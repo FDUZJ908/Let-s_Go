@@ -5,7 +5,7 @@ int main()
 {   
     
     string jsonReq_str=getRequestData();
-/*
+
     JSON jsonReq(jsonReq_str);
     JSON::CMIt openid_it=jsonReq.FindMember("openid");
     JSON::CMIt rawData_it=jsonReq.FindMember("rawData");
@@ -18,9 +18,9 @@ int main()
     //jsonInfo.insert("Tel",GETString(Tel_it));
     string ret=cdbc.insertJSON(jsonInfo,"user",false);
     if(ret!="OK") writeError(ret);
-    */
+    
     JSON jsonRes(0);
-    jsonRes.insert("sessionid",string("TESTlsh1234!");
+    jsonRes.insert("sessionid",string("TESTlsh1234!"));
     sendResponse(jsonRes.toString());
     return 0;
 }

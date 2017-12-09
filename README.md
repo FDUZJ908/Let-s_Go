@@ -21,45 +21,81 @@
 若`status`为`"ERROR"`，则同时会有一个名为`message`的`key`，表示出错的信息，若`status`为`"OK"`，则没有`message`。
 
 
-#### 1.用户注册
+### 1.用户注册
 
-##### url: [https://shiftlin.top/cgi-bin/Register](https://shiftlin.top/cgi-bin/Register)
+#### 说明：
+用户填写完userid后（要求用邮箱），前端用接口2获取验证码，用户从邮件获取验证码。
+用户输入验证码后，由前端进行验证，验证通过后，则用该接口发送注册信息给后端。
+若注册成功，后端返回的`status`为`OK`，并附带一个`token`（`token`的说明见登录接口)，前端可以直接登录。
 
-##### method: POST
+#### url: [https://shiftlin.top/cgi-bin/Register](https://shiftlin.top/cgi-bin/Register)
 
-##### 发送数据格式：
+#### method: POST
 
-```json
-{
-  userid:"lshzy137@163.com",
-  password:"123456",
-  nickname:"lsh",
-  gender:"男",
-  Tel: "15202345235"
-}
-```
-
-##### 接收数据格式:
+#### 发送数据格式：
 
 ```json
 {
-  status: "OK"
+  "userid":"lshzy137@163.com",
+  "password":"123456",
+  "nickname":"lsh",
+  "gender":"男",
+  "Tel": "15202345235" //可选
 }
 ```
 
+#### 接收数据格式:
 
-#### 2.签到
+```json
+{
+  "status": "OK"，
+  "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
+}
+```
 
-##### 说明：
+### 2.获取验证码
+
+#### 说明：
+该接口可用于
++ 注册时获取验证码，对应`type`参数为0。
+  若userid已经存在，则返回`status`为`ERROR`。
++ 密码找回时获取验证码，对应`type`参数为1。
+  若userid不存在，则返回`status`为`ERROR`。
+
+#### url: [https://shiftlin.top/cgi-bin/Verify](https://shiftlin.top/cgi-bin/Verify)
+
+#### method: POST
+
+#### 发送数据格式：
+
+```json
+{
+  "userid":"lshzy137@163.com",
+  "type":"0"
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status": "OK",
+  "code":"1243454" //小于等于10位
+}
+```
+
+### 3.签到
+
+#### 说明：
 获取附近poi由前端获取，服务器没有相应的poi信息，所以签到时需要将poi信息发给后端。
 
-##### 相关函数：`checkPosition()`
+#### 相关函数：`checkPosition()`
 
-##### url: [https://shiftlin.top/cgi-bin/CheckIn](https://shiftlin.top/cgi-bin/CheckIn)
+#### url: [https://shiftlin.top/cgi-bin/CheckIn](https://shiftlin.top/cgi-bin/CheckIn)
 
-##### method: POST
+#### method: POST
 
-##### 发送数据格式： 
+#### 发送数据格式： 
 
 ```json
 {
