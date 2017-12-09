@@ -4,7 +4,7 @@
 
 ### **注意**
 
-数据的交互全部采用json格式，数据类型严格按照json所示定义，即：
+数据的交互全部采用json格式，并且使用HTTPS，数据类型严格按照json所示定义，即：
 
 - 共有`Object, Array, string, int, double, string`这六种类型。
 - 大括号`{}`表示一个Object，也就是由`key:value`组成的字典，`value`可以为六种类型中的任意一种。
@@ -26,7 +26,7 @@
 #### 说明：
 用户填写完userid后（要求用邮箱），前端用接口2获取验证码，用户从邮件获取验证码。
 用户输入验证码后，由前端进行验证，验证通过后，则用该接口发送注册信息给后端。
-若注册成功，后端返回的`status`为`OK`，并附带一个`token`（`token`的说明见登录接口)，前端可以直接登录。
+若注册成功，后端返回的`status`为`OK`，并附带一个`token`(`token`的说明见登录接口)，前端可以直接登录。
 
 #### url: [https://shiftlin.top/cgi-bin/Register](https://shiftlin.top/cgi-bin/Register)
 
@@ -48,7 +48,7 @@
 
 ```json
 {
-  "status": "OK"，
+  "status": "OK",
   "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
 }
 ```
@@ -82,9 +82,48 @@
   "status": "OK",
   "code":"1243454" //小于等于10位
 }
+
+{
+  "status": "ERROR",
+  "message": "用户名已经存在！"
+}
 ```
 
-### 3.签到
+
+### 3.登录
+
+#### 说明：
+登录成功后，后端会返回一个小于等于128位的`token`，以后前端调用其他接口均需要把这个`token`传给后端，用于验证身份。
+
+#### url: [https://shiftlin.top/cgi-bin/Login](https://shiftlin.top/cgi-bin/Login)
+
+#### method: POST
+
+#### 发送数据格式：
+
+```json
+{
+  "userid":"lshzy137@163.com",
+  "password":"123456"
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status": "OK",
+  "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
+}
+
+{
+  "status": "ERROR",
+  "message": "用户名不存在或者密码错误。"
+}
+```
+
+
+### 4.签到
 
 #### 说明：
 获取附近poi由前端获取，服务器没有相应的poi信息，所以签到时需要将poi信息发给后端。
@@ -113,7 +152,8 @@
   userid: "lshzy137@163.com",
   latitude: 40.43535, //用户所在纬度
   longitude: 123.454,  //用户所在经度
-  text: "Let's Go!"
+  text: "Let's Go!",
+  "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
 }
 ```
 
