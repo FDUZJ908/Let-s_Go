@@ -3,6 +3,7 @@
 #include "stdcpp.h"
 #include "Util.h"
 #include "Poco.h"
+#include "crypto.h"
 #include "JSON.h"
 #include "CDBC.h"
 #include "Log.h"
@@ -122,12 +123,11 @@ struct AccessToken
 
 string getRequestData();
 void sendResponse(const string &response,const string &contentType=ContentType::json);
-string getSessionID(const string &openid);
-bool checkSessionID(const string &openid,const string &sessionid);
+string getToken(const string &userid);
+bool checkTocken(const string &token);
 string HTTPRequestGET(const string &url_str);
 string HTTPSRequestGET(const string &url_str);
 HTTPContent HTTPSRequestPOST(const string &url_str,const JSON &data);
-string getAccessToken(const bool refresh);
 void writeError(const string &mesg);
 
 

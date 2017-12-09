@@ -36,11 +36,11 @@
 
 ```json
 {
-  "userid":"lshzy137@163.com",
+  "userid":"lshzy137@163.com", //小于等于32字节
   "password":"123456",
-  "nickname":"lsh",
-  "gender":"男",
-  "Tel": "15202345235" //可选
+  "nickname":"lsh", //小于等于32字节
+  "gender": 1, //0:保密(未知) 1:男 2:女
+  "Tel": "15202345235" //可选 小于等于15字节
 }
 ```
 
@@ -49,7 +49,7 @@
 ```json
 {
   "status": "OK",
-  "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
+  "token": "03ab32de7e56556b66b2fdb2df0f17da88d3774alshzy137@163.com1512827249" //小于等于128字节
 }
 ```
 
@@ -71,7 +71,7 @@
 ```json
 {
   "userid":"lshzy137@163.com",
-  "type":"0"
+  "type": 0
 }
 ```
 
@@ -118,7 +118,7 @@
 
 {
   "status": "ERROR",
-  "message": "用户名不存在或者密码错误。"
+  "message": "用户名或密码错误！"
 }
 ```
 

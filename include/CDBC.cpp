@@ -109,3 +109,9 @@ int CDBC::getLastId()
     if(recordList.Size()>0) return recordList[0]["id"].GetInt();
     else return 0;
 }
+
+bool CDBC::authenticate(const string &userid,const string &password)
+{
+    RecordList res=selectQuery("*","user","userid='"+userid+"' AND password='"+password+"'");
+    return (res.Size()==1);
+}

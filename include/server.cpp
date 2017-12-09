@@ -21,30 +21,15 @@ void sendResponse(const string &response,const string &contentType)
     printf("%s\n%s\n",header.c_str(),response.c_str());
 }
 
-string getSessionID(const string &openid)
+string getToken(const string &userid)
 {
-    int timestamp=getTimestamp();
-    srand((unsigned)timestamp);
-    string time_str=TOString(timestamp),sessionid,ret="";
-    JSON json;
-    json.insert("openid",openid);
-    json.insert("sessionid","");
-    for(int cnt=0;cnt<10;cnt++)
-    {
-        int id=rand();
-        sessionid=time_str+TOString(id);
-        json["sessionid"].SetString(sessionid.c_str(),sessionid.size(),Allocator);
-        ret=cdbc.insertJSON(json,"session",true);
-        if(ret==OK) return sessionid;
-    }
-    return ERROR;
+    string str=userid+TOString(getTimestamp());
+    return sha1(polyhash(str))+str;
 }
 
-bool checkSessionID(const string &openid,const string &sessionid)
+bool checkTocken(const string &token)
 {
-    RecordList res=cdbc.selectQuery("*","session","openid='"+openid+"' and sessionid='"+sessionid+"'");
-    if(res.Size()!=1) writeError("Request data error!");
-    return true;
+    return (sha1(polyhash(token.substr(40)))==token.substr(0,40));
 }
 
 string HTTPRequestGET(const string &url_str) //need to append '/' at the end of url_str when you request for the default index.html

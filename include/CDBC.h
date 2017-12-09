@@ -9,6 +9,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include "server.h"
 using namespace sql;
 
 typedef Value Record;
@@ -43,7 +44,8 @@ public:
     RecordList selectQuery(const string &attrs,const string &tables,const string &conditions="TRUE",
                            const Value &argv=Value(kArrayType),const string &options=""); //argv must be kArrayType
     int getLastId();
-    
+    bool authenticate(const string &userid,const string &password);
+
     ~CDBC()
     {
         //remember to free ResultSet

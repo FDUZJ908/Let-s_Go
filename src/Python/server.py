@@ -4,6 +4,8 @@ import os
 import sys
 import json
 import time
+import random
+import mysql.connector
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -11,11 +13,37 @@ sys.setdefaultencoding('utf-8')
 DAY_SECONDS=24*60*60
 WEEK_SECONDS=7*DAY_SECONDS
 
-cgiPath=os.environ["MiniProg"]+"/cgi-bin/"
-resPath=os.environ["miniProgResrcPATH"]
-filePath=os.environ["miniProgFilePATH"]
-logPath=os.environ["miniProgLogPATH"]
-fontPath=os.environ["fonts"]
+# cgiPath=os.environ["MiniProg"]+"/cgi-bin/"
+# resPath=os.environ["miniProgResrcPATH"]
+# filePath=os.environ["miniProgFilePATH"]
+# logPath=os.environ["miniProgLogPATH"]
+# fontPath=os.environ["fonts"]
+
+class PDBC:
+    config={
+            "user":"root",
+            "password":os.environ["DatabasePassword"],
+            "database":"LetsGo"
+            }
+    conn=None
+
+    def __init__(self):
+        self.conn=mysql.connector.connect(**self.config)
+
+    def __del__(self):
+        if self.conn!=None:
+            self.conn.close()
+
+    def checkUserid(self,userid):
+        cur=self.conn.cursor()
+        cur.execute("SELECT * FROM user WHERE userid='"+userid+"' LIMIT 1")
+        row=cur.fetchone()
+        cur.close()
+        if row==None:
+            return 0
+        return 1
+
+pdbc=PDBC()
 
 def getRequestData(flog=None):
     jsonReq_str=""
