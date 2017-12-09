@@ -62,7 +62,7 @@
 + 密码找回时获取验证码，对应`type`参数为1。
   若userid不存在，则返回`status`为`ERROR`。
 
-#### url: [https://shiftlin.top/cgi-bin/Verify](https://shiftlin.top/cgi-bin/Verify)
+#### url: [https://shiftlin.top/cgi-bin/Verify.py](https://shiftlin.top/cgi-bin/Verify.py)
 
 #### method: POST
 
