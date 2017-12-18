@@ -113,7 +113,7 @@
 ```json
 {
   "status": "OK",
-  "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
+  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455" //小于等于128位
 }
 
 {
@@ -122,13 +122,119 @@
 }
 ```
 
+### 4.获取帐号信息
 
-### 4.签到
+#### url: [https://shiftlin.top/cgi-bin/Account](https://shiftlin.top/cgi-bin/Account)
 
-#### 说明：
-获取附近poi由前端获取，服务器没有相应的poi信息，所以签到时需要将poi信息发给后端。
+#### method: POST
 
-#### 相关函数：`checkPosition()`
+#### 发送数据格式：
+
+```json
+{
+  "userid":"lshzy137@163.com",
+  "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status" : "OK",
+  "userid":"lshzy137@163.com", //小于等于32字节
+  "password":"123456",
+  "nickname":"lsh", //小于等于32字节
+  "gender": 1, //0:保密(未知) 1:男 2:女
+  "Tel": "15202345235" //可选 小于等于15字节
+}
+```
+
+
+### 5.获取附近POI的热度
+
+#### url: [https://shiftlin.top/cgi-bin/Popularity](https://shiftlin.top/cgi-bin/Popularity)
+
+#### method: POST
+
+#### 发送数据格式： 
+
+```json
+{
+  "POI_num": 3,
+  "POI_ids": ["1", "2", "4"], //百度地图API的原始POI_id
+  "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status" : "OK",
+  "POI_num": 3,
+  "POIs":[
+    {
+      "POI_id": "1",
+      "popularity": 3,
+    },
+    {
+      "POI_id": "2",
+      "popularity": 0,
+    },
+    {
+      "POI_id": "4",
+      "popularity": 1
+    }
+  ]
+}
+```
+
+### 6.获取某个POI的POST历史记录
+
+#### url: [https://shiftlin.top/cgi-bin/History](https://shiftlin.top/cgi-bin/History)
+
+#### method: POST
+
+#### 发送数据格式： 
+
+```json
+{
+  "POI_id": "123",
+  "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status" : "OK",
+  "post_num": 3,
+  "posts": [
+    {
+      "postid":1,
+      "text":"今天天气好啊",
+      "like": 2, //点赞数
+      "dislike": 0 //反对数
+    },
+    {
+      "postid":2,
+      "text":"今天不好啊",
+      "like": 1,
+      "dislike": 1
+    },
+    {
+      "postid":3,
+      "text":"23333",
+      "like": 2,
+      "dislike": 0 
+    }
+  ]
+}
+```
+
+### 7.留下足迹
 
 #### url: [https://shiftlin.top/cgi-bin/CheckIn](https://shiftlin.top/cgi-bin/CheckIn)
 
@@ -138,22 +244,60 @@
 
 ```json
 {
-  POI_id: "1",
-  POI_info: {
-    category:"school",
-    POI_name: "Fudan University",
-    latitude: 40.43535, //poi所在纬度
-    longitude: 123.454, //poi所在经度
-    province: "上海市",
-    city: "上海市",
-    district: "黄浦区"
+  "POI_id": "1",
+  "POI_info": {
+    "category":"school",
+    "POI_name": "Fudan University",
+    "latitude": 40.43535, //POI所在纬度
+    "longitude": 123.454, //POI所在经度
+    "city": "上海市"
   },
-  created_by_user: false,
-  userid: "lshzy137@163.com",
-  latitude: 40.43535, //用户所在纬度
-  longitude: 123.454,  //用户所在经度
-  text: "Let's Go!",
-  "token": "SGSGKHNAIEJMJHGH31423R" //小于等于128位
+  "userid": "lshzy137@163.com",
+  "latitude": 40.43535, //用户所在纬度
+  "longitude": 123.454,  //用户所在经度
+  "text": "Let's Go!",
+  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
 }
 ```
 
+#### 接收数据格式:
+
+```json
+{
+  "status":"OK"
+}
+
+{
+  "status":"ERROR", //可能出错，前端需要判断
+  "message":"unknown"
+}
+```
+
+### 8. 点赞/反对/举报
+
+#### url: [https://shiftlin.top/cgi-bin/Feedback](https://shiftlin.top/cgi-bin/Feedback)
+
+#### method: POST
+
+#### 发送数据格式： 
+
+```json
+{
+  "POI_id": "123",
+  "feedback" : 0,  //0:点赞，1:反对，2:举报
+  "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status" : "OK"
+}
+
+{
+  "status":"ERROR", //可能出错，前端需要判断
+  "message":"unknown"
+}
+```
