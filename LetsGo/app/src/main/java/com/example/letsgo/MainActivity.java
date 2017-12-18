@@ -160,8 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //定义一个选中一个item后的处理
-    public void setChioceItem(int index)
-    {
+    public void setChioceItem(int index) {
         //重置选项+隐藏所有Fragment
         FragmentTransaction transaction = fManager.beginTransaction();
         clearChioce();
@@ -171,10 +170,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 course_image.setImageResource(R.drawable.f1);
                 course_text.setTextColor(blue);
                 //course_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
-                if (fg1 == null) {
-                    // 如果fg1为空，则创建一个并添加到界面上
-                    fg1 = new Fragment1();
-                    transaction.add(R.id.content, fg1);
+                    if (fg1 == null) {
+                        // 如果fg1为空，则创建一个并添加到界面上
+                        fg1 = new Fragment1();
+                        transaction.add(R.id.content, fg1);
                 } else {
                     // 如果MessageFragment不为空，则直接将它显示出来
                     transaction.show(fg1);

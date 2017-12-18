@@ -15,16 +15,26 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.location.Poi;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.LogoPosition;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.TextureMapView;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
+import com.baidu.mapapi.search.poi.PoiDetailResult;
+import com.baidu.mapapi.search.poi.PoiIndoorResult;
+import com.baidu.mapapi.search.poi.PoiResult;
+import com.baidu.mapapi.search.poi.PoiSearch;
 import com.example.letsgo.MainActivity;
 import com.example.letsgo.R;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,6 +58,9 @@ public class Fragment2 extends Fragment {
 
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
+    private UiSettings mUiSettings;
+    private List<Poi> mPoiList;
+    private PoiSearch mPoiSearch;
 
     public Fragment2() {
         // Required empty public constructor
@@ -88,12 +101,37 @@ public class Fragment2 extends Fragment {
         mLocationClient = new LocationClient(getContext());
         mLocationClient.registerLocationListener(new MyLocationListener());
         //SDKInitializer.initialize(getContext());
-        TextureMapView mMapView=new TextureMapView(getActivity());
-        mBaiduMap=mMapView.getMap();
+
+        mPoiSearch=PoiSearch.newInstance();
+        mPoiSearch.setOnGetPoiSearchResultListener(new OnGetPoiSearchResultListener(){
+            @Override
+            public void onGetPoiResult(PoiResult result){
+                //获取POI检索结果
+            }
+            @Override
+            public void onGetPoiDetailResult(PoiDetailResult result){
+                //获取Place详情页检索结果
+            }
+            @Override
+            public void onGetPoiIndoorResult(PoiIndoorResult result){
+
+            }
+        });
+
+        //绘制界面
+        TextureMapView mMapView = new TextureMapView(getActivity());
+        //mMapView.setLogoPosition(LogoPosition.logoPostionCenterBottom);
+        mBaiduMap = mMapView.getMap();
         mBaiduMap.setMyLocationEnabled(true);
 
-        LinearLayout linearLayout=new LinearLayout(getActivity());
+        //设置指南针
+        mUiSettings = mBaiduMap.getUiSettings();
+        mUiSettings.setCompassEnabled(true);
+
+        LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.addView(mMapView);
+
+        //开始定位
         requestLocation();
 
         return linearLayout;
@@ -102,20 +140,35 @@ public class Fragment2 extends Fragment {
 
     private void requestLocation() {
         LocationClientOption option = new LocationClientOption();
-        option.setScanSpan(5000);//每5秒获得一次定位
+        //option.setScanSpan(500000);//每500秒获得一次定位
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//高精度定位
+        option.setIsNeedLocationPoiList(true);//获得POI
         //option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);//只有GPS定位
         mLocationClient.setLocOption(option);
         mLocationClient.start();
     }
 
+
+
     protected class MyLocationListener extends BDAbstractLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
-            if(location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType()==BDLocation.TypeNetWorkLocation){
-                //Log.d("F2","enter");
+            Log.d("******", "ReceiveLocation");
+
+            if (location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation) {
                 locateTo(location);
             }
+
+            try {
+                mPoiList = location.getPoiList();
+                for (int i = 0; i < mPoiList.size(); i++) {
+                    Log.d("***Poi***", mPoiList.get(i).getId());
+                }
+            } catch (Exception e) {
+                Log.d("***Poi***", e.getMessage());
+            }
+
+
         }
     }
 
@@ -125,15 +178,15 @@ public class Fragment2 extends Fragment {
                 .direction(100).latitude(location.getLatitude())
                 .longitude(location.getLongitude()).build();
         mBaiduMap.setMyLocationData(locationData); //设置定位
-        centerToLocation(location,250); //设置中心“我”
+        centerToLocation(location, 250); //设置中心“我”
     }
 
-    protected void centerToLocation(BDLocation location,int duration) {
+    protected void centerToLocation(BDLocation location, int duration) {
         LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
         MapStatus newStatus = new MapStatus.Builder()
                 .target(ll).zoom(16).build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(newStatus);
-        mBaiduMap.animateMapStatus(mMapStatusUpdate,duration);//duration为动画的时间
+        mBaiduMap.animateMapStatus(mMapStatusUpdate, duration);//duration为动画的时间
     }
 
     // TODO: Rename method, update argument and hook method into UI event
