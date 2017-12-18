@@ -44,6 +44,7 @@ public:
     RecordList selectQuery(const string &attrs,const string &tables,const string &conditions="TRUE",
                            const Value &argv=Value(kArrayType),const string &options=""); //argv must be kArrayType
     int getLastId();
+    Record queryByID(const string &id,const string &table,const string &attr);
     bool authenticate(const string &userid,const string &password);
 
     ~CDBC()

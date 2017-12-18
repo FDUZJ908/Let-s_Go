@@ -110,6 +110,14 @@ int CDBC::getLastId()
     else return 0;
 }
 
+Record CDBC::queryByID(const string &id,const string &table,const string &attr)
+{
+    Value argv(kArrayType);
+    argv.PushBack(Str2Value(id),Allocator);
+    RecordList recordList=selectQuery("*",table,attr+"=?",argv,"LIMIT 1");
+    return FirstOf(recordList);
+}
+
 bool CDBC::authenticate(const string &userid,const string &password)
 {
     RecordList res=selectQuery("*","user","userid='"+userid+"' AND password='"+password+"'");
