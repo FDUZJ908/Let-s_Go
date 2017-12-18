@@ -151,9 +151,9 @@
 ```
 
 
-### 5.获取附近POI的热度
+### 5.获取附近POI
 
-#### url: [https://shiftlin.top/cgi-bin/Popularity](https://shiftlin.top/cgi-bin/Popularity)
+#### url: [https://shiftlin.top/cgi-bin/Search](https://shiftlin.top/cgi-bin/Search)
 
 #### method: POST
 
@@ -161,8 +161,9 @@
 
 ```json
 {
-  "POI_num": 3,
-  "POI_ids": ["1", "2", "4"], //百度地图API的原始POI_id
+  "userid":"lshzy137@gmail.com",
+  "latitude": 34.5,
+  "longitude": 123.1,
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
 }
 ```
@@ -176,15 +177,30 @@
   "POIs":[
     {
       "POI_id": "1",
+      "POI_name": "Fudan University",
+      "category":"学校",
+      "latitude": 34.5,
+      "longitude": 123.1,
       "popularity": 3,
+      "city":"上海市"
     },
     {
       "POI_id": "2",
+      "POI_name": "Gaoke Garden",
+      "category":"生活区",
+      "latitude": 34.5,
+      "longitude": 123.1,
       "popularity": 0,
+      "city":"上海市"
     },
     {
       "POI_id": "4",
-      "popularity": 1
+      "POI_name": "张江计算机楼",
+      "category":"学校",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 1,
+      "city":"上海市"
     }
   ]
 }
@@ -245,13 +261,6 @@
 ```json
 {
   "POI_id": "1",
-  "POI_info": {
-    "category":"school",
-    "POI_name": "Fudan University",
-    "latitude": 40.43535, //POI所在纬度
-    "longitude": 123.454, //POI所在经度
-    "city": "上海市"
-  },
   "userid": "lshzy137@163.com",
   "latitude": 40.43535, //用户所在纬度
   "longitude": 123.454,  //用户所在经度
