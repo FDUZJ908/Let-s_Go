@@ -21,6 +21,53 @@
 若`status`为`"ERROR"`，则同时会有一个名为`message`的`key`，表示出错的信息，若`status`为`"OK"`，则没有`message`。
 
 
+### 0.爬数据
+
+#### url: [https://shiftlin.top/cgi-bin/Save](https://shiftlin.top/cgi-bin/Save)
+
+#### method: POST
+
+#### 发送数据格式：
+
+```json
+{
+  "status" : "OK",
+  "POI_num": 3,
+  "category": "教育机构",
+  "POIs":[
+    {
+      "POI_id": "1",
+      "POI_name": "复旦大学",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "city":"上海市"
+    },
+    {
+      "POI_id": "2",
+      "POI_name": "中医药大学",
+      "latitude": 32.5,
+      "longitude": 123.34,
+      "city":"上海市"
+    },
+    {
+      "POI_id": "4",
+      "POI_name": "张江计算机楼",
+      "latitude": 31.5,
+      "longitude": 121.1,
+      "city":"上海市"
+    }
+  ]
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status": "OK"
+}
+```
+
 ### 1.用户注册
 
 #### 说明：
@@ -282,7 +329,7 @@
 }
 ```
 
-### 8. 点赞/反对/举报
+### 8.点赞/反对/举报
 
 #### url: [https://shiftlin.top/cgi-bin/Feedback](https://shiftlin.top/cgi-bin/Feedback)
 
