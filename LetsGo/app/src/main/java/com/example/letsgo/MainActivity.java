@@ -135,10 +135,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void initFragment(){
-        FragmentTransaction transaction = fManager.beginTransaction();
-        fg2 = new Fragment2();
-        transaction.add(R.id.content, fg2);
-        transaction.commit();
+        //FragmentTransaction transaction = fManager.beginTransaction();
+        //fg2 = new Fragment2();
+        //transaction.add(R.id.content, fg2);
+        //transaction.commit();
     }
 
     @Override
@@ -265,8 +265,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLocationClient.stop();
-        baiduMap.setMyLocationEnabled(false);
+        /*mLocationClient.stop();
+        baiduMap.setMyLocationEnabled(false);*/
         //mapView.onDestroy();
     }
 
