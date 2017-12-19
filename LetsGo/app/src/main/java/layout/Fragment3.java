@@ -2,6 +2,7 @@ package layout;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.letsgo.DataActivity;
 import com.example.letsgo.R;
 import com.google.gson.Gson;
 
@@ -112,6 +114,9 @@ public class Fragment3 extends Fragment {
         buttonTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent i=new Intent(getActivity(), DataActivity.class);
+                startActivity(i);
+                /*
                 Gson gson=new Gson();
                 Register register=new Register();
                 register.setUserid("Joash");
@@ -119,6 +124,7 @@ public class Fragment3 extends Fragment {
                 //textTest.setText(gson.toJson(register));
                 Register register1=gson.fromJson(gson.toJson(register),Register.class);
                 textTest.setText(register1.getCode()+"*"+register1.getUserid()+"*"+register1.getStatus());
+                */
             }
         });
     }
