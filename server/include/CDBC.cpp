@@ -123,3 +123,22 @@ bool CDBC::authenticate(const string &userid,const string &password)
     RecordList res=selectQuery("*","user","userid='"+userid+"' AND password='"+password+"'");
     return (res.Size()==1);
 }
+
+RecordList CDBC::queryPostHistoryByID(const string &id,const string &attr, int postid)
+{
+    if(postid==0) postid=INF;
+    string conditions=attr+"=? AND postid<?";
+
+    Value argv(kArrayType);
+    argv.PushBack(Str2Value(id),Allocator);
+    argv.PushBack(Int2Value(postid),Allocator);
+    return selectQuery("*","post",conditions,argv,"ORDER BY datetime DESC LIMIT 10");
+}
+
+RecordList CDBC::queryPOI(const double &lat, const double &lng, const double distLimit)
+{
+    double dlat=distTolat(distLimit,lat),dlng=distTolng(distLimit,lat);
+    string conditions=TOString(lat-dlat)+"<latitude and latitude<"+TOString(lat+dlat)+" and ";
+    conditions+=TOString(lng-dlng)+"<longitude and longitude<"+TOString(lng+dlng);
+    return selectQuery("*","POI",conditions);
+}

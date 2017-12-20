@@ -5,6 +5,7 @@
 #include <sys/time.h>
 
 #define ZERO 1e-6
+#define INF 2000000000
 
 #define TOString(x) (boost::lexical_cast<string>(x))
 

@@ -31,7 +31,7 @@ int main(int argc,char *argv[])
                     categories+=","+category;
                     p.AddMember("category",Str2Value(categories),Allocator);
                     ret=cdbc.insertJSON(JSON(p),"POI",true);
-                }
+                }else ret="Inserted";
             }
             if(ret==OK) cnt++; else message=ret;
         }

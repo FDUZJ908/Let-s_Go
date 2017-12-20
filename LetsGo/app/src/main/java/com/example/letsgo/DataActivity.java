@@ -41,15 +41,15 @@ class MyListener implements OnGetPoiSearchResultListener {
 
     @Override
     public void onGetPoiResult(PoiResult result) {
-        Log.d("onGetPoiResult", String.valueOf(result.getTotalPoiNum()));
+        Log.d("onGetPoiResult", String.valueOf(result.getTotalPoiNum()) + " " + String.valueOf(result.getTotalPageNum()));
         SavePoi mSavePoi = new SavePoi();
         mSavePoi.setCategory(category_);
         ArrayList<MyPoiInfo> myPoiInfos = new ArrayList<>();
         List<PoiInfo> re = result.getAllPoi();
         int m = (re != null) ? re.size() : 0;
-        mSavePoi.setPOI_num(m);
-        try {
-            for (int i = 0; i < m; i++) {
+        int cnt=m;
+        for (int i = 0; i < m; i++) {
+            try {
                 MyPoiInfo curInfo = new MyPoiInfo();
                 curInfo.setCity(re.get(i).city);
                 curInfo.setLat(re.get(i).location.latitude);
@@ -58,12 +58,12 @@ class MyListener implements OnGetPoiSearchResultListener {
                 curInfo.setUid(re.get(i).uid);
                 curInfo.setType(re.get(i).type.ordinal());
                 myPoiInfos.add(curInfo);
+            } catch (Exception e){
+                cnt--;
             }
-            mSavePoi.setPOIs(myPoiInfos);
-        }catch(Exception e)
-        {
-            return;
         }
+        mSavePoi.setPOI_num(cnt);
+        mSavePoi.setPOIs(myPoiInfos);
         dispatcher_.save(mSavePoi, result.getCurrentPageNum(), result.getTotalPageNum());
     }
 
@@ -79,7 +79,18 @@ class MyListener implements OnGetPoiSearchResultListener {
 }
 
 public class DataActivity extends AppCompatActivity {
-    private int p_ = 7;
+    //private final double latLow = 30.85;
+    private final double latLow = 31.05;
+    private final double latHigh = 31.45;
+    private final double lngLow = 121.00;
+    private final double lngHigh = 121.90;
+    private final double step = 0.02;
+    private double lat_;
+    private double lng_;
+
+    SavePoi savePoi_=new SavePoi();
+
+    private int p_ = 0;
     private final String[] categoryList = {"餐饮美食", "教育机构", "文化艺术", "旅游景点", "购物商场",
             "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
     boolean[] vis = new boolean[20];
@@ -96,47 +107,78 @@ public class DataActivity extends AppCompatActivity {
         int n = categoryList.length;
         for (int i = 0; i < n; i++) vis[i] = false;
         crawlData(p_);
+        System.out.println(p_);
     }
 
     private void crawlData(int p) {
         if (p >= categoryList.length) return;
         vis[p] = true;
         myListener.setCategory(categoryList[p]);
-        request(0);
+        LatLoop(latLow);
+    }
+
+    private void LatLoop(double lat) {
+        lat_ = lat;
+        if (lat_ <= latHigh)
+            LngLoop(lngLow);
+    }
+
+    private void LngLoop(double lng) {
+        lng_ = lng;
+        if (lng_ <= lngHigh)
+            request(0);
+        else
+            LatLoop(lat_ + step);
     }
 
     private void request(int k) {
         Log.d("***request***", String.valueOf(k));
+        Log.d("***request***", String.valueOf(lat_) + " " + String.valueOf(lng_));
         ps.searchNearby(new PoiNearbySearchOption()
                 .keyword(categoryList[p_])
                 .sortType(PoiSortType.distance_from_near_to_far)
-                .location(new LatLng(31.24, 121.47))
-                .radius(40000)
+                .location(new LatLng(lat_, lng_))
+                .radius(1500)
                 .pageCapacity(50).pageNum(k));
+    }
+
+    private void merge(SavePoi mSavePoi) {
+        ArrayList<MyPoiInfo> POIs=savePoi_.getPOIs();
+        POIs.addAll(mSavePoi.getPOIs());
+        savePoi_.setPOIs(POIs);
+        savePoi_.setPOI_num(savePoi_.getPOI_num()+mSavePoi.getPOI_num());
+        savePoi_.setCategory(mSavePoi.getCategory());
+    }
+
+    private void send() {
+        long x=0;
+        for (int i = 1; i <= 1 * 100000000; i++) x++;
+        String postData = gson.toJson(savePoi_);
+        Log.d("***PostData***", "正在发送数据...");
+        Log.d("***PostData***", postData);
+        sendHttpPost("https://shiftlin.top/cgi-bin/Save", postData, new okhttp3.Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("**PostData**", "Success:" + response.body().string());
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("**PostData**", "Failure");
+                e.printStackTrace();
+            }
+        });
+        savePoi_.clear();
     }
 
     public void save(SavePoi mSavePoi, int k, int pageNum) {
         if (mSavePoi.getPOI_num() > 0) {
-            String postData = gson.toJson(mSavePoi);
-            Log.d("***PostData***", "正在发送数据...");
-            Log.d("***PostData***", postData);
-            sendHttpPost("https://shiftlin.top/cgi-bin/Save", postData, new okhttp3.Callback() {
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    Log.d("**PostData**", "Success:" + response.body().string());
-                }
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.d("**PostData**", "Failure");
-                    e.printStackTrace();
-                }
-            });
+            merge(mSavePoi);
         }
         if (k + 1 < pageNum) request(k + 1);
         else {
-            p_ += 1;
-            crawlData(p_);
+            send();
+            LngLoop(lng_ + step);
         }
 
     }

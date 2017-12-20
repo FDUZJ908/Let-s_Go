@@ -11,11 +11,37 @@ public class SavePoi {
     private String category;
     private ArrayList<MyPoiInfo> POIs;
 
-    public int getPOI_num(){return this.POI_num;}
-    public String getCategory(){return this.category;}
-    public ArrayList<MyPoiInfo> getPOIs(){return this.POIs;}
+    public SavePoi() {
+        POI_num = 0;
+        POIs = new ArrayList<>();
+    }
 
-    public void setPOI_num(int POI_num){this.POI_num=POI_num;}
-    public void setCategory(String category){this.category=category;}
-    public void setPOIs(ArrayList<MyPoiInfo> POIs){this.POIs=POIs;}
+    public void clear() {
+        POI_num = 0;
+        POIs.clear();
+    }
+
+    public int getPOI_num() {
+        return this.POI_num;
+    }
+
+    public String getCategory() {
+        return this.category;
+    }
+
+    public ArrayList<MyPoiInfo> getPOIs() {
+        return this.POIs;
+    }
+
+    public void setPOI_num(int POI_num) {
+        this.POI_num = POI_num;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setPOIs(ArrayList<MyPoiInfo> POIs) {
+        this.POIs = POIs;
+    }
 }

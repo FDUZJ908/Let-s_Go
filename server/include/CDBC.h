@@ -46,6 +46,8 @@ public:
     int getLastId();
     Record queryByID(const string &id,const string &table,const string &attr);
     bool authenticate(const string &userid,const string &password);
+    RecordList queryPostHistoryByID(const string &id,const string &attr, int postid=0);
+    RecordList queryPOI(const double &lat, const double &lng, const double distLimit);
 
     ~CDBC()
     {
