@@ -11,4 +11,5 @@ int main()
     JSON jsonRes(record);
     jsonRes.insert("status",OK);
     sendResponse(jsonRes.toString());
+    return 0;
 }

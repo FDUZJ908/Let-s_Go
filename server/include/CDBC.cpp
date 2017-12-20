@@ -132,7 +132,7 @@ RecordList CDBC::queryPostHistoryByID(const string &id,const string &attr, int p
     Value argv(kArrayType);
     argv.PushBack(Str2Value(id),Allocator);
     argv.PushBack(Int2Value(postid),Allocator);
-    return selectQuery("*","post",conditions,argv,"ORDER BY datetime DESC LIMIT 10");
+    return selectQuery("*","post",conditions,argv,"ORDER BY timestamp DESC LIMIT 10");
 }
 
 RecordList CDBC::queryPOI(const double &lat, const double &lng, const double distLimit)
