@@ -1,11 +1,14 @@
 package layout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.icu.text.LocaleDisplayNames;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +24,16 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.LogoPosition;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
@@ -45,6 +53,7 @@ import com.baidu.mapapi.search.poi.PoiNearbySearchOption;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.baidu.mapapi.search.poi.PoiSortType;
+import com.example.letsgo.FootprintActivity;
 import com.example.letsgo.MainActivity;
 import com.example.letsgo.R;
 import com.google.gson.Gson;
@@ -57,9 +66,15 @@ import java.util.logging.StreamHandler;
 
 import model.MyPoiInfo;
 import model.SavePoi;
+import model.Search;
+import model.responseRegister;
+import model.responseSearch;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.example.letsgo.MainActivity.myToken;
+import static com.example.letsgo.MainActivity.myUserid;
 import static util.httpUtil.sendHttpPost;
 
 /**
@@ -70,7 +85,7 @@ import static util.httpUtil.sendHttpPost;
  * Use the {@link Fragment2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener, OnGetGeoCoderResultListener {
+public class Fragment2 extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -82,23 +97,41 @@ public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener,
 
     private OnFragmentInteractionListener mListener;
 
-    private final String[] categoryList = {"餐饮美食", "教育机构", "文化艺术", "旅游景点", "购物商场",
-            "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
-    private final double latLow = 30.85;
-    private final double latHigh = 31.45;
-    private final double lngLow = 121.00;
-    private final double lngHigh = 121.90;
-    private final double step = 0.05;
-    private int interval = 2000;
-    private int i_ = 0;
-
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     private UiSettings mUiSettings;
-    private List<Poi> mPoiList;
-    private PoiSearch mPoiSearch;
-    private GeoCoder mSearch;
     private Gson gson = new Gson();
+    private String responseData;
+    private responseSearch mResponseSearch;
+    private List<MyPoiInfo> PoiList;
+    private List<OverlayOptions> options=new ArrayList<>();
+
+    public static final int GETSEARCH=2;
+
+    private boolean isLocated=false;
+
+    private Handler handler=new Handler() {
+        public void handleMessage(Message msg){
+            mResponseSearch=gson.fromJson(msg.obj.toString(), responseSearch.class);
+            switch (msg.what){
+                case GETSEARCH:
+                    if(mResponseSearch.getStatus().equals("ERROR")){
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("搜索错误")
+                                .setMessage("搜索错误")
+                                .setPositiveButton("确定",null)
+                                .show();
+                    }
+                    else{
+                        PoiList=mResponseSearch.getPOIs();
+                        Marker();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     public Fragment2() {
         // Required empty public constructor
@@ -140,34 +173,6 @@ public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener,
         mLocationClient.registerLocationListener(new MyLocationListener());
         //SDKInitializer.initialize(getContext());
 
-        mPoiSearch = PoiSearch.newInstance();
-        mSearch = GeoCoder.newInstance();
-        mPoiSearch.setOnGetPoiSearchResultListener(this);
-        mSearch.setOnGetGeoCodeResultListener(this);
-        /*
-        mPoiSearch.setOnGetPoiSearchResultListener(new OnGetPoiSearchResultListener(){
-            @Override
-            public void onGetPoiResult(PoiResult result){
-                //获取POI检索结果
-            }
-            @Override
-            public void onGetPoiDetailResult(PoiDetailResult result){
-                if (result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    Log.d("***检索失败***","失败");
-                    //详情检索失败
-                    // result.error请参考SearchResult.ERRORNO
-                } else {
-                    //检索成功
-                    Log.d("***检索成功***",result.getName());
-                }
-            }
-            @Override
-            public void onGetPoiIndoorResult(PoiIndoorResult result){
-
-            }
-        });
-        */
-
         //绘制界面
         TextureMapView mMapView = new TextureMapView(getActivity());
         //mMapView.setLogoPosition(LogoPosition.logoPostionCenterBottom);
@@ -184,89 +189,8 @@ public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener,
         //开始定位
         requestLocation();
 
-
-        crawlData(i_);
-
         return linearLayout;
         //return inflater.inflate(R.layout.fragment_fragment2, container, false);
-    }
-
-    public void onGetPoiResult(PoiResult result) {
-        Log.d("onGetPoiResult", String.valueOf(result.getTotalPoiNum()));
-        //for (int j = 0; j < result.getTotalPageNum(); j++) {
-        //   result.setCurrentPageNum(j);
-        Log.d("**", String.valueOf(result.getCurrentPageNum()));
-        SavePoi mSavePoi = new SavePoi();
-        mSavePoi.setCategory(categoryList[i_]);
-        ArrayList<MyPoiInfo> myPoiInfos = new ArrayList<>();
-        List<PoiInfo> re = result.getAllPoi();
-        mSavePoi.setPOI_num(re.size());
-        for (int i = 0; i < re.size(); i++) {
-            MyPoiInfo curInfo = new MyPoiInfo();
-            curInfo.setCity(re.get(i).city);
-            curInfo.setLat(re.get(i).location.latitude);
-            curInfo.setLng(re.get(i).location.longitude);
-            curInfo.setName(re.get(i).name);
-            curInfo.setUid(re.get(i).uid);
-            curInfo.setType(re.get(i).type.ordinal());
-            myPoiInfos.add(curInfo);
-        }
-        mSavePoi.setPOIs(myPoiInfos);
-        String postData = gson.toJson(mSavePoi);
-        Log.d("***PostData***", "正在发送数据...");
-        Log.d("***PostData***", postData);
-        sendHttpPost("https://shiftlin.top/cgi-bin/Save", postData, new okhttp3.Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d("**PostData**", "Success:" + response.body().string());
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("**PostData**", "Failure");
-                e.printStackTrace();
-            }
-
-        });
-        //i_++;
-        //crawlData(i_);
-
-        // }
-    }
-
-    public void onGetPoiDetailResult(PoiDetailResult result) {
-        if (result.error != SearchResult.ERRORNO.NO_ERROR) {
-            Log.d("***检索失败***", String.valueOf(result.error));
-        } else {
-            Log.d("***检索成功***", result.getName());
-        }
-    }
-
-    public void onGetGeoCodeResult(GeoCodeResult result) {
-
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            //没有检索到结果
-        }
-
-        //获取地理编码结果
-    }
-
-    @Override
-    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
-
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            //没有找到检索结果
-        }
-        List<PoiInfo> re = result.getPoiList();
-        Log.d("ReverseGeoCodeResult", String.valueOf(re.size()));
-        for (int i = 0; i < re.size(); i++)
-            Log.d("**", re.get(i).name);
-        //获取反向地理编码结果
-    }
-
-    @Override
-    public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
-
     }
 
     private void requestLocation() {
@@ -285,48 +209,14 @@ public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener,
     protected class MyLocationListener extends BDAbstractLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
-            Log.d("******", "ReceiveLocation");
-
-            if (location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation) {
-                locateTo(location);
-            }
-            Log.d("******", "Start Work");
-
-
-            /*
-            while (i_<categoryList.length){
-                crawlData(i_);
-                i_++;
-            }*/
-
-
-            /*
-            mPoiSearch.searchNearby(new PoiNearbySearchOption()
-                    .keyword("景点")
-                    .sortType(PoiSortType.distance_from_near_to_far)
-                    .location(new LatLng(location.getLatitude(), location.getLongitude()))
-                    .radius(200000)
-                    .pageNum(10));
-             */
-            //mPoiSearch.searchPoiDetail((new PoiDetailSearchOption()).poiUid("5bb757e8485e2135e6e96549"));
-
-            //mSearch.reverseGeoCode(new ReverseGeoCodeOption()
-            //        .location(new LatLng(location.getLatitude(),location.getLongitude())));
-/*
-            try {
-                mPoiList = location.getPoiList();
-                for (int i = 0; i < mPoiList.size(); i++) {
-                    Log.d("***Poi***", mPoiList.get(i).getId());
-                    if( mPoiSearch.searchPoiDetail((new PoiDetailSearchOption()).poiUid(mPoiList.get(i).getId())) )
-                        Log.d("搜索结果","True");
-                    else Log.d("搜索结果","False");
+            if(!isLocated) {
+                Log.d("******", "ReceiveLocation");
+                if (location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation) {
+                    locateTo(location);
                 }
-            } catch (Exception e) {
-                Log.d("***Poi***", e.getMessage());
+                search(location);
+                isLocated=true;
             }
-*/
-
-
         }
     }
 
@@ -345,6 +235,60 @@ public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener,
                 .target(ll).zoom(16).build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(newStatus);
         mBaiduMap.animateMapStatus(mMapStatusUpdate, duration);//duration为动画的时间
+    }
+
+    protected void search(BDLocation location){
+        Search mSearch=new Search(myUserid,location.getLatitude(),location.getLongitude(),myToken);
+        sendHttpPost("https://shiftlin.top/cgi-bin/Search", gson.toJson(mSearch, Search.class), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                responseData = response.body().string();
+                Message message=new Message();
+                message.what=GETSEARCH;
+                message.obj=responseData;
+                handler.sendMessage(message);
+            }
+        });
+    }
+
+    protected void Marker(){
+
+        for(int i=0;i<PoiList.size()&&i<=10;i++) {
+            //定义Maker坐标点
+            LatLng point = new LatLng(PoiList.get(i).getLat(), PoiList.get(i).getLng());
+            //构建Marker图标
+            BitmapDescriptor bitmap = BitmapDescriptorFactory
+                    .fromResource(R.drawable.marker2);
+            //构建MarkerOption，用于在地图上添加Marker
+            Bundle mBundle = new Bundle();
+            mBundle.putString("POI_id", PoiList.get(i).getUid());
+            OverlayOptions option = new MarkerOptions()
+                    .extraInfo(mBundle)
+                    .perspective(true)
+                    .position(point)
+                    .icon(bitmap);
+            options.add(option);
+        }
+        //在地图上添加Marker，并显示
+        mBaiduMap.addOverlays(options);
+
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent i = new Intent(getActivity(), FootprintActivity.class);
+                i.putExtra("POI_id",marker.getExtraInfo().getString("POI_id"));
+                i.putExtra("token",myToken);
+                i.putExtra("userid",myUserid);
+                startActivity(i);
+                return true;
+            }
+        });
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -385,40 +329,6 @@ public class Fragment2 extends Fragment implements OnGetPoiSearchResultListener,
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-    protected void crawlData(int i) {
-
-        double curLat = latLow;
-        while (curLat < latHigh) {
-            double curLng = lngLow;
-            while (curLng < lngHigh) {
-                Log.d("Cur", String.valueOf(curLat) + ":" + String.valueOf(curLng));
-                PoiSearch ps = PoiSearch.newInstance();
-                ps.setOnGetPoiSearchResultListener(this);
-                ps.searchNearby(new PoiNearbySearchOption()
-                        .keyword(categoryList[i])
-                        .sortType(PoiSortType.distance_from_near_to_far)
-                        .location(new LatLng(curLat, curLng))
-                        .radius(5000)
-                        .pageCapacity(50));
-            }
-            curLng += step;
-        }
-        curLat += step;
-    }
-        /*
-        mPoiSearch.searchNearby(new PoiNearbySearchOption()
-                .keyword(categoryList[i])
-                .sortType(PoiSortType.distance_from_near_to_far)
-                .location(new LatLng(31.303, 121.517))
-                .radius(5000)
-                .pageCapacity(50));
-        try {
-            Thread.sleep(interval);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
 }
 
 
