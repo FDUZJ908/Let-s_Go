@@ -18,9 +18,6 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.SynchronousQueue;
 
 import model.MyPoiInfo;
 import model.SavePoi;
@@ -34,9 +31,8 @@ class MyListener implements OnGetPoiSearchResultListener {
     private String category_;
     private DataActivity dispatcher_;
 
-    MyListener(String category,DataActivity dispatcher){
-        category_=category;
-        dispatcher_=dispatcher;
+    MyListener(DataActivity dispatcher) {
+        dispatcher_ = dispatcher;
     }
 
     public void setCategory(String category) {
@@ -45,16 +41,15 @@ class MyListener implements OnGetPoiSearchResultListener {
 
     @Override
     public void onGetPoiResult(PoiResult result) {
-        synchronized (MyListener.class) {
-            Log.d("onGetPoiResult", String.valueOf(result.getTotalPoiNum()));
-            //for (int j = 0; j < result.getTotalPageNum(); j++) {
-            //   result.setCurrentPageNum(j);
-            SavePoi mSavePoi = new SavePoi();
-            mSavePoi.setCategory(category_);
-            ArrayList<MyPoiInfo> myPoiInfos = new ArrayList<>();
-            List<PoiInfo> re = result.getAllPoi();
-            mSavePoi.setPOI_num(re.size());
-            for (int i = 0; i < re.size(); i++) {
+        Log.d("onGetPoiResult", String.valueOf(result.getTotalPoiNum()));
+        SavePoi mSavePoi = new SavePoi();
+        mSavePoi.setCategory(category_);
+        ArrayList<MyPoiInfo> myPoiInfos = new ArrayList<>();
+        List<PoiInfo> re = result.getAllPoi();
+        int m = (re != null) ? re.size() : 0;
+        mSavePoi.setPOI_num(m);
+        try {
+            for (int i = 0; i < m; i++) {
                 MyPoiInfo curInfo = new MyPoiInfo();
                 curInfo.setCity(re.get(i).city);
                 curInfo.setLat(re.get(i).location.latitude);
@@ -65,8 +60,11 @@ class MyListener implements OnGetPoiSearchResultListener {
                 myPoiInfos.add(curInfo);
             }
             mSavePoi.setPOIs(myPoiInfos);
-            dispatcher_.save(mSavePoi);
+        }catch(Exception e)
+        {
+            return;
         }
+        dispatcher_.save(mSavePoi, result.getCurrentPageNum(), result.getTotalPageNum());
     }
 
     @Override
@@ -81,47 +79,44 @@ class MyListener implements OnGetPoiSearchResultListener {
 }
 
 public class DataActivity extends AppCompatActivity {
-
-    private final double latLow = 30.85;
-    private final double latHigh = 31.45;
-    private final double lngLow = 121.00;
-    private final double lngHigh = 121.90;
-    private final double step = 0.05;
-    private int interval = 2000;
-    private int i_ = 0;
+    private int p_ = 7;
     private final String[] categoryList = {"餐饮美食", "教育机构", "文化艺术", "旅游景点", "购物商场",
             "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
+    boolean[] vis = new boolean[20];
 
     private Gson gson = new Gson();
-    MyListener myListener = new MyListener(categoryList[0],this);
+    MyListener myListener = new MyListener(this);
     PoiSearch ps = PoiSearch.newInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
-        try {
-            ps.setOnGetPoiSearchResultListener(myListener);
-            synchronized (MyListener.class) {
-                crawlData(i_);
-            }
-        } catch (Exception e) {
-        }
+        ps.setOnGetPoiSearchResultListener(myListener);
+        int n = categoryList.length;
+        for (int i = 0; i < n; i++) vis[i] = false;
+        crawlData(p_);
     }
 
-    private void request(String category, double curLat, double curLng,int k) throws Exception {
-        Log.d("Cur", String.valueOf(curLat) + ":" + String.valueOf(curLng));
+    private void crawlData(int p) {
+        if (p >= categoryList.length) return;
+        vis[p] = true;
+        myListener.setCategory(categoryList[p]);
+        request(0);
+    }
+
+    private void request(int k) {
+        Log.d("***request***", String.valueOf(k));
         ps.searchNearby(new PoiNearbySearchOption()
-                .keyword(category)
+                .keyword(categoryList[p_])
                 .sortType(PoiSortType.distance_from_near_to_far)
-                .location(new LatLng(curLat, curLng))
-                .radius(500)
+                .location(new LatLng(31.24, 121.47))
+                .radius(40000)
                 .pageCapacity(50).pageNum(k));
-        Log.d("****","send request");
     }
 
-    public void save(SavePoi mSavePoi) {
-        synchronized (DataActivity.class) {
+    public void save(SavePoi mSavePoi, int k, int pageNum) {
+        if (mSavePoi.getPOI_num() > 0) {
             String postData = gson.toJson(mSavePoi);
             Log.d("***PostData***", "正在发送数据...");
             Log.d("***PostData***", postData);
@@ -136,42 +131,13 @@ public class DataActivity extends AppCompatActivity {
                     Log.d("**PostData**", "Failure");
                     e.printStackTrace();
                 }
-
             });
         }
-    }
-
-    protected void crawlData(int i) throws Exception {
-        for (int p = 0; p < 3; p++)
-        {
-            request(categoryList[i],31.3,121.5,p);
-            //Thread.sleep(1000);
-            //long s=100000000,t=5;
-            //long cnt=s*t;
-            //for(long k=0;k<cnt;k++);
+        if (k + 1 < pageNum) request(k + 1);
+        else {
+            p_ += 1;
+            crawlData(p_);
         }
-           /* long s=100000000,t=20;
-            long cnt=s*t;
-            for(long k=0;k<cnt;k++);*/
-        //request(categoryList[i], 31.1, 121.6);
-      /*  request(categoryList[i],31.2,121.7);
-        request(categoryList[i],31,121.5);
-        request(categoryList[i],31.1,121.6);
-        request(categoryList[i],31.2,121.7);*/
 
-       /* double curLat = latLow;
-        while (curLat < latHigh) {
-            double curLng = lngLow;
-            while (curLng < lngHigh) {
-                request(categoryList[i], curLat, curLng);
-                curLng += step;
-              *//*  long s = 100000000, t = 20;
-                long cnt = s * t;
-                for (long k = 0; k < cnt; k++) ;
-                //break;*//*
-            }
-            curLat += step;
-            break;
-        }*/
     }
 }

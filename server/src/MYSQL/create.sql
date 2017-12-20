@@ -21,3 +21,5 @@ CREATE TABLE POI (
 
 DROP TABLE user;
 DROP TABLE POI;
+
+SELECT * FROM POI where POI_name like '%高科苑%';

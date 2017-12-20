@@ -117,7 +117,6 @@ out/
 .gradle/
 gradle/
 build/
-gradle.properties
 gradlew*
 
 # Local configuration file (sdk path, etc)
