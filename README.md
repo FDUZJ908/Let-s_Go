@@ -265,7 +265,9 @@
 
 ```json
 {
+  "user_id": "lshzy137@163.com",
   "POI_id": "123",
+  "postid": 2, //前端目前已有的当前POI的最小的postid，即最早的post，0表示获取最新的post
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
 }
 ```
@@ -278,22 +280,28 @@
   "post_num": 3,
   "posts": [
     {
-      "postid":1,
-      "text":"今天天气好啊",
+      "postid":3,
+      "timestamp": 1513578455,
+      "text":"23333",
+      "imageUrl":null,
+      "like": 2,
+      "dislike": 0 
+    },
+    {
+      "postid":2,
+      "timestamp": 1513578450,
+      "text":"今天天气不好啊",
+      "imageUrl":null,
       "like": 2, //点赞数
       "dislike": 0 //反对数
     },
     {
-      "postid":2,
-      "text":"今天不好啊",
+      "postid":1,
+      "timestamp": 1513578440,
+      "text":"今天天气好啊",
+      "imageUrl":null,
       "like": 1,
       "dislike": 1
-    },
-    {
-      "postid":3,
-      "text":"23333",
-      "like": 2,
-      "dislike": 0 
     }
   ]
 }

@@ -19,6 +19,7 @@ void sendResponse(const string &response,const string &contentType)
 {
     string header="Content-type: "+contentType+"\n";
     printf("%s\n%s\n",header.c_str(),response.c_str());
+    logFile.print(response);
 }
 
 string getToken(const string &userid)

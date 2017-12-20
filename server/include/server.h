@@ -12,7 +12,7 @@ typedef long long LL;
 
 const string URL="https://shiftlin.top";
 
-const int MAXBUF=1024*1024;
+const int MAXBUF=2*1024*1024;
 
 struct ContentType
 {

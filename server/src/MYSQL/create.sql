@@ -19,7 +19,34 @@ CREATE TABLE POI (
 )
   CHARACTER SET = utf8mb4;
 
+CREATE INDEX idx_lat_lng
+  ON POI (latitude, longitude);
+
+CREATE TABLE post
+(
+  postid    INT AUTO_INCREMENT
+    PRIMARY KEY,
+  timestamp INT             NOT NULL,
+  userid    CHAR(32)        NOT NULL,
+  POI_id    CHAR(30)        NOT NULL,
+  latitude  DOUBLE          NOT NULL,
+  longitude DOUBLE          NOT NULL,
+  `like`    INT DEFAULT '0' NOT NULL,
+  dislike   INT DEFAULT '0' NOT NULL,
+  text      TEXT            NULL,
+  imageUrl  TEXT            NULL,
+  FOREIGN KEY (userid) REFERENCES user (userid)
+    ON UPDATE CASCADE,
+  FOREIGN KEY (POI_id) REFERENCES POI (POI_id)
+    ON UPDATE CASCADE
+)
+  CHARACTER SET = utf8mb4;
+
+CREATE INDEX idx_poi_post
+  ON post (POI_id, postid);
+
 DROP TABLE user;
 DROP TABLE POI;
 
-SELECT * FROM POI where POI_name like '%高科苑%';
+
+SELECT 

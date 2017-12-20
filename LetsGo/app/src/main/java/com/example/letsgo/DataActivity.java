@@ -83,17 +83,16 @@ public class DataActivity extends AppCompatActivity {
     private final double latLow = 31.05;
     private final double latHigh = 31.45;
     private final double lngLow = 121.00;
-    private final double lngHigh = 121.90;
+    private final double lngHigh = 121.85;
     private final double step = 0.02;
     private double lat_;
     private double lng_;
 
     SavePoi savePoi_=new SavePoi();
 
-    private int p_ = 0;
-    private final String[] categoryList = {"餐饮美食", "教育机构", "文化艺术", "旅游景点", "购物商场",
+    private int p_ = 9;
+    private final String[] categoryList = {"餐饮美食", "教育学校", "文化艺术", "旅游景点", "购物商场",
             "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
-    boolean[] vis = new boolean[20];
 
     private Gson gson = new Gson();
     MyListener myListener = new MyListener(this);
@@ -104,15 +103,12 @@ public class DataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
         ps.setOnGetPoiSearchResultListener(myListener);
-        int n = categoryList.length;
-        for (int i = 0; i < n; i++) vis[i] = false;
         crawlData(p_);
         System.out.println(p_);
     }
 
     private void crawlData(int p) {
         if (p >= categoryList.length) return;
-        vis[p] = true;
         myListener.setCategory(categoryList[p]);
         LatLoop(latLow);
     }
@@ -121,6 +117,7 @@ public class DataActivity extends AppCompatActivity {
         lat_ = lat;
         if (lat_ <= latHigh)
             LngLoop(lngLow);
+        else send();
     }
 
     private void LngLoop(double lng) {
@@ -134,11 +131,12 @@ public class DataActivity extends AppCompatActivity {
     private void request(int k) {
         Log.d("***request***", String.valueOf(k));
         Log.d("***request***", String.valueOf(lat_) + " " + String.valueOf(lng_));
+        int r=(int)(step*100000);
         ps.searchNearby(new PoiNearbySearchOption()
                 .keyword(categoryList[p_])
                 .sortType(PoiSortType.distance_from_near_to_far)
                 .location(new LatLng(lat_, lng_))
-                .radius(1500)
+                .radius(r)
                 .pageCapacity(50).pageNum(k));
     }
 
@@ -151,8 +149,6 @@ public class DataActivity extends AppCompatActivity {
     }
 
     private void send() {
-        long x=0;
-        for (int i = 1; i <= 1 * 100000000; i++) x++;
         String postData = gson.toJson(savePoi_);
         Log.d("***PostData***", "正在发送数据...");
         Log.d("***PostData***", postData);
@@ -169,6 +165,8 @@ public class DataActivity extends AppCompatActivity {
             }
         });
         savePoi_.clear();
+        long x=0,t=10,s=100000000;
+        for (long i = 1; i <= t*s; i++) x++;
     }
 
     public void save(SavePoi mSavePoi, int k, int pageNum) {
@@ -177,9 +175,8 @@ public class DataActivity extends AppCompatActivity {
         }
         if (k + 1 < pageNum) request(k + 1);
         else {
-            send();
+            if(savePoi_.getPOI_num()>200) send();
             LngLoop(lng_ + step);
         }
-
     }
 }

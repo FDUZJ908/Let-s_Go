@@ -1,7 +1,7 @@
 #include <stdcpp.h>
 #include <server.h>
 
-const double distLimit=1;
+const double distLimit=0.5;
 const int POINumLimit=20;
 
 struct Data
@@ -52,8 +52,8 @@ int main()
     }
 
     JSON jsonRes(0);
-    jsonRes.insert("POI_num",int(recordList.Size()));
-    jsonRes.insert("POIs",recordList);
+    jsonRes.insert("POI_num",int(results.Size()));
+    jsonRes.insert("POIs",results);
     sendResponse(jsonRes.toString());
     return 0;
 }

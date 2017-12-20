@@ -10,12 +10,14 @@ void Log::set(const string &logFile)
 
 void Log::print(const string &str)const
 {
+    if(flog==NULL) return;
     fprintf(flog,"%s\n\n",str.c_str());
     fflush(flog);
 }
 
 void Log::print(const char *str)const
 {
+    if(flog==NULL) return;
     fprintf(flog,"%s\n\n",str);
     fflush(flog);
 }
