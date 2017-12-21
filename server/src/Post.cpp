@@ -20,12 +20,14 @@ int main()
     string ret=cdbc.insertJSON(record,"POI",true);
     if(ret!=OK) writeError(ret);
 
-    jsonReq.insert("timestamp",getTimestamp());
+    int timestamp=getTimestamp();
+    jsonReq.insert("timestamp",timestamp);
     jsonReq.RemoveMember("token");
     ret=cdbc.insertJSON(jsonReq,"post",false);
     if(ret!=OK) writeError(ret);
 
     JSON jsonRes(0);
+    jsonRes.insert("timestamp",timestamp);
     sendResponse(jsonRes.toString());
     return 0;
 }

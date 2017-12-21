@@ -1,7 +1,7 @@
 #include <stdcpp.h>
 #include <server.h>
 
-const int POINumLimit=20;
+const int POINumLimit=10000;
 
 struct Data
 {

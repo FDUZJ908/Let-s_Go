@@ -102,6 +102,7 @@
 }
 ```
 
+
 ### 2.获取验证码
 
 #### 说明：
@@ -172,7 +173,11 @@
 ```
 
 
-### 4.获取帐号信息
+### 4.获取帐号信息或更新个人信息
+
+#### 说明：
+若只发送了`userid`和`token`，则相当于向服务器获取帐号信息。 
+若还有其他参数，则服务器会更新这些信息，然后返回新的个人信息，可用于修改密码。
 
 #### url: [https://shiftlin.top/cgi-bin/Account](https://shiftlin.top/cgi-bin/Account)
 
@@ -184,6 +189,7 @@
 {
   "userid":"lshzy137@163.com",
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+  “nickname”:""
 }
 ```
 
@@ -193,7 +199,6 @@
 {
   "status" : "OK",
   "userid":"lshzy137@163.com", //小于等于32字节
-  "password":"123456",
   "nickname":"lsh", //小于等于32字节
   "gender": 1, //0:保密(未知) 1:男 2:女
   "Tel": "15202345235" //可选 小于等于15字节
@@ -326,7 +331,8 @@
   "latitude": 40.43535, //用户所在纬度
   "longitude": 123.454,  //用户所在经度
   "text": "Let's Go!",
-  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
+  "tags": 2524242 //一个整数,long long, binary表示
 }
 ```
 
@@ -334,7 +340,8 @@
 
 ```json
 {
-  "status":"OK"
+  "status":"OK",
+  "timestamp":1513578600
 }
 
 {

@@ -69,7 +69,7 @@ const double PI=atan2(0,-1);
 #define ToRadian(x) (x*PI/180.0)
 
 
-#define DISTLOW 0.5
+#define DISTLOW 1
 #define DISTHIGH 3
 
 double distance(double lat1,double lng1,double lat2,double lng2);
