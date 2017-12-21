@@ -34,6 +34,8 @@ struct Triple
 };
 
 const int DAY_SECONDS=24*60*60;
+const int MON_SECONDS=30*DAY_SECONDS;
+const int YEAR_SECONDS=6*MON_SECONDS;
 
 #define TIMEONLY 1
 #define DATEONLY 2
@@ -65,6 +67,10 @@ inline int getTimestamp() //unix timestamp
 const double Radius=6371;
 const double PI=atan2(0,-1);
 #define ToRadian(x) (x*PI/180.0)
+
+
+#define DISTLOW 0.5
+#define DISTLOW 3
 
 double distance(double lat1,double lng1,double lat2,double lng2);
 

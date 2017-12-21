@@ -171,6 +171,7 @@
 }
 ```
 
+
 ### 4.获取帐号信息
 
 #### url: [https://shiftlin.top/cgi-bin/Account](https://shiftlin.top/cgi-bin/Account)
@@ -285,7 +286,8 @@
       "text":"23333",
       "imageUrl":null,
       "like": 2,
-      "dislike": 0 
+      "dislike": 0,
+      "attitude": 0 //当前用户的态度，0表示未知，1表示点赞，2表示反对
     },
     {
       "postid":2,
@@ -293,7 +295,8 @@
       "text":"今天天气不好啊",
       "imageUrl":null,
       "like": 2, //点赞数
-      "dislike": 0 //反对数
+      "dislike": 0, //反对数
+      "attitude": 0 //当前用户的态度，0表示未知，1表示点赞，2表示反对
     },
     {
       "postid":1,
@@ -301,7 +304,8 @@
       "text":"今天天气好啊",
       "imageUrl":null,
       "like": 1,
-      "dislike": 1
+      "dislike": 1,
+      "attitude": 0 //当前用户的态度，0表示未知，1表示点赞，2表示反对
     }
   ]
 }
@@ -309,7 +313,7 @@
 
 ### 7.留下足迹
 
-#### url: [https://shiftlin.top/cgi-bin/CheckIn](https://shiftlin.top/cgi-bin/CheckIn)
+#### url: [https://shiftlin.top/cgi-bin/Post](https://shiftlin.top/cgi-bin/Post)
 
 #### method: POST
 
@@ -339,6 +343,7 @@
 }
 ```
 
+
 ### 8.点赞/反对/举报
 
 #### url: [https://shiftlin.top/cgi-bin/Feedback](https://shiftlin.top/cgi-bin/Feedback)
@@ -349,8 +354,9 @@
 
 ```json
 {
+  "user_id": "lshzy137@163.com",
   "POI_id": "123",
-  "feedback" : 0,  //0:点赞，1:反对，2:举报
+  "feedback" : 0,  //1:点赞，2:反对，3:举报
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
 }
 ```
@@ -367,3 +373,61 @@
   "message":"unknown"
 }
 ```
+
+
+### 9. 推荐
+
+#### url: [https://shiftlin.top/cgi-bin/Recommend](https://shiftlin.top/cgi-bin/Recommend)
+
+#### method: POST
+
+#### 发送数据格式： 
+
+```json
+{
+  "userid": "lshzy137@163.com",
+  "latitude": 40.43535, //用户所在纬度
+  "longitude": 123.454,  //用户所在经度
+  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
+  "tags": 2524242 //一个整数,long long, binary表示
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status" : "OK",
+  "POI_num": 3,
+  "POIs":[
+    {
+      "POI_id": "1",
+      "POI_name": "Fudan University",
+      "category":"学校",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 3,
+      "city":"上海市"
+    },
+    {
+      "POI_id": "2",
+      "POI_name": "Gaoke Garden",
+      "category":"生活区",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 0,
+      "city":"上海市"
+    },
+    {
+      "POI_id": "4",
+      "POI_name": "张江计算机楼",
+      "category":"学校",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 1,
+      "city":"上海市"
+    }
+  ]
+}
+```
+

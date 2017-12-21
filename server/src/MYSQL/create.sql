@@ -48,5 +48,8 @@ CREATE INDEX idx_poi_post
 DROP TABLE user;
 DROP TABLE POI;
 
-
-SELECT
+SELECT COUNT(POI_name) from POI where POI_name like '梯%';
+SELECT * from POI where POI_name like '%银行%';
+DELETE FROM POI where POI_name like '%洗手间%';
+SELECT COUNT(*) from POI where category in ('教育学校','生活服务','餐饮美食');
+SELECT DISTINCT(POI_name) from POI where category in ('生活服务');

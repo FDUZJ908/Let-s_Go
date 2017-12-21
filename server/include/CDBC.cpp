@@ -142,3 +142,13 @@ RecordList CDBC::queryPOI(const double &lat, const double &lng, const double dis
     conditions+=TOString(lng-dlng)+"<longitude and longitude<"+TOString(lng+dlng);
     return selectQuery("*","POI",conditions);
 }
+
+RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
+{
+    string attrs="POI_id, MAX(timestamp) AS time,";
+    string conditions="userid=? AND timestamp>?";
+    Value argv(kArrayType);
+    argv.PushBack(Str2Value(userid),Allocator);
+    argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
+    return selectQuery(attrs,"post",conditions,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
+}

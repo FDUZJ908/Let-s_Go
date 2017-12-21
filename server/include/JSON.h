@@ -22,6 +22,7 @@ extern Document::AllocatorType& Allocator;
 
 #define GETString(it) string((it)->value.GetString())
 #define GETInt(it) ((it)->value.GetInt())
+#define GETLong(it) ((it)->value.GetInt64())
 #define GETDouble(it) ((it)->value.GetDouble())
 #define GETBool(it) ((it)->value.GetBool())
 #define GETValue(it) (Value().CopyFrom((it)->value,Allocator))

@@ -1,7 +1,6 @@
 #include <stdcpp.h>
 #include <server.h>
 
-const double distLimit=0.5;
 const int POINumLimit=20;
 
 struct Data
