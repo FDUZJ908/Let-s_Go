@@ -73,8 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //定义FragmentManager对象
     FragmentManager fManager;
 
-    public static String myToken;
-    public static String myUserid;
+    public static String myToken="bb62cdae027d12f2ac8f2bf48bfa29e0c50784021143768516@qq.com1513784781";
+    public static String myUserid="1143768516@qq.com";
 
 
 
@@ -135,10 +135,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void initFragment(){
-        //FragmentTransaction transaction = fManager.beginTransaction();
-        //fg2 = new Fragment2();
-        //transaction.add(R.id.content, fg2);
-        //transaction.commit();
+        FragmentTransaction transaction = fManager.beginTransaction();
+        fg2 = new Fragment2();
+        transaction.add(R.id.content, fg2);
+        transaction.commit();
     }
 
     @Override

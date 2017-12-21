@@ -13,6 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import util.httpUtil;
 
+import static com.example.letsgo.MainActivity.myToken;
+import static com.example.letsgo.MainActivity.myUserid;
 import static util.httpUtil.sendHttpPost;
 import static util.httpUtil.sendHttpRequest;
 
@@ -84,8 +87,10 @@ public class Fragment1 extends Fragment {
                                 .show();
                     }
                     else{
-                        MainActivity.myToken=responseRegister.getToken();
-                        MainActivity.myUserid=user.getUserid();
+                        myToken=responseRegister.getToken();
+                        myUserid=user.getUserid();
+                        Log.d("userid",myUserid);
+                        Log.d("token",myToken);
                     }
                     break;
                 default:

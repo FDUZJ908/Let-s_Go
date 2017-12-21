@@ -34,14 +34,16 @@
         </activity>
         <activity
             android:name=".RegisterActivity"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/AppTheme" />
 
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".DataActivity"></activity>
+        <activity android:name=".DataActivity" />
+        <activity android:name=".FootprintActivity"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
