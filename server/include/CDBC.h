@@ -45,9 +45,11 @@ public:
                            const Value &argv=Value(kArrayType),const string &options=""); //argv must be kArrayType
     int getLastId();
     Record queryByID(const string &id,const string &table,const string &attr);
+    Record queryByIDs(const vector<string> &v,const string &table,const string &attr);
     bool authenticate(const string &userid,const string &password);
     RecordList queryPostHistoryByID(const string &id,const string &attr, int postid=0);
-    RecordList queryPOI(const double &lat, const double &lng, const double distLimit);
+    RecordList queryPOINearby(const double &lat, const double &lng, const double distLimit);
+    RecordList queryHistoryPOI(const string &userid,const int &timestamp);
 
     ~CDBC()
     {

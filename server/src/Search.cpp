@@ -29,7 +29,7 @@ int main()
 
     double lat=GETDouble(lat_it);
     double lng=GETDouble(lng_it);
-    RecordList recordList=cdbc.queryPOI(lat,lng,distLimit);
+    RecordList recordList=cdbc.queryPOINearby(lat,lng,DISTLOW);
 
     vector<Data> v;
     int n=recordList.Size();

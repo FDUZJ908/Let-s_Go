@@ -118,6 +118,26 @@ Record CDBC::queryByID(const string &id,const string &table,const string &attr)
     return FirstOf(recordList);
 }
 
+Record CDBC::queryByIDs(const vector<string> &v,const string &table,const string &attr)
+{
+    int n=v.size();
+    char conds[4*n]; int m=0;
+    conds[m++]='(';
+    for(int i=0;i<n;i++)
+    {
+        if(i>0) conds[m++]=',';
+        conds[m++]='?';
+    }
+    conds[m++]=')';
+    conds[m]='\0';
+
+    string conditions=attr+" in"+string(conds);
+
+    Value argv(kArrayType);
+    for(int i=0;i<n;i++) argv.PushBack(Str2Value(v[i]),Allocator);
+    return selectQuery("*",table,conditions,argv,"ORDER BY "+attr);
+}
+
 bool CDBC::authenticate(const string &userid,const string &password)
 {
     RecordList res=selectQuery("*","user","userid='"+userid+"' AND password='"+password+"'");
@@ -135,7 +155,7 @@ RecordList CDBC::queryPostHistoryByID(const string &id,const string &attr, int p
     return selectQuery("*","post",conditions,argv,"ORDER BY timestamp DESC LIMIT 10");
 }
 
-RecordList CDBC::queryPOI(const double &lat, const double &lng, const double distLimit)
+RecordList CDBC::queryPOINearby(const double &lat, const double &lng, const double distLimit)
 {
     double dlat=distTolat(distLimit,lat),dlng=distTolng(distLimit,lat);
     string conditions=TOString(lat-dlat)+"<latitude and latitude<"+TOString(lat+dlat)+" and ";
@@ -150,5 +170,5 @@ RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
     Value argv(kArrayType);
     argv.PushBack(Str2Value(userid),Allocator);
     argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
-    return selectQuery(attrs,"post",conditions,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
+    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
 }

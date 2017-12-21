@@ -70,7 +70,7 @@ const double PI=atan2(0,-1);
 
 
 #define DISTLOW 0.5
-#define DISTLOW 3
+#define DISTHIGH 3
 
 double distance(double lat1,double lng1,double lat2,double lng2);
 
@@ -81,3 +81,6 @@ const double degPerKm=180.0/(PI*Radius);
 string getLocStr(double lat,double lng);
 
 string removeChar(string str,char ch);
+
+unsigned short Hex2Byte(const char c);
+unsigned int Hex2Int(const char *s);
