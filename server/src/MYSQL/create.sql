@@ -74,3 +74,5 @@ DROP TABLE post;
         WHERE city = '上海市'
         GROUP BY category
         LIMIT 5;*/
+
+SELECT * from POI where category like '%生活%';

@@ -28,7 +28,7 @@ struct POI{
 
     void setTags()
     {
-        vector<int> &v=cateTags[string(info["category"].GetString())];
+        vector<int> &v=cateTags[string(info["category"].GetString())];///******
         for(int i=0;i<v.size();i++) tags[i]=v[i];
     }
 
