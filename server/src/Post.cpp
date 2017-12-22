@@ -12,7 +12,7 @@ int main()
     JSON::CMIt tags_it=jsonReq.FindMember("tags");
     if(POI_it==jsonReq.MemberEnd() || lat_it==jsonReq.MemberEnd() || lng_it==jsonReq.MemberEnd() || tags_it==jsonReq.MemberEnd())
         writeError("Request data error!");
-    
+
     jsonReq.RemoveMember("token");
 /*    
     string POI_id=GETString(POI_it);
@@ -25,10 +25,11 @@ int main()
 */
     int timestamp=getTimestamp();
     jsonReq.insert("timestamp",timestamp);
-    ret=cdbc.insertJSON(jsonReq,"post",false);
+    string ret=cdbc.insertJSON(jsonReq,"post",false);
     if(ret!=OK) writeError(ret);
 
     JSON jsonRes(0);
+    jsonRes.insert("postid",cdbc.getLastId());
     jsonRes.insert("timestamp",timestamp);
     sendResponse(jsonRes.toString());
     return 0;

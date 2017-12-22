@@ -23,6 +23,7 @@ string CDBC::insertJSON(const JSON &json,const string &table,bool isUpdate)
             i++;
             if(ISString(it)) query->setString(i,GETString(it));
             else if(ISInt(it)) query->setInt(i,GETInt(it));
+            else if(ISULong(it)) query->setUInt64(i,GETULong(it));
             else if(ISDouble(it)) query->setDouble(i,GETDouble(it));
             else if(ISBool(it)) query->setBoolean(i,GETBool(it));
             else if(ISObject(it) || ISArray(it)) query->setString(i,JSON(GETValue(it)).toString());
@@ -66,8 +67,11 @@ RecordList CDBC::getResultList(ResultSet *res)
                 value=Str2Value(str);
             }
             else 
-            if(type.find("INT")!=-1) 
+            if(type=="INT" || type=="TINYINT") 
                 value=Value(res->getInt(key));
+            else
+            if(type=="BIGINT")
+                value=Value(res->getUInt64(key));//
             else 
             if(type=="FLOAT" || type=="DOUBLE")
                 value=Value(double(res->getDouble(key)));
@@ -138,6 +142,14 @@ Record CDBC::queryByIDs(const vector<string> &v,const string &table,const string
     return selectQuery("*",table,conditions,argv,"ORDER BY "+attr);
 }
 
+Record CDBC::querySystemVariable(const string &name)
+{
+    Value argv(kArrayType);
+    argv.PushBack(Str2Value(name),Allocator);
+    RecordList recordList=selectQuery("*","sysvar","name=?",argv);
+    return FirstOf(recordList);
+}
+
 bool CDBC::authenticate(const string &userid,const string &password)
 {
     RecordList res=selectQuery("*","user","userid='"+userid+"' AND password='"+password+"'");
@@ -171,4 +183,9 @@ RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
     argv.PushBack(Str2Value(userid),Allocator);
     argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
     return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
+}
+
+RecordList CDBC::queryPostByTime(int timestamp)
+{
+    return selectQuery("POI_id,tags","post","timestamp>"+TOString(timestamp));
 }

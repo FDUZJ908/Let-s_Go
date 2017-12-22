@@ -14,6 +14,9 @@ extern Document::AllocatorType& Allocator;
 
 #define ISString(it) ((it)->value.IsString())
 #define ISInt(it) ((it)->value.IsInt())
+#define ISUInt(it) ((it)->value.IsUint())
+#define ISLong(it) ((it)->value.IsInt64())
+#define ISULong(it) ((it)->value.IsUint64())
 #define ISDouble(it) ((it)->value.IsDouble())
 #define ISBool(it) ((it)->value.IsBool())
 #define ISObject(it) ((it)->value.IsObject())
@@ -22,7 +25,9 @@ extern Document::AllocatorType& Allocator;
 
 #define GETString(it) string((it)->value.GetString())
 #define GETInt(it) ((it)->value.GetInt())
-#define GETLong(it) ((it)->value.GetInt64())
+#define GETUInt(it) ((it)->value.GeUint())
+#define GETLong(it) ((it)->value.Getint64())
+#define GETULong(it) ((it)->value.GetUint64())
 #define GETDouble(it) ((it)->value.GetDouble())
 #define GETBool(it) ((it)->value.GetBool())
 #define GETValue(it) (Value().CopyFrom((it)->value,Allocator))

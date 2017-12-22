@@ -288,6 +288,7 @@
   "posts": [
     {
       "postid":3,
+      "nickname":"lsh",
       "timestamp": 1513578455,
       "text":"23333",
       "imageUrl":null,
@@ -297,6 +298,7 @@
     },
     {
       "postid":2,
+      "nickname":"lsh",
       "timestamp": 1513578450,
       "text":"今天天气不好啊",
       "imageUrl":null,
@@ -306,6 +308,7 @@
     },
     {
       "postid":1,
+      "nickname":"lsh",
       "timestamp": 1513578440,
       "text":"今天天气好啊",
       "imageUrl":null,
@@ -333,7 +336,7 @@
   "longitude": 123.454,  //用户所在经度
   "text": "Let's Go!",
   "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
-  "tags": 2524242 //一个整数,long long, binary表示
+  "tags": 2524242 //一个整数,unsigned long long, binary表示
 }
 ```
 
@@ -342,6 +345,7 @@
 ```json
 {
   "status":"OK",
+  "postid":123,
   "timestamp":1513578600
 }
 
@@ -363,8 +367,21 @@
 ```json
 {
   "user_id": "lshzy137@163.com",
-  "POI_id": "123",
-  "feedback" : 0,  //1:点赞，2:反对，3:举报
+  "feedback_num":3,
+  "feedbacks" :[
+      {
+        "postid": "12",
+        "attitude": 1 //1表示点赞，2表示反对，3表示举报
+      },
+      {
+        "postid": "1233",
+        "attitude": 1 //1表示点赞，2表示反对，3表示举报
+      },
+      {
+        "postid": "152",
+        "attitude": 1 //1表示点赞，2表示反对，3表示举报
+      }
+  ]
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
 }
 ```
@@ -397,7 +414,7 @@
   "latitude": 40.43535, //用户所在纬度
   "longitude": 123.454,  //用户所在经度
   "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
-  "tags": 2524242 //一个整数,long long, binary表示
+  "tags": 2524242 //一个整数,unsigned long long, binary表示
 }
 ```
 

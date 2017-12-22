@@ -16,5 +16,6 @@
 using namespace std;
 
 typedef long long LL;
+typedef long long uLL;
 
 #endif

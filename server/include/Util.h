@@ -82,5 +82,7 @@ string getLocStr(double lat,double lng);
 
 string removeChar(string str,char ch);
 
-unsigned short Hex2Byte(const char c);
+unsigned short Hex2Byte(char c);
 unsigned int Hex2Int(const char *s);
+char Byte2Hex(short x);
+char* Int2Hex(unsigned int x, char *s);

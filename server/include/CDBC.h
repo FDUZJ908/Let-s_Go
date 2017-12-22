@@ -46,10 +46,12 @@ public:
     int getLastId();
     Record queryByID(const string &id,const string &table,const string &attr);
     Record queryByIDs(const vector<string> &v,const string &table,const string &attr);
+    Record querySystemVariable(const string &name);
     bool authenticate(const string &userid,const string &password);
     RecordList queryPostHistoryByID(const string &id,const string &attr, int postid=0);
     RecordList queryPOINearby(const double &lat, const double &lng, const double distLimit);
     RecordList queryHistoryPOI(const string &userid,const int &timestamp);
+    RecordList queryPostByTime(int timestamp);
 
     ~CDBC()
     {

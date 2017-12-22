@@ -1,8 +1,6 @@
 #include <stdcpp.h>
 #include <server.h>
 
-#define TAGS_MAXNUM 64
-#define TAGS_NUM 30
 #define REC_NUM 10
 #define REQUIRE_DATA_NUM 10 //****
 
@@ -17,7 +15,7 @@ struct POI{
     int popularity;
     double ts;
     Record info;
-    LL tags[TAGS_MAXNUM]; //will be used to multiply, so it needs long long
+    int tags[TAGS_MAXNUM]; //will be used to multiply, so remember to cast it to long long
 
     POI(const Record &record)
     {
@@ -28,27 +26,9 @@ struct POI{
 
     void setTags()
     {
-        vector<int> &v=cateTags[string(info["category"].GetString())];///******
+        vector<int> &v=cateTags[string(info["category"].GetString())];
         for(int i=0;i<v.size();i++) tags[i]=v[i];
-    }
-
-    void setTags(const char *s,int offset,int len)
-    {
-        if(strlen(s)==0)
-        {
-            for(int i=0;i<len;i++) tags[offset+i]=0;
-            return;
-        }
-        for(int i=0;i<len;i++)
-            tags[offset+i]=Hex2Int(s+(i<<3)); //bigend
-    }
-
-    void setTags(const Record &record)
-    {
-        int len=(TAGS_MAXNUM>>1);
-        setTags(record["tags1"].GetString(),0,len);
-        if(TAGS_NUM>len)
-            setTags(record["tags2"].GetString(),len+1,len);
+        for(int i=v.size();i<TAGS_MAXNUM;i++) tags[i]=0;
     }
 };
 
@@ -65,7 +45,7 @@ vector<POI> getPoiInfo(const vector<string> &ids)
     for(int i=0,j=0;i<n && j<m;i++)
     {
         if(v[i].id<recordList[j]["POI_id"].GetString()) v[i].setTags();
-        else v[i].setTags(recordList[j]),j++;
+        else tagsRecordToArray(v[i].tags,recordList[j]),j++;
     }
     return v;
 }
@@ -106,9 +86,9 @@ double ScorebyHistory(const POI &cand, const POI &user)
     LL scalar=0,norm1=0,norm2=0;
     for(int i=0;i<TAGS_NUM;i++)
     {
-        scalar+=cand.tags[i]*user.tags[i];
-        norm1+=cand.tags[i]*cand.tags[i];
-        norm2+=user.tags[i]*user.tags[i];
+        scalar+=((LL)cand.tags[i])*((LL)user.tags[i]);
+        norm1+=((LL)cand.tags[i])*((LL)cand.tags[i]);
+        norm2+=((LL)user.tags[i])*((LL)user.tags[i]);
     }
     double cosine=1.0*scalar/(sqrt(1.0*norm1)*sqrt(1.0*norm2));
     double scores=ALPHA*user.ts*cosine+(1-ALPHA)*2*cand.popularity/(Pmax+1);
@@ -121,14 +101,14 @@ bool cmp(const pair<int,double> &a,const pair<int,double> &b)
     return a.second>b.second;
 }
 
-RecordList recommendGenerally(vector<POI> &candPOIs, LL tags)
+RecordList recommendGenerally(vector<POI> &candPOIs, uLL tags)
 {
     int n=candPOIs.size();
     pair<int,double> res[n];
     for(int i=0;i<n;i++)
     {
         const POI &cand=candPOIs[i];
-        LL sum=0,total=0,mask=1;
+        LL sum=0,total=0; uLL mask=1;
         for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=cand.tags[j])
             if(tags&mask) sum+=cand.tags[j];
         double scores=1.0*sum/total+2*cand.popularity/(Pmax+1);
@@ -201,7 +181,7 @@ int main()
 
     double lat=GETDouble(lat_it);
     double lng=GETDouble(lng_it);
-    LL tags=GETLong(tags_it);
+    uLL tags=GETULong(tags_it);
 
     vector<POI> candPOIs=setCand(cdbc.queryPOINearby(lat,lng,DISTHIGH));
     vector<POI> userPOIs=setUser(cdbc.queryHistoryPOI(userid,timestamp));
