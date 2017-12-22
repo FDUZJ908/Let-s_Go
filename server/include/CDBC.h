@@ -52,6 +52,7 @@ public:
     RecordList queryPOINearby(const double &lat, const double &lng, const double distLimit);
     RecordList queryHistoryPOI(const string &userid,const int &timestamp);
     RecordList queryPostByTime(int timestamp);
+    string updatePOIPopularity(const string &POI_id,int popularity);
 
     ~CDBC()
     {

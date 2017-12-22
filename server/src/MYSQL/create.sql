@@ -1,6 +1,6 @@
 DROP TABLE post;
 DROP TABLE POITags;
-DROP TABLE POI;
+#DROP TABLE POI;*******
 DROP TABLE user;
 
 CREATE TABLE user (
@@ -14,14 +14,14 @@ CREATE TABLE user (
   CHARACTER SET = utf8mb4;
 
 CREATE TABLE POI (
-  POI_id    CHAR(30) PRIMARY KEY,
-  category  CHAR(64) NOT NULL,
-  POI_name  CHAR(50) NOT NULL,
-  latitude  DOUBLE   NOT NULL,
-  longitude DOUBLE   NOT NULL,
-  type      TINYINT,
-  city      CHAR(20),
-  country   CHAR(20) DEFAULT "中国"
+  POI_id     CHAR(30) PRIMARY KEY,
+  category   CHAR(64) NOT NULL,
+  POI_name   CHAR(50) NOT NULL,
+  latitude   DOUBLE   NOT NULL,
+  longitude  DOUBLE   NOT NULL,
+  popularity INT      NOT NULL DEFAULT 0,
+  city       CHAR(20),
+  country    CHAR(20) DEFAULT "中国"
 )
   CHARACTER SET = utf8mb4;
 
@@ -64,3 +64,9 @@ CREATE INDEX idx_user_time
   ON post (userid, timestamp); #speed up finding a user's POIs in Recommend procedure
 CREATE INDEX idx_time
   ON post (timestamp); #speed up the UpdatePOI precedure
+
+CREATE TABLE sysvar (
+  name   CHAR(20) PRIMARY KEY,
+  value1 INT
+)
+  CHARACTER SET = utf8mb4;

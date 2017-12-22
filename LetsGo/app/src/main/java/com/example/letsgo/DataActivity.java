@@ -47,7 +47,7 @@ class MyListener implements OnGetPoiSearchResultListener {
         ArrayList<MyPoiInfo> myPoiInfos = new ArrayList<>();
         List<PoiInfo> re = result.getAllPoi();
         int m = (re != null) ? re.size() : 0;
-        int cnt=m;
+        int cnt = m;
         for (int i = 0; i < m; i++) {
             try {
                 MyPoiInfo curInfo = new MyPoiInfo();
@@ -58,7 +58,7 @@ class MyListener implements OnGetPoiSearchResultListener {
                 curInfo.setUid(re.get(i).uid);
                 curInfo.setType(re.get(i).type.ordinal());
                 myPoiInfos.add(curInfo);
-            } catch (Exception e){
+            } catch (Exception e) {
                 cnt--;
             }
         }
@@ -84,13 +84,13 @@ public class DataActivity extends AppCompatActivity {
     private final double latHigh = 31.45;
     private final double lngLow = 121.00;
     private final double lngHigh = 121.85;
-    private final double step = 0.02;
+    private final double step = 0.03;
     private double lat_;
     private double lng_;
 
-    SavePoi savePoi_=new SavePoi();
+    SavePoi savePoi_ = new SavePoi();
 
-    private int p_ = 9;
+    private int p_ = 3;
     private final String[] categoryList = {"餐饮美食", "教育学校", "文化艺术", "旅游景点", "购物商场",
             "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
 
@@ -104,20 +104,23 @@ public class DataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_data);
         ps.setOnGetPoiSearchResultListener(myListener);
         crawlData(p_);
-        System.out.println(p_);
     }
 
     private void crawlData(int p) {
-        if (p >= categoryList.length) return;
-        myListener.setCategory(categoryList[p]);
-        LatLoop(latLow);
+        if (p < categoryList.length) {
+            myListener.setCategory(categoryList[p]);
+            LatLoop(latLow);
+        } else send();
     }
 
     private void LatLoop(double lat) {
         lat_ = lat;
         if (lat_ <= latHigh)
             LngLoop(lngLow);
-        else send();
+        else {
+            p_ += 1;
+            crawlData(p_);
+        }
     }
 
     private void LngLoop(double lng) {
@@ -131,7 +134,7 @@ public class DataActivity extends AppCompatActivity {
     private void request(int k) {
         Log.d("***request***", String.valueOf(k));
         Log.d("***request***", String.valueOf(lat_) + " " + String.valueOf(lng_));
-        int r=(int)(step*100000);
+        int r = (int) (step * 100000);
         ps.searchNearby(new PoiNearbySearchOption()
                 .keyword(categoryList[p_])
                 .sortType(PoiSortType.distance_from_near_to_far)
@@ -141,10 +144,10 @@ public class DataActivity extends AppCompatActivity {
     }
 
     private void merge(SavePoi mSavePoi) {
-        ArrayList<MyPoiInfo> POIs=savePoi_.getPOIs();
+        ArrayList<MyPoiInfo> POIs = savePoi_.getPOIs();
         POIs.addAll(mSavePoi.getPOIs());
         savePoi_.setPOIs(POIs);
-        savePoi_.setPOI_num(savePoi_.getPOI_num()+mSavePoi.getPOI_num());
+        savePoi_.setPOI_num(savePoi_.getPOI_num() + mSavePoi.getPOI_num());
         savePoi_.setCategory(mSavePoi.getCategory());
     }
 
@@ -165,8 +168,8 @@ public class DataActivity extends AppCompatActivity {
             }
         });
         savePoi_.clear();
-        long x=0,t=10,s=100000000;
-        for (long i = 1; i <= t*s; i++) x++;
+        long x = 0, t = 10, s = 100000000;
+        for (long i = 1; i <= t * s; i++) x++;
     }
 
     public void save(SavePoi mSavePoi, int k, int pageNum) {
@@ -175,7 +178,7 @@ public class DataActivity extends AppCompatActivity {
         }
         if (k + 1 < pageNum) request(k + 1);
         else {
-            if(savePoi_.getPOI_num()>200) send();
+            if (savePoi_.getPOI_num() > 200) send();
             LngLoop(lng_ + step);
         }
     }

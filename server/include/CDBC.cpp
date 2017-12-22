@@ -177,15 +177,31 @@ RecordList CDBC::queryPOINearby(const double &lat, const double &lng, const doub
 
 RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
 {
-    string attrs="POI_id, MAX(timestamp) AS time,";
+ /*   string attrs="POI_id, MAX(timestamp) AS time,";
     string conditions="userid=? AND timestamp>?";
     Value argv(kArrayType);
     argv.PushBack(Str2Value(userid),Allocator);
     argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
-    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
+    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");*/
 }
 
 RecordList CDBC::queryPostByTime(int timestamp)
 {
     return selectQuery("POI_id,tags","post","timestamp>"+TOString(timestamp));
+}
+
+string CDBC::updatePOIPopularity(const string &POI_id,int popularity)
+{
+    string sql="UPDATE POI SET popularity=? WHERE POI_id=?";
+    try
+    {
+        PreparedStatement *query=conn->prepareStatement(sql);
+        query->setInt(1,popularity);
+        query->setString(2,POI_id);
+        delete query;
+    }catch(exception &e)
+    {
+        return e.what();
+    }
+    return OK;
 }

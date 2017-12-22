@@ -23,15 +23,19 @@ struct Info
 
 int getLastUpdateTime()
 {
-    cdbc.querySystemVariable("lastUpdateTime");
-    return 0;
+    Record record=cdbc.querySystemVariable("lastUpdateTime");
+    int res=record["value1"].GetInt();
+    JSON json;
+    json.insert("name",string("lastUpdateTime"));
+    json.insert("value1",getTimestamp());
+    cdbc.insertJSON(json,"sysvar");
+    return res;
 }
 
 int main()
 {
     logFile.set("UpdatePOI.log");
 
-    int timestamp=getTimestamp();
     RecordList recordList=cdbc.queryPostByTime(getLastUpdateTime());
     map<string,Info> count; count.clear();
     
@@ -45,11 +49,13 @@ int main()
         (it->second).Add(1,record["tags"].GetUint64());
     }
 
+    string ret;
     vector<string> ids; ids.clear();
     for(map<string,Info>::iterator it=count.begin();it!=count.end();it++)
     {
         ids.push_back(it->first);
-        //cdbc.updateAttr(it->first,"POI","POI_id",(it->second).popularity,"popularity");
+        ret=cdbc.updatePOIPopularity(it->first,(it->second).popularity);
+        if(ret!=OK) logFile.print(ret);
     }
 
     recordList=cdbc.queryByIDs(ids,"POITags","POI_id");
@@ -65,7 +71,8 @@ int main()
         tagsRecordToArray(tmp,record);
         for(int i=0;i<TAGS_NUM;i++) tags[i]+=tmp[i];
         tagsArrayToRecord(tags,record);
-        cdbc.insertJSON(JSON(record),"POITags",true);
+        ret=cdbc.insertJSON(JSON(record),"POITags",true);
+        if(ret!=OK) logFile.print(ret);
 
         count.erase(it);
     }
@@ -80,7 +87,8 @@ int main()
         record.AddMember("tags3","",Allocator);
         record.AddMember("tags4","",Allocator);
         tagsArrayToRecord((it->second).tags,record);
+        ret=cdbc.insertJSON(JSON(record),"POITags",true);
+        if(ret!=OK) logFile.print(ret);
     }
-//****
     return 0;
 }
