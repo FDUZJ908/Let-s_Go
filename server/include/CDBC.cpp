@@ -26,7 +26,7 @@ string CDBC::insertJSON(const JSON &json,const string &table,bool isUpdate)
             else if(ISULong(it)) query->setUInt64(i,GETULong(it));
             else if(ISDouble(it)) query->setDouble(i,GETDouble(it));
             else if(ISBool(it)) query->setBoolean(i,GETBool(it));
-            else if(ISObject(it) || ISArray(it)) query->setString(i,JSON(GETValue(it)).toString());
+            else if(ISObject(it) || ISArray(it)) query->setString(i,JSON(it->value).toString());
             else if(ISNull(it)) query->setNull(i,DataType::UNKNOWN);
         }
         query->executeUpdate();
@@ -70,7 +70,7 @@ RecordList CDBC::getResultList(ResultSet *res)
             if(type=="INT" || type=="TINYINT") 
                 value=Value(res->getInt(key));
             else
-            if(type=="BIGINT")
+            if(type=="BIGINT UNSIGNED")
                 value=Value(res->getUInt64(key));//
             else 
             if(type=="FLOAT" || type=="DOUBLE")
@@ -156,15 +156,23 @@ bool CDBC::authenticate(const string &userid,const string &password)
     return (res.Size()==1);
 }
 
-RecordList CDBC::queryPostHistoryByID(const string &id,const string &attr, int postid)
+RecordList CDBC::queryPostHistoryAtPOI(const string &POI_id, int postid)
 {
     if(postid==0) postid=INF;
-    string conditions=attr+"=? AND postid<?";
+    string attrs="";
+    attrs+="post.postid AS postid, ";
+    attrs+="user.nickname AS nickname, ";
+    attrs+="post.timestamp AS timestamp, ";
+    attrs+="post.text AS text, ";
+    attrs+="post.imageUrl AS imageUrl, ";
+    attrs+="post.like as like, ";
+    attrs+="post.dislike as dislike";
+    string conditions="POI_id=? AND postid<? AND post.userid=user.userid";
 
     Value argv(kArrayType);
-    argv.PushBack(Str2Value(id),Allocator);
+    argv.PushBack(Str2Value(POI_id),Allocator);
     argv.PushBack(Int2Value(postid),Allocator);
-    return selectQuery("*","post",conditions,argv,"ORDER BY timestamp DESC LIMIT 10");
+    return selectQuery(attrs,"post,user",conditions,argv,"ORDER BY postid DESC LIMIT 10");
 }
 
 RecordList CDBC::queryPOINearby(const double &lat, const double &lng, const double distLimit)
@@ -177,12 +185,13 @@ RecordList CDBC::queryPOINearby(const double &lat, const double &lng, const doub
 
 RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
 {
- /*   string attrs="POI_id, MAX(timestamp) AS time,";
+    string attrs="POI_id, MAX(timestamp) AS time,";
     string conditions="userid=? AND timestamp>?";
     Value argv(kArrayType);
     argv.PushBack(Str2Value(userid),Allocator);
     argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
-    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");*/
+    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
+    //*****
 }
 
 RecordList CDBC::queryPostByTime(int timestamp)

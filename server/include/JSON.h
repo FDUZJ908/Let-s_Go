@@ -30,7 +30,7 @@ extern Document::AllocatorType& Allocator;
 #define GETULong(it) ((it)->value.GetUint64())
 #define GETDouble(it) ((it)->value.GetDouble())
 #define GETBool(it) ((it)->value.GetBool())
-#define GETValue(it) (Value().CopyFrom((it)->value,Allocator))
+//#define GETValue(it) (Value().CopyFrom((it)->value,Allocator))
 
 #define COPYValue(v) (Value(v,Allocator)) //copyConstStrings???
 #define Str2Value(str) (Value().SetString((str).c_str(),(str).size(),Allocator))

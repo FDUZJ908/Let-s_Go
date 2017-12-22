@@ -90,7 +90,7 @@ public class DataActivity extends AppCompatActivity {
 
     SavePoi savePoi_ = new SavePoi();
 
-    private int p_ = 3;
+    private int p_ = 7;
     private final String[] categoryList = {"餐饮美食", "教育学校", "文化艺术", "旅游景点", "购物商场",
             "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
 

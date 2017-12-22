@@ -107,7 +107,6 @@ void writeError(const string &mesg)
     JSON json(1);
     json.insert("message",mesg);
     sendResponse(json.toString());
-    logFile.print(mesg);
     exit(0);
 }
 

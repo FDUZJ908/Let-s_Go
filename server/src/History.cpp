@@ -12,7 +12,7 @@ int main()
 
     string POI_id=GETString(POI_it);
     int postid=(postid_it!=jsonReq.MemberEnd())?GETInt(postid_it):0;
-    RecordList recordList=cdbc.queryPostHistoryByID(POI_id,"POI_id",postid);
+    RecordList recordList=cdbc.queryPostHistoryAtPOI(POI_id,postid);
 
     JSON jsonRes(0);
     jsonRes.insert("post_num",int(recordList.Size()));

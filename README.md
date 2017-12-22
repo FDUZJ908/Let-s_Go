@@ -272,7 +272,7 @@
 
 ```json
 {
-  "user_id": "lshzy137@163.com",
+  "userid": "lshzy137@163.com",
   "POI_id": "123",
   "postid": 2, //前端目前已有的当前POI的最小的postid，即最早的post，0表示获取最新的post
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
@@ -370,15 +370,15 @@
   "feedback_num":3,
   "feedbacks" :[
       {
-        "postid": "12",
+        "postid": 12,
         "attitude": 1 //1表示点赞，2表示反对，3表示举报
       },
       {
-        "postid": "1233",
+        "postid": 123,
         "attitude": 1 //1表示点赞，2表示反对，3表示举报
       },
       {
-        "postid": "152",
+        "postid": 152,
         "attitude": 1 //1表示点赞，2表示反对，3表示举报
       }
   ]
