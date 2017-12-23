@@ -42,6 +42,7 @@ public:
     string insertRecordlist(RecordList &recordList,const string &table,bool isUpdate);
     string insertRecord(Record &record,const string &table,bool isUpdate);
     string insertJSON(JSON &json,const string &table,bool isUpdate=false);
+    string updateJSON(const JSON &json, const string &table,const string &id,const string &idAttr);
     vector<Pair> getColumns(const ResultSet *res);
     RecordList getResultList(ResultSet *res);
     RecordList selectQuery(const string &attrs,const string &tables,const string &conditions="TRUE",
@@ -57,6 +58,7 @@ public:
     RecordList queryPostByTime(int timestamp);
     string updatePOIPopularity(const string &POI_id,int popularity);
     string updatePostLike(const vector<int> &ids,const string &attr,int x);
+    Record queryAttitude(const string &userid, const vector<int> &postids);
 
     ~CDBC()
     {

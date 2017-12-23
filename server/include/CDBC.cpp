@@ -1,4 +1,4 @@
-#include "CDBC.h"
+    #include "CDBC.h"
 
 string getRepeatQMark(int n,int m)
 {
@@ -21,6 +21,7 @@ string getRepeatQMark(int n,int m)
 
 int CDBC::getColsUpdateString(const Record &record, char *cols, char *update)
 {
+    JSON json(record);
     int p=0,q=0,l=0,m=0; const char *col;
     cols[p++]='(';
     for(JSON::CMIt it=record.MemberBegin();it!=record.MemberEnd();it++)
@@ -28,14 +29,15 @@ int CDBC::getColsUpdateString(const Record &record, char *cols, char *update)
         if((++m)>1) cols[p++]=',',update[q++]=',';
         col=GETKey(it); l=strlen(col);
 
-        strcat(cols+p,col); p+=l;
+        strcpy(cols+p,col); p+=l;
 
-        strcat(update+q,col); q+=l;
-        strcat(update+q,"=VALUES("); q+=8;
-        strcat(update+q,col); q+=l;
+        strcpy(update+q,col); q+=l;
+        strcpy(update+q,"=VALUES("); q+=8;
+        strcpy(update+q,col); q+=l;
         update[q++]=')';
     }
-    cols[p]='\0'; update[q]='\0';
+    cols[p++]=')'; cols[p]='\0';
+    update[q]='\0';
     return m;
 }
 
@@ -48,21 +50,6 @@ string CDBC::insertRecordlist(RecordList &recordList,const string &table,bool is
 
     char cols[BUFSIZE],update[BUFSIZE];
     int col_num=getColsUpdateString(recordList[0],cols,update);
-
-    /*char values[n*2*col_num+3*n+n]; int p=0;
-    for(int i=0;i<n;i++)
-    {
-        if(i>0) values[p++]=",";
-        values[p++]="("
-        int j=0; Record &record=json[i]
-        for(JSON::CMIt it=record.MemberBegin();it!=record.MemberEnd();it++)
-        {
-            if((++j)>1) value[p++]=",";
-            values[p++]="?";
-        }
-        values[p++]=")"
-    }
-    values[p]='\0';*/
 
     string sql="INSERT INTO "+table+" "+string(cols)+" VALUES "+getRepeatQMark(1,col_num);
     if(isUpdate) sql+=" ON DUPLICATE KEY UPDATE "+string(update);
@@ -105,18 +92,23 @@ string CDBC::insertJSON(JSON &json,const string &table,bool isUpdate)//the json 
     DefRecordList(recordList);
     recordList.PushBack(json.toValue(),Allocator);
     return insertRecordlist(recordList,table,isUpdate);
-/*    string sql="INSERT INTO "+table+"(",values="",update=" ON DUPLICATE KEY UPDATE ";
-    int i=0; string col;
+}
+
+string CDBC::updateJSON(const JSON &json, const string &table,const string &id,const string &idAttr)
+{
+    char update[BUFSIZE+40]; const char *col;
+    int i=0,p=0,l=0;
     for(JSON::CMIt it=json.MemberBegin();it!=json.MemberEnd();it++)
     {
-        if((++i)>1) sql+=",",values+=",",update+=",";
-        col=GETKey(it);
-        sql+=col;
-        values+="?";
-        update+=col+"=VALUES("+col+")";
+        if((++i)>1) update[p++]=',';
+        col=GETKey(it); l=strlen(col);
+        strcpy(update+p,col); p+=l;
+        update[p++]='=';
+        update[p++]='?';
     }
-    sql+=") VALUES("+values+")";
-    if(isUpdate) sql+=update;
+    update[p++]='\0';
+
+    string sql="UPDATE "+table+" SET "+string(update)+" WHERE "+idAttr+"= ?";
     try
     {
         PreparedStatement *query=conn->prepareStatement(sql);
@@ -132,13 +124,14 @@ string CDBC::insertJSON(JSON &json,const string &table,bool isUpdate)//the json 
             else if(ISObject(it) || ISArray(it)) query->setString(i,JSON(it->value).toString());
             else if(ISNull(it)) query->setNull(i,DataType::UNKNOWN);
         }
+        query->setString(++i,id);
         query->executeUpdate();
         delete query;
     }catch(exception &e)
     {
         return e.what();
     }
-    return OK;*/
+    return OK;
 }
 
 vector<Pair> CDBC::getColumns(const ResultSet *res)
@@ -174,7 +167,7 @@ RecordList CDBC::getResultList(ResultSet *res)
                 value=Value(res->getInt(key));
             else
             if(type=="BIGINT UNSIGNED")
-                value=Value(res->getUInt64(key));//
+                value=Value(res->getUInt64(key));
             else 
             if(type=="FLOAT" || type=="DOUBLE")
                 value=Value(double(res->getDouble(key)));
@@ -228,7 +221,7 @@ Record CDBC::queryByID(const string &id,const string &table,const string &attr)
 Record CDBC::queryByIDs(const vector<string> &v,const string &table,const string &attr)
 {
     int n=v.size();
-    string conditions=attr+" in"+getRepeatQMark(1,n);
+    string conditions=attr+" IN "+getRepeatQMark(1,n);
 
     Value argv(kArrayType);
     for(int i=0;i<n;i++) argv.PushBack(Str2Value(v[i]),Allocator);
@@ -258,14 +251,14 @@ RecordList CDBC::queryPostHistoryAtPOI(const string &POI_id, int postid)
     attrs+="post.timestamp AS timestamp, ";
     attrs+="post.text AS text, ";
     attrs+="post.imageUrl AS imageUrl, ";
-    attrs+="post.like as like, ";
+    attrs+="post.love as love, ";
     attrs+="post.dislike as dislike";
     string conditions="POI_id=? AND postid<? AND post.userid=user.userid";
 
     Value argv(kArrayType);
     argv.PushBack(Str2Value(POI_id),Allocator);
     argv.PushBack(Int2Value(postid),Allocator);
-    return selectQuery(attrs,"post,user",conditions,argv,"ORDER BY postid DESC LIMIT 10");
+    return selectQuery(attrs,"post,user",conditions,argv,"ORDER BY postid DESC LIMIT 20");
 }
 
 RecordList CDBC::queryPOINearby(const double &lat, const double &lng, const double distLimit)
@@ -283,8 +276,7 @@ RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
     Value argv(kArrayType);
     argv.PushBack(Str2Value(userid),Allocator);
     argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
-    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
-    //*****
+    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 10");
 }
 
 RecordList CDBC::queryPostByTime(int timestamp)
@@ -294,12 +286,13 @@ RecordList CDBC::queryPostByTime(int timestamp)
 
 string CDBC::updatePOIPopularity(const string &POI_id,int popularity)
 {
-    string sql="UPDATE POI SET popularity=? WHERE POI_id=?";
+    string sql="UPDATE POI SET popularity=popularity+? WHERE POI_id=?";
     try
     {
         PreparedStatement *query=conn->prepareStatement(sql);
         query->setInt(1,popularity);
         query->setString(2,POI_id);
+        query->executeUpdate();
         delete query;
     }catch(exception &e)
     {
@@ -318,6 +311,7 @@ string CDBC::updatePostLike(const vector<int> &ids,const string &attr,int x)
     {
         PreparedStatement *query=conn->prepareStatement(sql);
         for(int i=0;i<n;i++) query->setInt(i+1,ids[i]);
+        query->executeUpdate();
         delete query;
     }catch(exception &e)
     {
@@ -326,3 +320,13 @@ string CDBC::updatePostLike(const vector<int> &ids,const string &attr,int x)
     return OK;
 }
 
+Record CDBC::queryAttitude(const string &userid, const vector<int> &postids)
+{
+    int n=postids.size();
+    string conditions="userid=? AND postid IN "+getRepeatQMark(1,n);
+
+    Value argv(kArrayType);
+    argv.PushBack(Str2Value(userid),Allocator);
+    for(int i=0;i<n;i++) argv.PushBack(Int2Value(postids[i]),Allocator);
+    return selectQuery("*","feedback",conditions,argv,"ORDER BY postid DESC");
+}

@@ -24,12 +24,7 @@ struct Info
 int getLastUpdateTime()
 {
     Record record=cdbc.querySystemVariable("lastUpdateTime");
-    int res=record["value1"].GetInt();
-    JSON json;
-    json.insert("name",string("lastUpdateTime"));
-    json.insert("value1",getTimestamp());
-    cdbc.insertJSON(json,"sysvar");
-    return res;
+    return (record.IsNull())?0:record["value1"].GetInt();
 }
 
 int main()
@@ -90,5 +85,10 @@ int main()
         ret=cdbc.insertRecord(record,"POITags",true);
         if(ret!=OK) logFile.print(ret);
     }
+
+    JSON json;
+    json.insert("name",string("lastUpdateTime"));
+    json.insert("value1",getTimestamp());
+    cdbc.insertJSON(json,"sysvar");
     return 0;
 }

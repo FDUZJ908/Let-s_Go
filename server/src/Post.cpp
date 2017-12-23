@@ -3,7 +3,7 @@
 
 int main()
 {
-    INIT("CheckIn.log");
+    INIT("Post.log");
 
     JSON::CMIt POI_it=jsonReq.FindMember("POI_id");
     JSON::CMIt lat_it=jsonReq.FindMember("latitude");

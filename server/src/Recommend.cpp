@@ -4,7 +4,7 @@
 #define REC_NUM 10
 #define REQUIRE_DATA_NUM 10 //****
 
-#define ALPHA 0.7
+#define ALPHA 0.8
 #define BETA 0.6
 
 int timestamp=0,CATE_NUM=0,Pmax=0;
@@ -41,12 +41,13 @@ vector<POI> getPoiInfo(const vector<string> &ids)
     for(int i=0;i<n;i++) v.push_back(POI(recordList[i])); 
     
     recordList=cdbc.queryByIDs(ids,"POITags","POI_id"); //the results should be sorted yet
-    int m=recordList.Size();
-    for(int i=0,j=0;i<n && j<m;i++)
+    int m=recordList.Size(),i=0;
+    for(int j=0;i<n && j<m;i++)
     {
         if(v[i].id<recordList[j]["POI_id"].GetString()) v[i].setTags();
         else tagsRecordToArray(v[i].tags,recordList[j]),j++;
     }
+    for(;i<n;i++) v[i].setTags();
     return v;
 }
 
@@ -58,13 +59,13 @@ vector<POI> setUser(const RecordList &recordList)
         ids.push_back(recordList[i]["POI_id"].GetString());
     vector<POI> v=getPoiInfo(ids);
 
-    for(int i=0;i<n;i++)
+/*    for(int i=0;i<n;i++)
     {
         int delta=timestamp-recordList[i]["time"].GetInt();
         if(delta<MON_SECONDS) v[i].ts=1;
         else if((delta<<1)<YEAR_SECONDS) v[i].ts=0.6;
         else v[i].ts=0.3;
-    }
+    }*/
     return v;
 }
 
@@ -81,7 +82,15 @@ vector<POI> setCand(const RecordList &recordList)
     return v;
 }
 
-double ScorebyHistory(const POI &cand, const POI &user)
+double Degree(const POI &cand,const uLL tags)
+{
+    LL sum=0,total=0; uLL mask=1;
+    for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=cand.tags[j])
+        if(tags&mask) sum+=cand.tags[j];
+    return 1.0*sum/total;
+}
+
+double ScorebyHistory(const POI &cand, const POI &user, const uLL tags)
 {
     LL scalar=0,norm1=0,norm2=0;
     for(int i=0;i<TAGS_NUM;i++)
@@ -91,7 +100,7 @@ double ScorebyHistory(const POI &cand, const POI &user)
         norm2+=((LL)user.tags[i])*((LL)user.tags[i]);
     }
     double cosine=1.0*scalar/(sqrt(1.0*norm1)*sqrt(1.0*norm2));
-    double scores=ALPHA*user.ts*cosine+(1-ALPHA)*2*cand.popularity/(Pmax+1);
+    double scores=ALPHA*cosine*Degree(cand,tags)+(1-ALPHA)*2*cand.popularity/(Pmax+1);
     if(cand.id==user.id) scores*=BETA;
     return scores;
 }
@@ -101,17 +110,14 @@ bool cmp(const pair<int,double> &a,const pair<int,double> &b)
     return a.second>b.second;
 }
 
-RecordList recommendGenerally(vector<POI> &candPOIs, uLL tags)
+RecordList recommendGenerally(vector<POI> &candPOIs, const uLL tags)
 {
     int n=candPOIs.size();
     pair<int,double> res[n];
     for(int i=0;i<n;i++)
     {
         const POI &cand=candPOIs[i];
-        LL sum=0,total=0; uLL mask=1;
-        for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=cand.tags[j])
-            if(tags&mask) sum+=cand.tags[j];
-        double scores=1.0*sum/total+2*cand.popularity/(Pmax+1);
+        double scores=Degree(cand,tags)+2*cand.popularity/(Pmax+1);
         res[i]=make_pair(i,scores);
     }
     sort(res,res+n,cmp);
@@ -122,7 +128,7 @@ RecordList recommendGenerally(vector<POI> &candPOIs, uLL tags)
     return recordList;
 }
 
-RecordList recommendByHistory(vector<POI> &candPOIs, vector<POI> &userPOIs)
+RecordList recommendByHistory(vector<POI> &candPOIs, vector<POI> &userPOIs, const uLL tags)
 {
     int n=candPOIs.size(),m=userPOIs.size();
     pair<int,double> res[n];
@@ -130,7 +136,7 @@ RecordList recommendByHistory(vector<POI> &candPOIs, vector<POI> &userPOIs)
     {
         double Smax=0;
         for(int j=0;j<m;j++)
-            Smax=max(Smax,ScorebyHistory(candPOIs[i],userPOIs[j]));
+            Smax=max(Smax,ScorebyHistory(candPOIs[i],userPOIs[j],tags));
         res[i]=make_pair(i,Smax);
     }
     sort(res,res+n,cmp);
@@ -191,7 +197,7 @@ int main()
         results=recommendGenerally(candPOIs,tags);
     }else
     {
-        results=recommendByHistory(candPOIs,userPOIs);
+        results=recommendByHistory(candPOIs,userPOIs,tags);
     }
 
     JSON jsonRes(0);

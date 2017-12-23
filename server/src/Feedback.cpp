@@ -54,7 +54,7 @@ int main()
     }
     cdbc.insertRecordlist(vJson,"feedback",true);
 
-    cdbc.updatePostLike(vLike,"like",1);
+    cdbc.updatePostLike(vLike,"love",1);
     cdbc.updatePostLike(vDislike,"dislike",1);
     cdbc.updatePostLike(vCancelLike,"like",-1);
     cdbc.updatePostLike(vCancelDisLike,"dislike",-1);

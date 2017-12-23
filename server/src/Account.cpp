@@ -16,23 +16,23 @@ int main()
     {
         const char* key=GETKey(it);
         JSON::MIt jt=record.FindMember(key);
-        if(jt!=record.MemberEnd())
+        if(jt!=jsonReq.MemberEnd())
         {
+            modified=true;
             if(strcmp(key,"password")==0)
             {
                 string hash=sha1((it->value).GetString());
-                (jt->value)=Str2Value(hash);
+                jt->value=Str2Value(hash);
             }
-            else jt->value=COPYValue(it->value);
-            modified=true;
         }
     }
     if(modified)
     {
-        string ret=cdbc.insertRecord(record,"user",true);
+        string ret=cdbc.updateJSON(JSON(record),"user",userid,"userid");
         if(ret!=OK) writeError(ret);
     }
 
+    record.RemoveMember("password");
     JSON jsonRes(record);
     jsonRes.insert("status",OK);
     sendResponse(jsonRes.toString());

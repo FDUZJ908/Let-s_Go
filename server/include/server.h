@@ -152,4 +152,4 @@ void tagsRecordToArray(int *tags, const Value &record);
                       JSON::CMIt token_it=jsonReq.FindMember("token");\
                       if(userid_it==jsonReq.MemberEnd() || token_it==jsonReq.MemberEnd()) writeError("Request data error!");\
                       string userid=GETString(userid_it),token=GETString(token_it);\
-                      checkTocken(token)
+                      if(!checkTocken(token)) writeError("Request data error!");

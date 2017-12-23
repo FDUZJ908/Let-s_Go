@@ -95,6 +95,11 @@ public:
         return dict.FindMember(key.c_str());
     }
 
+    inline CMIt FindMember(const string &key) const
+    {
+        return dict.FindMember(key.c_str());
+    }
+
     inline bool RemoveMember(const char* key)
     {
         return dict.RemoveMember(key);
@@ -106,6 +111,16 @@ public:
     }
 
     inline MIt MemberEnd()
+    {
+        return dict.MemberEnd();
+    }
+
+    inline CMIt MemberBegin() const
+    {
+        return dict.MemberBegin();
+    }
+
+    inline CMIt MemberEnd() const
     {
         return dict.MemberEnd();
     }
