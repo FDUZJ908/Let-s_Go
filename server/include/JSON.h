@@ -10,7 +10,7 @@ using namespace rapidjson;
 
 extern Document::AllocatorType& Allocator;
 
-#define GETKey(it) (it)->name.GetString()
+#define GETKey(it) ((it)->name.GetString())
 
 #define ISString(it) ((it)->value.IsString())
 #define ISInt(it) ((it)->value.IsInt())
@@ -48,6 +48,7 @@ class JSON
     Document::AllocatorType& alloc=dict.GetAllocator();
 
 public:
+    typedef Value::MemberIterator MIt;
     typedef Value::ConstMemberIterator CMIt;
     typedef Value::ConstValueIterator CVIt;
 
@@ -89,7 +90,7 @@ public:
         return COPYValue(Value(dict.GetObject()));
     }
 
-    inline CMIt FindMember(const string &key) const
+    inline MIt FindMember(const string &key)
     {
         return dict.FindMember(key.c_str());
     }
@@ -99,12 +100,12 @@ public:
         return dict.RemoveMember(key);
     }
 
-    inline CMIt MemberBegin() const
+    inline MIt MemberBegin()
     {
         return dict.MemberBegin();
     }
 
-    inline CMIt MemberEnd() const
+    inline MIt MemberEnd()
     {
         return dict.MemberEnd();
     }

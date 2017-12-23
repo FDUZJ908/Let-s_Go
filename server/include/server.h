@@ -122,7 +122,7 @@ struct AccessToken
 string getRequestData();
 void sendResponse(const string &response,const string &contentType=ContentType::json);
 string getToken(const string &userid);
-bool checkTocken(const string &token,const string &userid);
+bool checkTocken(const string &token);
 string HTTPRequestGET(const string &url_str);
 string HTTPSRequestGET(const string &url_str);
 HTTPContent HTTPSRequestPOST(const string &url_str,const JSON &data);
@@ -152,4 +152,4 @@ void tagsRecordToArray(int *tags, const Value &record);
                       JSON::CMIt token_it=jsonReq.FindMember("token");\
                       if(userid_it==jsonReq.MemberEnd() || token_it==jsonReq.MemberEnd()) writeError("Request data error!");\
                       string userid=GETString(userid_it),token=GETString(token_it);\
-                      checkTocken(token,userid)
+                      checkTocken(token)

@@ -1,3 +1,4 @@
+DROP TABLE feedback;
 DROP TABLE post;
 DROP TABLE POITags;
 #DROP TABLE POI;*******

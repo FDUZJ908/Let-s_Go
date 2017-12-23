@@ -28,9 +28,9 @@ string getToken(const string &userid)
     return sha1(polyhash(str))+str;
 }
 
-bool checkTocken(const string &token,const string &userid)
+bool checkTocken(const string &token)
 {
-    return (sha1(polyhash(token.substr(40)))==token.substr(0,40) && (token.substr(40).find(userid)!=-1));
+    return sha1(polyhash(token.substr(40)))==token.substr(0,40);
 }
 
 string HTTPRequestGET(const string &url_str) //need to append '/' at the end of url_str when you request for the default index.html
