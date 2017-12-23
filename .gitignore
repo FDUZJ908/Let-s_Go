@@ -3,7 +3,7 @@ README.html
 resources/*
 dependency/*
 lib/*
-cgi-bin/*
+*cgi-bin/*
 *.tar.gz
 *.zip
 *.txt
