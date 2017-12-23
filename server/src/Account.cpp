@@ -24,6 +24,7 @@ int main()
                 string hash=sha1((it->value).GetString());
                 jt->value=Str2Value(hash);
             }
+            jt->value=COPYValue(it->value);
         }
     }
     if(modified)
