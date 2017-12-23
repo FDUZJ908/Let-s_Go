@@ -71,7 +71,7 @@ int main()
         tagsRecordToArray(tmp,record);
         for(int i=0;i<TAGS_NUM;i++) tags[i]+=tmp[i];
         tagsArrayToRecord(tags,record);
-        ret=cdbc.insertJSON(JSON(record),"POITags",true);
+        ret=cdbc.insertRecord(record,"POITags",true);
         if(ret!=OK) logFile.print(ret);
 
         count.erase(it);
@@ -87,7 +87,7 @@ int main()
         record.AddMember("tags3","",Allocator);
         record.AddMember("tags4","",Allocator);
         tagsArrayToRecord((it->second).tags,record);
-        ret=cdbc.insertJSON(JSON(record),"POITags",true);
+        ret=cdbc.insertRecord(record,"POITags",true);
         if(ret!=OK) logFile.print(ret);
     }
     return 0;

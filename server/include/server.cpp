@@ -76,32 +76,6 @@ HTTPContent HTTPSRequestPOST(const string &url_str,const JSON &data)
     return result;
 }
 
-/*
-string getAccessToken(const bool refresh)
-{
-    int timestamp=getTimestamp();
-    AccessToken token(cdbc.querySystemVariable(AccessToken::name));
-    if(refresh || token.expireTime<timestamp)
-    {
-        string url="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+APPID+"&secret="+APPSECRET;
-        string jsonRes_str=HTTPSRequestGET(url);
-        JSON jsonRes(jsonRes_str);
-
-        JSON::CMIt accessToken_it=jsonRes.FindMember("access_token");
-        if(accessToken_it==jsonRes.MemberEnd())
-            return "error";
-        string accessToken=GETString(accessToken_it);
-
-        JSON::CMIt expiresIn_it=jsonRes.FindMember("expires_in");
-        int expiresIn=(expiresIn_it==jsonRes.MemberEnd())?GETInt(expiresIn_it):AccessToken::defaultExpires;
-
-        token.set(accessToken,timestamp+expiresIn);
-        cdbc.insertJSON(token.toJSON(),"sysvar",true);
-    }
-    return token.value;
-}
-*/
-
 void writeError(const string &mesg)
 {
     JSON json(1);

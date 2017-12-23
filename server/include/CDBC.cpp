@@ -1,8 +1,111 @@
 #include "CDBC.h"
 
-string CDBC::insertJSON(const JSON &json,const string &table,bool isUpdate)
+string getRepeatQMark(int n,int m)
 {
-    string sql="INSERT INTO "+table+"(",values="",update=" ON DUPLICATE KEY UPDATE ";
+    char s[n*2*m+3*n+n];
+    int p=0;
+    for(int i=1;i<=n;i++)
+    {
+        if(i>1) s[p++]=',';
+        s[p++]='(';
+        for(int j=1;j<=m;j++)
+        {
+            if(j>1) s[p++]=',';
+            s[p++]='?';
+        }
+        s[p++]=')';
+    }
+    s[p]='\0';
+    return s;
+}
+
+int CDBC::getColsUpdateString(const Record &record, char *cols, char *update)
+{
+    int p=0,q=0,l=0,m=0; const char *col;
+    cols[p++]='(';
+    for(JSON::CMIt it=record.MemberBegin();it!=record.MemberEnd();it++)
+    {
+        if((++m)>1) cols[p++]=',',update[q++]=',';
+        col=GETKey(it); l=strlen(col);
+
+        strcat(cols+p,col); p+=l;
+
+        strcat(update+q,col); q+=l;
+        strcat(update+q,"=VALUES("); q+=8;
+        strcat(update+q,col); q+=l;
+        update[q++]=')';
+    }
+    cols[p]='\0'; update[q]='\0';
+    return m;
+}
+
+#define BUFSIZE 15*20
+
+string CDBC::insertRecordlist(RecordList &recordList,const string &table,bool isUpdate)//the recordList shouldn't be used later
+{
+    int n=recordList.Size();
+    if(n==0) return OK;
+
+    char cols[BUFSIZE],update[BUFSIZE];
+    int col_num=getColsUpdateString(recordList[0],cols,update);
+
+    /*char values[n*2*col_num+3*n+n]; int p=0;
+    for(int i=0;i<n;i++)
+    {
+        if(i>0) values[p++]=",";
+        values[p++]="("
+        int j=0; Record &record=json[i]
+        for(JSON::CMIt it=record.MemberBegin();it!=record.MemberEnd();it++)
+        {
+            if((++j)>1) value[p++]=",";
+            values[p++]="?";
+        }
+        values[p++]=")"
+    }
+    values[p]='\0';*/
+
+    string sql="INSERT INTO "+table+" "+string(cols)+" VALUES "+getRepeatQMark(1,col_num);
+    if(isUpdate) sql+=" ON DUPLICATE KEY UPDATE "+string(update);
+    try
+    {
+        PreparedStatement *query=conn->prepareStatement(sql);
+        for(int k=0,i=0;k<n;k++)
+        {
+            Record &record=recordList[k];
+            for(JSON::CMIt it=record.MemberBegin();it!=record.MemberEnd();it++)
+            {
+                i++;
+                if(ISString(it)) query->setString(i,GETString(it));
+                else if(ISInt(it)) query->setInt(i,GETInt(it));
+                else if(ISULong(it)) query->setUInt64(i,GETULong(it));
+                else if(ISDouble(it)) query->setDouble(i,GETDouble(it));
+                else if(ISBool(it)) query->setBoolean(i,GETBool(it));
+                else if(ISObject(it) || ISArray(it)) query->setString(i,JSON(it->value).toString());
+                else if(ISNull(it)) query->setNull(i,DataType::UNKNOWN);
+            }
+        }
+        query->executeUpdate();
+        delete query;
+    }catch(exception &e)
+    {
+        return e.what();
+    }
+    return OK;
+}
+
+string CDBC::insertRecord(Record &record,const string &table,bool isUpdate)//the record shouldn't be used later
+{
+    DefRecordList(recordList);
+    recordList.PushBack(record,Allocator);
+    return insertRecordlist(recordList,table,isUpdate);
+}
+
+string CDBC::insertJSON(JSON &json,const string &table,bool isUpdate)//the json shouldn't be used later
+{
+    DefRecordList(recordList);
+    recordList.PushBack(json.toValue(),Allocator);
+    return insertRecordlist(recordList,table,isUpdate);
+/*    string sql="INSERT INTO "+table+"(",values="",update=" ON DUPLICATE KEY UPDATE ";
     int i=0; string col;
     for(JSON::CMIt it=json.MemberBegin();it!=json.MemberEnd();it++)
     {
@@ -35,7 +138,7 @@ string CDBC::insertJSON(const JSON &json,const string &table,bool isUpdate)
     {
         return e.what();
     }
-    return OK;
+    return OK;*/
 }
 
 vector<Pair> CDBC::getColumns(const ResultSet *res)
@@ -125,17 +228,7 @@ Record CDBC::queryByID(const string &id,const string &table,const string &attr)
 Record CDBC::queryByIDs(const vector<string> &v,const string &table,const string &attr)
 {
     int n=v.size();
-    char conds[4*n]; int m=0;
-    conds[m++]='(';
-    for(int i=0;i<n;i++)
-    {
-        if(i>0) conds[m++]=',';
-        conds[m++]='?';
-    }
-    conds[m++]=')';
-    conds[m]='\0';
-
-    string conditions=attr+" in"+string(conds);
+    string conditions=attr+" in"+getRepeatQMark(1,n);
 
     Value argv(kArrayType);
     for(int i=0;i<n;i++) argv.PushBack(Str2Value(v[i]),Allocator);
@@ -214,3 +307,22 @@ string CDBC::updatePOIPopularity(const string &POI_id,int popularity)
     }
     return OK;
 }
+
+string CDBC::updatePostLike(const vector<int> &ids,const string &attr,int x)
+{
+    int n=ids.size();
+    string conditions="postid in"+getRepeatQMark(1,n);
+    string sql="UPDATE post SET "+attr+"="+attr+"+("+TOString(x)+") WHERE "+conditions;
+
+    try
+    {
+        PreparedStatement *query=conn->prepareStatement(sql);
+        for(int i=0;i<n;i++) query->setInt(i+1,ids[i]);
+        delete query;
+    }catch(exception &e)
+    {
+        return e.what();
+    }
+    return OK;
+}
+

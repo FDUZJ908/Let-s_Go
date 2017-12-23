@@ -10,7 +10,7 @@ using namespace rapidjson;
 
 extern Document::AllocatorType& Allocator;
 
-#define GETKey(it) string((it)->name.GetString())
+#define GETKey(it) (it)->name.GetString()
 
 #define ISString(it) ((it)->value.IsString())
 #define ISInt(it) ((it)->value.IsInt())

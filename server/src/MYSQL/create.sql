@@ -21,7 +21,7 @@ CREATE TABLE POI (
   longitude  DOUBLE   NOT NULL,
   popularity INT      NOT NULL DEFAULT 0,
   city       CHAR(20),
-  country    CHAR(20) DEFAULT "中国"
+  country    CHAR(20)          DEFAULT "中国"
 )
   CHARACTER SET = utf8mb4;
 
@@ -65,8 +65,24 @@ CREATE INDEX idx_user_time
 CREATE INDEX idx_time
   ON post (timestamp); #speed up the UpdatePOI precedure
 
+CREATE TABLE feedback (
+  userid   CHAR(32) NOT NULL,
+  postid   INT      NOT NULL,
+  attitude TINYINT  NOT NULL DEFAULT 0,
+  FOREIGN KEY (userid) REFERENCES user (userid)
+    ON UPDATE CASCADE,
+  FOREIGN KEY (postid) REFERENCES post(postid)
+)
+  CHARACTER SET = utf8mb4;
+
 CREATE TABLE sysvar (
   name   CHAR(20) PRIMARY KEY,
   value1 INT
 )
   CHARACTER SET = utf8mb4;
+
+/*ALTER TABLE POI
+  CHANGE type popularity INT NOT NULL DEFAULT 0;*/
+
+/*SELECT count(*) from POI;
+*/

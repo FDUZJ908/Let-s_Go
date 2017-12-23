@@ -39,7 +39,6 @@
       "POI_name": "复旦大学",
       "latitude": 34.5,
       "longitude": 123.1,
-      "type":0,
       "city":"上海市"
     },
     {
@@ -47,7 +46,6 @@
       "POI_name": "中医药大学",
       "latitude": 32.5,
       "longitude": 123.34,
-      "type":0,
       "city":"上海市"
     },
     {
@@ -55,7 +53,6 @@
       "POI_name": "张江计算机楼",
       "latitude": 31.5,
       "longitude": 121.1,
-      "type":0,
       "city":"上海市"
     }
   ]
