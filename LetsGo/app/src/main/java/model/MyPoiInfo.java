@@ -9,16 +9,18 @@ public class MyPoiInfo {
     double latitude;
     double longitude;
     String POI_name;
-    int type;
+    String category;
     String POI_id;
+    int popularity;
 
-    public MyPoiInfo MyPoiInfo(String city,double Lat,double Lng,String name,int type,String uid){
+    public MyPoiInfo MyPoiInfo(String city,double Lat,double Lng,String name,String category,String uid,int popularity){
         this.city=city;
         this.latitude=Lat;
         this.longitude=Lng;
         this.POI_name=name;
-        this.type=type;
+        this.category=category;
         this.POI_id=uid;
+        this.popularity=popularity;
         return this;
     }
 
@@ -26,13 +28,15 @@ public class MyPoiInfo {
     public void setLat(double Lat){this.latitude=Lat;}
     public void setLng(double Lng){this.longitude=Lng;}
     public void setName(String name){this.POI_name=name;}
-    public void setType(int type){this.type=type;}
+    public void setCategory(String category){this.category=category;}
     public void setUid(String uid){this.POI_id=uid;}
+    public void setPopularity(int popularity){this.popularity=popularity;}
 
     public String getCity(){return this.city;}
     public double getLat(){return this.latitude;}
     public double getLng(){return this.longitude;}
     public String getName(){return this.POI_name;}
-    public int getType(){return this.type;}
+    public String getCategory(){return this.category;}
     public String getUid(){return this.POI_id;}
+    public int getPopularity(){return this.popularity;}
 }

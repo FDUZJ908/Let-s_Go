@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -64,15 +65,19 @@ import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.StreamHandler;
 
+import model.CheckIn;
 import model.MyPoiInfo;
 import model.SavePoi;
 import model.Search;
+import model.User;
 import model.responseRegister;
 import model.responseSearch;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.example.letsgo.MainActivity.myLat;
+import static com.example.letsgo.MainActivity.myLng;
 import static com.example.letsgo.MainActivity.myToken;
 import static com.example.letsgo.MainActivity.myUserid;
 import static util.httpUtil.sendHttpPost;
@@ -97,6 +102,8 @@ public class Fragment2 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private TextureMapView mMapView;
+    private Button Refresh;
     private BaiduMap mBaiduMap;
     private LocationClient mLocationClient;
     private UiSettings mUiSettings;
@@ -104,27 +111,30 @@ public class Fragment2 extends Fragment {
     private String responseData;
     private responseSearch mResponseSearch;
     private List<MyPoiInfo> PoiList;
-    private List<OverlayOptions> options=new ArrayList<>();
+    private List<OverlayOptions> options = new ArrayList<>();
+    private int markerI = 0;
+    private double mLng;
+    private double mLat;
 
-    public static final int GETSEARCH=2;
+    public static final int GETSEARCH = 2;
 
-    private boolean isLocated=false;
+    private boolean isLocated = false;
 
-    private Handler handler=new Handler() {
-        public void handleMessage(Message msg){
-            mResponseSearch=gson.fromJson(msg.obj.toString(), responseSearch.class);
-            switch (msg.what){
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            mResponseSearch = gson.fromJson(msg.obj.toString(), responseSearch.class);
+            Log.d("****Search***", msg.obj.toString());
+            switch (msg.what) {
                 case GETSEARCH:
-                    if(mResponseSearch.getStatus().equals("ERROR")){
+                    if (mResponseSearch.getStatus().equals("ERROR")) {
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("搜索错误")
                                 .setMessage("搜索错误")
-                                .setPositiveButton("确定",null)
+                                .setPositiveButton("确定", null)
                                 .show();
-                    }
-                    else{
-                        PoiList=mResponseSearch.getPOIs();
-                        Marker();
+                    } else {
+                        PoiList = mResponseSearch.getPOIs();
+                        Marker(markerI);
                     }
                     break;
                 default:
@@ -168,34 +178,65 @@ public class Fragment2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_fragment2, container, false);
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initViews();
+    }
+
+    private void initViews() {
         mLocationClient = new LocationClient(getContext());
         mLocationClient.registerLocationListener(new MyLocationListener());
         //SDKInitializer.initialize(getContext());
-
         //绘制界面
-        TextureMapView mMapView = new TextureMapView(getActivity());
+        //mMapView = new TextureMapView(getActivity());
+        mMapView = getView().findViewById(R.id.MainMap);
         //mMapView.setLogoPosition(LogoPosition.logoPostionCenterBottom);
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMyLocationEnabled(true);
+        //Button Refresh=new Button(getActivity());
+        Refresh = getView().findViewById(R.id.Refresh);
 
         //设置指南针
         mUiSettings = mBaiduMap.getUiSettings();
         mUiSettings.setCompassEnabled(true);
-
+        /*
         LinearLayout linearLayout = new LinearLayout(getActivity());
-        linearLayout.addView(mMapView);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(Refresh);
+        linearLayout.addView(mMapView);*/
+        Refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Marker(++markerI);
+            }
+        });
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent i = new Intent(getActivity(), FootprintActivity.class);
+                i.putExtra("POI_id", marker.getExtraInfo().getString("POI_id"));
+                i.putExtra("POI_name", marker.getExtraInfo().getString("POI_name"));
+                i.putExtra("token", myToken);
+                i.putExtra("userid", myUserid);
+                i.putExtra("mLat", mLat);
+                i.putExtra("mLng", mLng);
+                startActivity(i);
+                return true;
+            }
+        });
 
         //开始定位
         requestLocation();
 
-        return linearLayout;
-        //return inflater.inflate(R.layout.fragment_fragment2, container, false);
     }
 
     private void requestLocation() {
         LocationClientOption option = new LocationClientOption();
-        //option.setScanSpan(500000);//每500秒获得一次定位
+        option.setScanSpan(10000);//每10秒获得一次定位
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//高精度定位
         option.setIsNeedLocationPoiList(true);//获得POI
         option.setOpenGps(true);
@@ -209,14 +250,24 @@ public class Fragment2 extends Fragment {
     protected class MyLocationListener extends BDAbstractLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
-            if(!isLocated) {
-                Log.d("******", "ReceiveLocation");
+            Log.d("******", "ReceiveLocation");
+            if (!isLocated) {
+                Log.d("******", "第一次定位");
                 if (location.getLocType() == BDLocation.TypeGpsLocation || location.getLocType() == BDLocation.TypeNetWorkLocation) {
                     locateTo(location);
                 }
+                mLat = location.getLatitude();
+                mLng = location.getLongitude();
+                myLat = mLat;
+                myLng = mLng;
                 search(location);
-                isLocated=true;
+                isLocated = true;
+            } else if (isMoved(location)) {
+                Log.d("******", "移动超过200定位");
+                locateTo(location);
             }
+            else
+                Log.d("******","移动不足200不定位");
         }
     }
 
@@ -237,8 +288,8 @@ public class Fragment2 extends Fragment {
         mBaiduMap.animateMapStatus(mMapStatusUpdate, duration);//duration为动画的时间
     }
 
-    protected void search(BDLocation location){
-        Search mSearch=new Search(myUserid,location.getLatitude(),location.getLongitude(),myToken);
+    protected void search(BDLocation location) {
+        Search mSearch = new Search(myUserid, location.getLatitude(), location.getLongitude(), myToken);
         sendHttpPost("https://shiftlin.top/cgi-bin/Search", gson.toJson(mSearch, Search.class), new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -248,25 +299,30 @@ public class Fragment2 extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 responseData = response.body().string();
-                Message message=new Message();
-                message.what=GETSEARCH;
-                message.obj=responseData;
+                Message message = new Message();
+                message.what = GETSEARCH;
+                message.obj = responseData;
                 handler.sendMessage(message);
             }
         });
     }
 
-    protected void Marker(){
-
-        for(int i=0;i<PoiList.size()&&i<=10;i++) {
+    protected void Marker(int j) {
+        int d = PoiList.size() / 10;
+        j = j % d;
+        mBaiduMap.clear();
+        options.clear();
+        for (int i = j; i < PoiList.size(); i += d) {
             //定义Maker坐标点
             LatLng point = new LatLng(PoiList.get(i).getLat(), PoiList.get(i).getLng());
             //构建Marker图标
             BitmapDescriptor bitmap = BitmapDescriptorFactory
-                    .fromResource(R.drawable.marker2);
+                    .fromResource(R.drawable.marker1);
+
             //构建MarkerOption，用于在地图上添加Marker
             Bundle mBundle = new Bundle();
             mBundle.putString("POI_id", PoiList.get(i).getUid());
+            mBundle.putString("POI_name", PoiList.get(i).getName());
             OverlayOptions option = new MarkerOptions()
                     .extraInfo(mBundle)
                     .perspective(true)
@@ -277,18 +333,17 @@ public class Fragment2 extends Fragment {
         //在地图上添加Marker，并显示
         mBaiduMap.addOverlays(options);
 
-        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Intent i = new Intent(getActivity(), FootprintActivity.class);
-                i.putExtra("POI_id",marker.getExtraInfo().getString("POI_id"));
-                i.putExtra("token",myToken);
-                i.putExtra("userid",myUserid);
-                startActivity(i);
-                return true;
-            }
-        });
 
+    }
+
+    protected boolean isMoved(BDLocation location) {
+        if (Math.sqrt((location.getLatitude() - myLat) * (location.getLatitude() - myLat)
+                + (location.getLongitude() - myLng) * (location.getLongitude() - myLng)) > 0.002) {
+            myLat = location.getLatitude();
+            myLng = location.getLongitude();
+            return true;
+        }
+        return false;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -308,6 +363,27 @@ public class Fragment2 extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
+    @Override
+    public void onDestroy() {
+        if (mLocationClient != null)
+            mLocationClient.stop();
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
 
     @Override
     public void onDetach() {

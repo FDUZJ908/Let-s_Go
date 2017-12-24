@@ -56,7 +56,7 @@ class MyListener implements OnGetPoiSearchResultListener {
                 curInfo.setLng(re.get(i).location.longitude);
                 curInfo.setName(re.get(i).name);
                 curInfo.setUid(re.get(i).uid);
-                curInfo.setType(re.get(i).type.ordinal());
+                //curInfo.setType(re.get(i).type.ordinal());
                 myPoiInfos.add(curInfo);
             } catch (Exception e){
                 cnt--;

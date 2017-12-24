@@ -5,6 +5,7 @@
     tools:context="layout.Fragment3">
 
     <!-- TODO: Update blank fragment layout -->
+    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,5 +28,25 @@
 
         </TextView>
     </LinearLayout>
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/RecommendInfo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="20sp"></TextView>
+
+        <com.baidu.mapapi.map.TextureMapView
+            android:id="@+id/Recommend"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"></com.baidu.mapapi.map.TextureMapView>
+
+    </LinearLayout>
 </FrameLayout>

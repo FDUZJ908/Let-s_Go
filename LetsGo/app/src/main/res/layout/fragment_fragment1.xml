@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     tools:context="layout.Fragment1">
 
     <!--?xml version=1.0 encoding=utf-8?-->
     <LinearLayout
         android:id="@+id/line1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FAECD8"
+        android:layout_height="200dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -18,37 +18,48 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:hint="账号">
-            </EditText>
+            android:background="@color/colorWhite"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:hint="请输入账号(邮箱)"></EditText>
+
         <EditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:hint="密码">
-            </EditText>
+            android:hint="请输入密码"
+            android:background="@color/colorWhite"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:inputType="textPassword"></EditText>
+
         <Button
             android:id="@+id/buttonLogin"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="登录"/>
+            android:background="@drawable/btn_selector"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+
+            android:text="登录" />
+
         <Button
             android:id="@+id/buttonRegister"
-            android:layout_height="0dp"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="注册"
-            ></Button>
-        <!--
-        <TextView
-            android:id="@+id/text1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="5"
-            android:text="初始化">
-        </TextView>
-        -->
+            android:background="@null"
+            android:textColor="@color/colorButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="注册"></Button>
+
     </LinearLayout>
 
 </FrameLayout>
