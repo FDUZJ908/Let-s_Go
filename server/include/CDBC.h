@@ -38,16 +38,27 @@ public:
         conn = driver->connect(CDBC::host,CDBC::user,password);
     }
 
-    string insertJSON(const JSON &json,const string &table,bool isUpdate=false);
+    int getColsUpdateString(const Record &record, char *cols, char *update);
+    string insertRecordlist(RecordList &recordList,const string &table,bool isUpdate);
+    string insertRecord(Record &record,const string &table,bool isUpdate);
+    string insertJSON(JSON &json,const string &table,bool isUpdate=false);
+    string updateJSON(const JSON &json, const string &table,const string &id,const string &idAttr);
     vector<Pair> getColumns(const ResultSet *res);
     RecordList getResultList(ResultSet *res);
     RecordList selectQuery(const string &attrs,const string &tables,const string &conditions="TRUE",
                            const Value &argv=Value(kArrayType),const string &options=""); //argv must be kArrayType
     int getLastId();
     Record queryByID(const string &id,const string &table,const string &attr);
+    Record queryByIDs(const vector<string> &v,const string &table,const string &attr);
+    Record querySystemVariable(const string &name);
     bool authenticate(const string &userid,const string &password);
-    RecordList queryPostHistoryByID(const string &id,const string &attr, int postid=0);
-    RecordList queryPOI(const double &lat, const double &lng, const double distLimit);
+    RecordList queryPostHistoryAtPOI(const string &id, int postid=0);
+    RecordList queryPOINearby(const double &lat, const double &lng, const double distLimit);
+    RecordList queryHistoryPOI(const string &userid,const int &timestamp);
+    RecordList queryPostByTime(int timestamp);
+    string updatePOIPopularity(const string &POI_id,int popularity);
+    string updatePostLike(const vector<int> &ids,const string &attr,int x);
+    Record queryAttitude(const string &userid, const vector<int> &postids);
 
     ~CDBC()
     {

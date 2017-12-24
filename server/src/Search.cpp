@@ -1,8 +1,7 @@
 #include <stdcpp.h>
 #include <server.h>
 
-const double distLimit=0.5;
-const int POINumLimit=20;
+const int POINumLimit=10000;
 
 struct Data
 {
@@ -30,7 +29,7 @@ int main()
 
     double lat=GETDouble(lat_it);
     double lng=GETDouble(lng_it);
-    RecordList recordList=cdbc.queryPOI(lat,lng,distLimit);
+    RecordList recordList=cdbc.queryPOINearby(lat,lng,DISTLOW);
 
     vector<Data> v;
     int n=recordList.Size();

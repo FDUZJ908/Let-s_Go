@@ -1,9 +1,9 @@
 *.pyc
 README.html
-resources/*
+*/resources/*
 dependency/*
 lib/*
-cgi-bin/*
+*/cgi-bin/*
 *.tar.gz
 *.zip
 *.txt

@@ -10,10 +10,13 @@ using namespace rapidjson;
 
 extern Document::AllocatorType& Allocator;
 
-#define GETKey(it) string((it)->name.GetString())
+#define GETKey(it) ((it)->name.GetString())
 
 #define ISString(it) ((it)->value.IsString())
 #define ISInt(it) ((it)->value.IsInt())
+#define ISUInt(it) ((it)->value.IsUint())
+#define ISLong(it) ((it)->value.IsInt64())
+#define ISULong(it) ((it)->value.IsUint64())
 #define ISDouble(it) ((it)->value.IsDouble())
 #define ISBool(it) ((it)->value.IsBool())
 #define ISObject(it) ((it)->value.IsObject())
@@ -22,9 +25,12 @@ extern Document::AllocatorType& Allocator;
 
 #define GETString(it) string((it)->value.GetString())
 #define GETInt(it) ((it)->value.GetInt())
+#define GETUInt(it) ((it)->value.GeUint())
+#define GETLong(it) ((it)->value.Getint64())
+#define GETULong(it) ((it)->value.GetUint64())
 #define GETDouble(it) ((it)->value.GetDouble())
 #define GETBool(it) ((it)->value.GetBool())
-#define GETValue(it) (Value().CopyFrom((it)->value,Allocator))
+//#define GETValue(it) (Value().CopyFrom((it)->value,Allocator))
 
 #define COPYValue(v) (Value(v,Allocator)) //copyConstStrings???
 #define Str2Value(str) (Value().SetString((str).c_str(),(str).size(),Allocator))
@@ -42,6 +48,7 @@ class JSON
     Document::AllocatorType& alloc=dict.GetAllocator();
 
 public:
+    typedef Value::MemberIterator MIt;
     typedef Value::ConstMemberIterator CMIt;
     typedef Value::ConstValueIterator CVIt;
 
@@ -83,6 +90,11 @@ public:
         return COPYValue(Value(dict.GetObject()));
     }
 
+    inline MIt FindMember(const string &key)
+    {
+        return dict.FindMember(key.c_str());
+    }
+
     inline CMIt FindMember(const string &key) const
     {
         return dict.FindMember(key.c_str());
@@ -91,6 +103,16 @@ public:
     inline bool RemoveMember(const char* key)
     {
         return dict.RemoveMember(key);
+    }
+
+    inline MIt MemberBegin()
+    {
+        return dict.MemberBegin();
+    }
+
+    inline MIt MemberEnd()
+    {
+        return dict.MemberEnd();
     }
 
     inline CMIt MemberBegin() const

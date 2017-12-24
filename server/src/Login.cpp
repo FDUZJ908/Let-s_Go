@@ -21,9 +21,6 @@ int main()
 
     JSON jsonRes(0);
     jsonRes.insert("token",getToken(userid));
-    string jsonRes_str=jsonRes.toString();
-    sendResponse(jsonRes_str);
-
-    logFile.print(jsonRes_str);
+    sendResponse(jsonRes.toString());
     return 0;
 }

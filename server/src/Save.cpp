@@ -22,7 +22,7 @@ int main(int argc,char *argv[])
             if(res.IsNull())
             {
                 p.AddMember("category",Str2Value(category),Allocator);
-                ret=cdbc.insertJSON(JSON(p),"POI",false);
+                ret=cdbc.insertRecord(p,"POI",false);
             }else
             {
                 string categories=res["category"].GetString();
@@ -30,7 +30,7 @@ int main(int argc,char *argv[])
                 {
                     categories+=","+category;
                     p.AddMember("category",Str2Value(categories),Allocator);
-                    ret=cdbc.insertJSON(JSON(p),"POI",true);
+                    ret=cdbc.insertRecord(p,"POI",true);
                 }else ret="Inserted";
             }
             if(ret==OK) cnt++; else message=ret;

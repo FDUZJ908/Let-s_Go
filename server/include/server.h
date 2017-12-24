@@ -8,8 +8,6 @@
 #include "CDBC.h"
 #include "Log.h"
 
-typedef long long LL;
-
 const string URL="https://shiftlin.top";
 
 const int MAXBUF=2*1024*1024;
@@ -124,12 +122,25 @@ struct AccessToken
 string getRequestData();
 void sendResponse(const string &response,const string &contentType=ContentType::json);
 string getToken(const string &userid);
-bool checkTocken(const string &token,const string &userid);
+bool checkTocken(const string &token);
 string HTTPRequestGET(const string &url_str);
 string HTTPSRequestGET(const string &url_str);
 HTTPContent HTTPSRequestPOST(const string &url_str,const JSON &data);
 void writeError(const string &mesg);
 
+
+#define TAGS_MAXNUM 64
+#define TAGS_NUM 36
+#define PARTITION_LEN 16 
+#define START1 0
+#define START2 16
+#define START3 32
+#define START4 48
+
+void setTags(int * tags, const int offset, const char *s);
+void tagsToString(int *tags,const int offset,const char *s);
+void tagsArrayToRecord(int *tags, Value &record);
+void tagsRecordToArray(int *tags, const Value &record);
 
 #define INIT(logName) logFile.set(logName);\
                         \
@@ -141,4 +152,4 @@ void writeError(const string &mesg);
                       JSON::CMIt token_it=jsonReq.FindMember("token");\
                       if(userid_it==jsonReq.MemberEnd() || token_it==jsonReq.MemberEnd()) writeError("Request data error!");\
                       string userid=GETString(userid_it),token=GETString(token_it);\
-                      checkTocken(token,userid)
+                      if(!checkTocken(token)) writeError("Request data error!");

@@ -34,6 +34,8 @@ struct Triple
 };
 
 const int DAY_SECONDS=24*60*60;
+const int MON_SECONDS=30*DAY_SECONDS;
+const int YEAR_SECONDS=6*MON_SECONDS;
 
 #define TIMEONLY 1
 #define DATEONLY 2
@@ -66,6 +68,10 @@ const double Radius=6371;
 const double PI=atan2(0,-1);
 #define ToRadian(x) (x*PI/180.0)
 
+
+#define DISTLOW 1
+#define DISTHIGH 3
+
 double distance(double lat1,double lng1,double lat2,double lng2);
 
 const double degPerKm=180.0/(PI*Radius);
@@ -75,3 +81,8 @@ const double degPerKm=180.0/(PI*Radius);
 string getLocStr(double lat,double lng);
 
 string removeChar(string str,char ch);
+
+unsigned short Hex2Byte(char c);
+unsigned int Hex2Int(const char *s);
+char Byte2Hex(short x);
+char* Int2Hex(unsigned int x, char *s);

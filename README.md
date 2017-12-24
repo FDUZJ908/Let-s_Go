@@ -39,7 +39,6 @@
       "POI_name": "复旦大学",
       "latitude": 34.5,
       "longitude": 123.1,
-      "type":0,
       "city":"上海市"
     },
     {
@@ -47,7 +46,6 @@
       "POI_name": "中医药大学",
       "latitude": 32.5,
       "longitude": 123.34,
-      "type":0,
       "city":"上海市"
     },
     {
@@ -55,7 +53,6 @@
       "POI_name": "张江计算机楼",
       "latitude": 31.5,
       "longitude": 121.1,
-      "type":0,
       "city":"上海市"
     }
   ]
@@ -101,6 +98,7 @@
   "token": "03ab32de7e56556b66b2fdb2df0f17da88d3774alshzy137@163.com1512827249" //小于等于128字节
 }
 ```
+
 
 ### 2.获取验证码
 
@@ -171,7 +169,12 @@
 }
 ```
 
-### 4.获取帐号信息
+
+### 4.获取帐号信息或更新个人信息
+
+#### 说明：
+若只发送了`userid`和`token`，则相当于向服务器获取帐号信息。 
+若还有其他参数，则服务器会更新这些信息，然后返回新的个人信息，可用于修改密码。
 
 #### url: [https://shiftlin.top/cgi-bin/Account](https://shiftlin.top/cgi-bin/Account)
 
@@ -183,6 +186,7 @@
 {
   "userid":"lshzy137@163.com",
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+  "nickname":"zwx"
 }
 ```
 
@@ -192,10 +196,10 @@
 {
   "status" : "OK",
   "userid":"lshzy137@163.com", //小于等于32字节
-  "password":"123456",
-  "nickname":"lsh", //小于等于32字节
+  "nickname":"zwx", //小于等于32字节
   "gender": 1, //0:保密(未知) 1:男 2:女
   "Tel": "15202345235" //可选 小于等于15字节
+  "tags": 3, //3=(000...0011) 一个64位整数，对应位表示是否选择了该标签，如3表示选择了0号和1号标签; 0=(0...0)表示没有选择标签。
 }
 ```
 
@@ -265,7 +269,7 @@
 
 ```json
 {
-  "user_id": "lshzy137@163.com",
+  "userid": "lshzy137@163.com",
   "POI_id": "123",
   "postid": 2, //前端目前已有的当前POI的最小的postid，即最早的post，0表示获取最新的post
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
@@ -281,27 +285,33 @@
   "posts": [
     {
       "postid":3,
+      "nickname":"lsh",
       "timestamp": 1513578455,
       "text":"23333",
       "imageUrl":null,
       "like": 2,
-      "dislike": 0 
+      "dislike": 0,
+      "attitude": 0 //当前用户的态度，0表示未知，1表示点赞，2表示反对
     },
     {
       "postid":2,
+      "nickname":"lsh",
       "timestamp": 1513578450,
       "text":"今天天气不好啊",
       "imageUrl":null,
       "like": 2, //点赞数
-      "dislike": 0 //反对数
+      "dislike": 0, //反对数
+      "attitude": 0 //当前用户的态度，0表示未知，1表示点赞，2表示反对
     },
     {
       "postid":1,
+      "nickname":"lsh",
       "timestamp": 1513578440,
       "text":"今天天气好啊",
       "imageUrl":null,
       "like": 1,
-      "dislike": 1
+      "dislike": 1,
+      "attitude": 0 //当前用户的态度，0表示未知，1表示点赞，2表示反对
     }
   ]
 }
@@ -309,7 +319,7 @@
 
 ### 7.留下足迹
 
-#### url: [https://shiftlin.top/cgi-bin/CheckIn](https://shiftlin.top/cgi-bin/CheckIn)
+#### url: [https://shiftlin.top/cgi-bin/Post](https://shiftlin.top/cgi-bin/Post)
 
 #### method: POST
 
@@ -322,7 +332,8 @@
   "latitude": 40.43535, //用户所在纬度
   "longitude": 123.454,  //用户所在经度
   "text": "Let's Go!",
-  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
+  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
+  "tags": 2524242 //一个整数,unsigned long long, binary表示
 }
 ```
 
@@ -330,7 +341,9 @@
 
 ```json
 {
-  "status":"OK"
+  "status":"OK",
+  "postid":123,
+  "timestamp":1513578600
 }
 
 {
@@ -338,6 +351,7 @@
   "message":"unknown"
 }
 ```
+
 
 ### 8.点赞/反对/举报
 
@@ -349,8 +363,22 @@
 
 ```json
 {
-  "POI_id": "123",
-  "feedback" : 0,  //0:点赞，1:反对，2:举报
+  "user_id": "lshzy137@163.com",
+  "feedback_num":3,
+  "feedbacks" :[
+      {
+        "postid": 12,
+        "attitude": 1 //1表示点赞，2表示反对，3表示举报
+      },
+      {
+        "postid": 123,
+        "attitude": 1 //1表示点赞，2表示反对，3表示举报
+      },
+      {
+        "postid": 152,
+        "attitude": 1 //1表示点赞，2表示反对，3表示举报
+      }
+  ]
   "token":"1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455"
 }
 ```
@@ -367,3 +395,61 @@
   "message":"unknown"
 }
 ```
+
+
+### 9. 推荐
+
+#### url: [https://shiftlin.top/cgi-bin/Recommend](https://shiftlin.top/cgi-bin/Recommend)
+
+#### method: POST
+
+#### 发送数据格式： 
+
+```json
+{
+  "userid": "lshzy137@163.com",
+  "latitude": 40.43535, //用户所在纬度
+  "longitude": 123.454,  //用户所在经度
+  "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
+  "tags": 2524242 //一个整数,unsigned long long, binary表示
+}
+```
+
+#### 接收数据格式:
+
+```json
+{
+  "status" : "OK",
+  "POI_num": 3,
+  "POIs":[
+    {
+      "POI_id": "1",
+      "POI_name": "Fudan University",
+      "category":"学校",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 3,
+      "city":"上海市"
+    },
+    {
+      "POI_id": "2",
+      "POI_name": "Gaoke Garden",
+      "category":"生活区",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 0,
+      "city":"上海市"
+    },
+    {
+      "POI_id": "4",
+      "POI_name": "张江计算机楼",
+      "category":"学校",
+      "latitude": 34.5,
+      "longitude": 123.1,
+      "popularity": 1,
+      "city":"上海市"
+    }
+  ]
+}
+```
+

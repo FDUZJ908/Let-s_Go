@@ -87,3 +87,32 @@ string removeChar(string str,char ch)
     free(s);
     return s;
 }
+
+unsigned short Hex2Byte(char c)
+{
+    if('0'<=c && c<='9') return c-'0';
+    if('a'<=c && c<='f') return c-'a'+10;
+    return c-'A'+10;
+}
+
+unsigned int Hex2Int(const char *s)
+{
+    unsigned int x=0;
+    for(int j=0;j<8;j++)
+        x=(x<<4)+Hex2Byte(s[j]);
+    return x;
+}
+
+char Byte2Hex(short x)
+{
+    if(0<=x && x<=9) return '0'+x;
+    return 'a'+x-10;
+}
+
+char* Int2Hex(unsigned int x, char *s)
+{
+    int i=7;
+    for(;i>=0 && x>0;i--,x>>=4) s[i]=Byte2Hex(x%16);
+    while(i>=0) s[i--]='0';
+    return s;
+}
