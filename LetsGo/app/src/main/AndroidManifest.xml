@@ -42,8 +42,10 @@
             android:process=":remote" />
 
         <activity android:name=".DataActivity" />
-        <activity android:name=".FootprintActivity"
-            android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".FootprintActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".CheckInActivity"></activity>
     </application>
 
 </manifest>

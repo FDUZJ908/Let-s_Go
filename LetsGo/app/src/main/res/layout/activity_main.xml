@@ -44,14 +44,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@drawable/f1"></ImageView>
+                        android:background="@drawable/user"></ImageView>
 
                     <TextView
                         android:id="@+id/course_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="日程"
+                        android:text="个人"
                         android:textColor="#7597B3"></TextView>
 
                 </LinearLayout>
@@ -74,14 +74,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@drawable/f2"></ImageView>
+                        android:background="@drawable/footprint"></ImageView>
 
                     <TextView
                         android:id="@+id/found_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="发现"
+                        android:text="足迹"
                         android:textColor="#7597B3"></TextView>
 
                 </LinearLayout>
@@ -104,14 +104,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@drawable/f3"></ImageView>
+                        android:background="@drawable/finding"></ImageView>
 
                     <TextView
                         android:id="@+id/setting_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="设置"
+                        android:text="探索"
                         android:textColor="#7597B3"></TextView>
 
                 </LinearLayout>

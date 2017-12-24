@@ -2,6 +2,7 @@ package layout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,11 +38,11 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import util.httpUtil;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.letsgo.MainActivity.myToken;
 import static com.example.letsgo.MainActivity.myUserid;
 import static util.httpUtil.sendHttpPost;
 import static util.httpUtil.sendHttpRequest;
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -65,6 +66,8 @@ public class Fragment1 extends Fragment {
     private Button buttonRegister;
     private EditText account;
     private EditText password;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
 
     private Gson gson = new Gson();
     private responseRegister responseRegister;
@@ -87,10 +90,12 @@ public class Fragment1 extends Fragment {
                                 .show();
                     }
                     else{
-                        myToken=responseRegister.getToken();
-                        myUserid=user.getUserid();
-                        Log.d("userid",myUserid);
-                        Log.d("token",myToken);
+                        editor=sp.edit();
+                        editor.putString("UserName",account.getText().toString());
+                        editor.putString("UserPsw",password.getText().toString());
+                        editor.putString("UserToken",responseRegister.getToken());
+                        editor.commit();
+                        ((MainActivity)getActivity()).SetLogIn(user.getUserid(),responseRegister.getToken());
                     }
                     break;
                 default:
@@ -140,16 +145,22 @@ public class Fragment1 extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initViews();
+    }
+
+    private void initViews(){
         buttonLogin = getView().findViewById(R.id.buttonLogin);
         buttonRegister = getView().findViewById(R.id.buttonRegister);
         account = getView().findViewById(R.id.account);
         password = getView().findViewById(R.id.password);
+        sp=getContext().getSharedPreferences("UserInfo",MODE_PRIVATE);
+        if(sp.getString("UserName",null)!=null && sp.getString("UserPsw",null)!=null && sp.getString("UserToken",null)!=null){
+            ((MainActivity)getActivity()).SetLogIn(sp.getString("UserName",null),sp.getString("UserToken",null));
+        }
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                user=new User();
-                user.setUserid(account.getText().toString());
-                user.setPassword(password.getText().toString());
+                user=new User(account.getText().toString(),password.getText().toString());
                 sendHttpPost("https://shiftlin.top/cgi-bin/Login",gson.toJson(user), new okhttp3.Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
@@ -174,7 +185,6 @@ public class Fragment1 extends Fragment {
             }
         });
     }
-
 
 
 

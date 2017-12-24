@@ -4,23 +4,38 @@
     android:layout_height="match_parent"
     tools:context="layout.Fragment2">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
     <LinearLayout
-        android:background="#FAECD8"
+        android:background="@color/colorWhite"
         android:gravity="center"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/foot_refresh"
+                android:gravity="center_vertical"
+                />
+            <Button
+                android:id="@+id/Refresh"
+                android:layout_width="20dp"
+                android:background="@drawable/getmore"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_height="20dp"/>
 
-        <TextView
-            android:id="@+id/FaXian"
-            android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="发现Fragment">
-
-        </TextView></LinearLayout>
+        </LinearLayout>
+        <com.baidu.mapapi.map.TextureMapView
+            android:id="@+id/MainMap"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"></com.baidu.mapapi.map.TextureMapView>
+    </LinearLayout>
 
 </FrameLayout>

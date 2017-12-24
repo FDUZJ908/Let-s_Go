@@ -1,48 +1,39 @@
 package com.example.letsgo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.baidu.location.BDAbstractLocationListener;
-import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.TextureMapView;
-import com.baidu.mapapi.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.LogRecord;
 
 import layout.Fragment1;
 import layout.Fragment2;
 import layout.Fragment3;
+import layout.Fragment4;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         Fragment1.OnFragmentInteractionListener,
         Fragment2.OnFragmentInteractionListener,
-        Fragment3.OnFragmentInteractionListener{
+        Fragment3.OnFragmentInteractionListener,
+        Fragment4.OnFragmentInteractionListener {
     public LocationClient mLocationClient;
     private TextView positionText;
     private TextureMapView mapView;
@@ -53,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Fragment1 fg1;
     private Fragment2 fg2;
     private Fragment3 fg3;
+    private Fragment4 fg4;
     //帧布局对象,就是用来存放Fragment的容器
     private FrameLayout flayout;
     //定义底部导航栏的三个布局 监听点击
@@ -69,14 +61,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //定义要用的颜色值
     private int whirt = 0xFFFFFFFF;
     private int gray = 0xFF7597B3;
-    private int blue =0xFF0AB2FB;
+    private int blue = 0xFF0AB2FB;
     //定义FragmentManager对象
     FragmentManager fManager;
 
-    public static String myToken="bb62cdae027d12f2ac8f2bf48bfa29e0c50784021143768516@qq.com1513784781";
-    public static String myUserid="1143768516@qq.com";
-
-
+    public static String myToken;
+    public static String myUserid;
+    public static String myNickname;
+    public static long myTags;
+    public static double myLat;
+    public static double myLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,17 +85,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setPrivileges();
         initFragment();
         //requestLocation();
-
-
     }
 
     public void initViews() {
-        /*
-        mapView = (TextureMapView) findViewById(R.id.bmapView);
-        baiduMap = mapView.getMap();
-        baiduMap.setMyLocationEnabled(true);
-        positionText = (TextView) findViewById(R.id.positon_text_view);
-        */
         fManager = getSupportFragmentManager();
         course_image = (ImageView) findViewById(R.id.course_image);
         found_image = (ImageView) findViewById(R.id.found_image);
@@ -117,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         settings_layout.setOnClickListener(this);
     }
 
-    protected void setPrivileges(){
+    protected void setPrivileges() {
         List<String> permissionList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -134,27 +120,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    protected void initFragment(){
-        FragmentTransaction transaction = fManager.beginTransaction();
-        fg2 = new Fragment2();
-        transaction.add(R.id.content, fg2);
-        transaction.commit();
+    protected void initFragment() {
+        if (myToken == null || myUserid == null) {
+            //登录或者注册
+            setChioceItem(0);
+        } else {
+            setChioceItem(1);
+        }
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.course_layout:
-                setChioceItem(0);
-                break;
-            case R.id.found_layout:
-                setChioceItem(1);
-                break;
-            case R.id.setting_layout:
-                setChioceItem(2);
-                break;
-            default:
-                break;
+        if (myUserid == null && myToken == null) {
+            if (view.getId() == R.id.course_layout)
+                return;
+            else
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("")
+                        .setMessage("请先登录或注册")
+                        .setPositiveButton("确定", null)
+                        .show();
+        } else {
+            switch (view.getId()) {
+                case R.id.course_layout:
+                    setChioceItem(0);
+                    break;
+                case R.id.found_layout:
+                    setChioceItem(1);
+                    break;
+                case R.id.setting_layout:
+                    setChioceItem(2);
+                    break;
+                default:
+                    break;
+            }
         }
 
     }
@@ -167,43 +166,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hideFragments(transaction);
         switch (index) {
             case 0:
-                course_image.setImageResource(R.drawable.f1);
+                course_image.setImageResource(R.drawable.user);
                 course_text.setTextColor(blue);
                 //course_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
+                if (myUserid == null && myToken == null) {
                     if (fg1 == null) {
-                        // 如果fg1为空，则创建一个并添加到界面上
                         fg1 = new Fragment1();
                         transaction.add(R.id.content, fg1);
+                    } else {
+                        transaction.show(fg1);
+                    }
                 } else {
-                    // 如果MessageFragment不为空，则直接将它显示出来
-                    transaction.show(fg1);
+                    if (fg4 == null) {
+                        fg4 = new Fragment4();
+                        transaction.add(R.id.content, fg4);
+                    } else {
+                        transaction.show(fg4);
+                    }
                 }
+                /*
+                if (fg1 == null) {
+                    transaction.show(fg4);
+                } else {
+                    transaction.show(fg1);
+                }*/
                 break;
 
             case 1:
-                found_image.setImageResource(R.drawable.f2);
+                found_image.setImageResource(R.drawable.footprint);
                 found_text.setTextColor(blue);
                 //found_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg2 == null) {
-                    // 如果fg1为空，则创建一个并添加到界面上
                     fg2 = new Fragment2();
                     transaction.add(R.id.content, fg2);
                 } else {
-                    // 如果MessageFragment不为空，则直接将它显示出来
                     transaction.show(fg2);
                 }
                 break;
 
             case 2:
-                settings_image.setImageResource(R.drawable.f3);
+                settings_image.setImageResource(R.drawable.finding);
                 settings_text.setTextColor(blue);
                 //settings_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg3 == null) {
-                    // 如果fg1为空，则创建一个并添加到界面上
                     fg3 = new Fragment3();
                     transaction.add(R.id.content, fg3);
                 } else {
-                    // 如果MessageFragment不为空，则直接将它显示出来
                     transaction.show(fg3);
                 }
                 break;
@@ -222,12 +230,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (fg3 != null) {
             transaction.hide(fg3);
         }
+        if (fg4 != null) {
+            transaction.hide(fg4);
+        }
     }
 
 
     //定义一个重置所有选项的方法
-    public void clearChioce()
-    {
+    public void clearChioce() {
         //course_image.setImageResource(R.drawable.ic_tabbar_course_normal);
         course_layout.setBackgroundColor(whirt);
         course_text.setTextColor(gray);
@@ -237,6 +247,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //settings_image.setImageResource(R.drawable.ic_tabbar_settings_normal);
         settings_layout.setBackgroundColor(whirt);
         settings_text.setTextColor(gray);
+    }
+
+    public void SetLogIn(String userid_, String usertoken_) {
+        myUserid = userid_;
+        myToken = usertoken_;
+        FragmentTransaction transaction = fManager.beginTransaction();
+        transaction.remove(fg1);
+        fg1 = null;
+        fg4 = new Fragment4();
+        transaction.add(R.id.content, fg4);
+        transaction.commit();
     }
 
     /*
@@ -277,8 +298,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (grantResults.length > 0) {
                     for (int result : grantResults) {
                         if (result != PackageManager.PERMISSION_GRANTED) {
-                            Toast.makeText(this, "必须同意所有权限才能使用本程序", Toast.LENGTH_SHORT).show();
-                            finish();
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("获取权限失败")
+                                    .setMessage("必须获得所有权限才能使用此应用")
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            finish();
+                                        }
+                                    })
+                                    .show();
                             return;
                         }
                     }
@@ -335,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     */
 
     @Override
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
 
     }
 

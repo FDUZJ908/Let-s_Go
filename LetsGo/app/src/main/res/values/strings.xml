@@ -3,4 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="foot_print">点击右方标签留下你的足迹☞</string>
+    <string name="foot_hint">请将你的足迹留下</string>
+    <string name="foot_refresh">点击右侧刷新按钮获取更多足迹\n点击地图坐标寻找他人留下的足迹</string>
 </resources>
