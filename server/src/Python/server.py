@@ -13,12 +13,6 @@ sys.setdefaultencoding('utf-8')
 DAY_SECONDS=24*60*60
 WEEK_SECONDS=7*DAY_SECONDS
 
-# cgiPath=os.environ["MiniProg"]+"/cgi-bin/"
-# resPath=os.environ["miniProgResrcPATH"]
-# filePath=os.environ["miniProgFilePATH"]
-# logPath=os.environ["miniProgLogPATH"]
-# fontPath=os.environ["fonts"]
-
 class PDBC:
     config={
             "user":"root",

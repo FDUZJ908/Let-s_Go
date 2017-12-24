@@ -3,6 +3,7 @@ DROP TABLE post;
 DROP TABLE POITags;
 DROP TABLE sysvar;
 DROP TABLE user;
+UPDATE POI set popularity=0;
 
 CREATE TABLE user (
   userid   CHAR(32) PRIMARY KEY,
@@ -13,7 +14,7 @@ CREATE TABLE user (
   tags     BIGINT UNSIGNED NOT NULL DEFAULT 0
 )
   CHARACTER SET = utf8mb4;
-
+/*
 CREATE TABLE POI (
   POI_id     CHAR(30) PRIMARY KEY,
   category   CHAR(64) NOT NULL,
@@ -27,7 +28,7 @@ CREATE TABLE POI (
   CHARACTER SET = utf8mb4;
 
 CREATE INDEX idx_lat_lng
-  ON POI (latitude, longitude);
+  ON POI (latitude, longitude);*/
 
 CREATE TABLE POITags (
   POI_id CHAR(30) PRIMARY KEY,
@@ -79,12 +80,3 @@ CREATE TABLE sysvar (
   value1 INT
 )
   CHARACTER SET = utf8mb4;
-
-/*ALTER TABLE POI
-  CHANGE type popularity INT NOT NULL DEFAULT 0;*/
-
-/*SELECT count(*) from POI;
-*/UPDATE POI
-SET popularity = popularity + 1
-WHERE POI_id = '000006be298cba665bf6be3a';
-
