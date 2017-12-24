@@ -1,6 +1,7 @@
 #include <stdcpp.h>
 #include <server.h>
 
+double delta=0.01;
 double myLat=31.1966573150;
 double myLng=121.6043728388;
 
@@ -95,8 +96,11 @@ int main()
             fscanf(fin," %d",&x);
             if(x==1)
             {
-                insert(categories[i], userid, tags);
-                insert(categories[i], userid, tags);
+                for(int i=0;i<n;i++)
+                {
+                    insert(categories[i], userid, tags);
+                    insert(categories[i], userid, tags);
+                }
             }
         }
     }

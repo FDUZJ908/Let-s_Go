@@ -46,11 +46,11 @@ struct POI{
         LL sum=0,total=0; uLL mask=1;
         for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=tags[j])
             if(_tags&mask) sum+=tags[j];
-        MD=1.0*sum/total;
+        MD=(1.0*sum/total)+1; //total>0
 
         CF=0;
         for(int k=0;k<categories.size();k++) CF+=cateFreq[categories[k]];
-        CF=log(1+CF)/log(2);
+        CF=log(1+CF)/log(2)+1;
     }
 };
 
@@ -107,15 +107,17 @@ vector<POI> setCand(const RecordList &POIs, const uLL tags, double latitude,doub
     }
     setTags(v);
 
+    n=v.size();
     int Pmax=0;
     for(int i=0;i<n;i++)
     {
         Pmax=max(Pmax,v[i].popularity);
         v[i].setMDCF(tags);
     }
-    double k=ALPHA*Pmax;
     for(int i=0;i<n;i++)
-        v[i].Pop=-k/(v[i].popularity+k)+2;
+        v[i].Pop=v[i].popularity/(Pmax+1);
+    for(int i=0;i<n;i++)
+        v[i].Pop=log(1+v[i].Pop)/log(2)+1;
     return v;
 }
 
@@ -147,7 +149,7 @@ RecordList recommendGenerally(vector<POI> &candPOIs, const uLL tags)
     for(int i=0;i<n;i++)
     {
         const POI &cand=candPOIs[i];
-        double scores=cand.MD*cand.Pop;
+        double scores=cand.MD*cand.CF*cand.Pop;
         res[i]=make_pair(i,scores);
     }
     sort(res,res+n,cmp);
@@ -224,7 +226,7 @@ int main()
     double lng=GETDouble(lng_it);
     uLL tags=GETULong(tags_it);
 
-    vector<POI> candPOIs=setCand(cdbc.queryPOINearby(lat,lng,DISTHIGH),lat,lng,tags); //sortbydistance
+    vector<POI> candPOIs=setCand(cdbc.queryPOINearby(lat,lng,DISTHIGH),tags,lat,lng); //sortbydistance
     vector<POI> userPOIs=setUser(cdbc.queryHistoryPOI(userid,timestamp));
     RecordList results;
     if(userPOIs.size()<REQUIRE_DATA_NUM)
