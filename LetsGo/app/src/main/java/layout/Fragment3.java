@@ -203,7 +203,7 @@ public class Fragment3 extends Fragment {
             RecommendInfo.setText(GetInfo());
             mBaiduMap.clear();
             LatLng point=new LatLng(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
-            BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.marker2);
+            BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.marker2_2);
             OverlayOptions option = new MarkerOptions()
                     .perspective(true)
                     .position(point)

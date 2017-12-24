@@ -52,11 +52,11 @@ int main()
         feedback.AddMember("userid",Str2Value(userid),Allocator);
         vJson.PushBack(feedback,Allocator);
     }
-    cdbc.insertRecordlist(vJson,"feedback",true);
+    string ret=cdbc.insertRecordlist(vJson,"feedback",true);
 
     cdbc.updatePostLike(vLike,"love",1);
     cdbc.updatePostLike(vDislike,"dislike",1);
-    cdbc.updatePostLike(vCancelLike,"like",-1);
+    cdbc.updatePostLike(vCancelLike,"love",-1);
     cdbc.updatePostLike(vCancelDisLike,"dislike",-1);
 
     return 0;

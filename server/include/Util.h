@@ -81,6 +81,7 @@ const double degPerKm=180.0/(PI*Radius);
 string getLocStr(double lat,double lng);
 
 string removeChar(string str,char ch);
+vector<string> splitString(const char* st,char ch);
 
 unsigned short Hex2Byte(char c);
 unsigned int Hex2Int(const char *s);

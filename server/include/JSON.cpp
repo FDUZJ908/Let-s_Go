@@ -18,6 +18,11 @@ void JSON::insert(const string &key,const int value)
     dict.AddMember(Str2Value(key),Value(value).Move(),alloc);
 }
 
+void JSON::insert(const string &key,const uint64_t value)
+{
+    dict.AddMember(Str2Value(key),Value(value).Move(),alloc);
+}
+
 void JSON::insert(const string &key,const double value)
 {
     dict.AddMember(Str2Value(key),Value(value).Move(),alloc);

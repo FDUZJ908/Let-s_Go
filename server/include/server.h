@@ -55,7 +55,7 @@ public:
     string saveAsFile(const string &filename)
     {
         string url=URL+"/Files/"+filename;
-        string filepath(getenv("LetsGoFilePATH"));
+        string filepath(getenv("LetsGoResrcPATH"));
         FILE* fout=fopen((filepath+filename).c_str(),"w");
         fwrite(buffer,length,1,fout);
         fclose(fout);
@@ -75,49 +75,6 @@ public:
         free(buffer);
     }
 };
-
-/*
-struct AccessToken
-{
-    string value;
-    int expireTime;
-    static const string name;
-    static const int defaultExpires;
-
-    AccessToken()
-    {
-        expireTime=0;
-    }
-
-    AccessToken(Record record)
-    {
-        if(!record.IsNull())
-        {
-            value=record["value"].GetString();
-            expireTime=record["attr1"].GetInt();
-        }else AccessToken();
-    }
-
-    void set(string _value, int _expireTime)
-    {
-        value=_value;
-        expireTime=_expireTime;
-    }
-
-    JSON toJSON()
-    {
-        JSON json;
-        json.insert("name",name);
-        json.insert("value",value);
-        json.insert("attr1",expireTime);
-        return json;
-    }
-};
-
-#define AccessToken_NAME "AccessToken"
-#define AccessToken_DEFAULT_EXPIRES 5400
-*/
-
 
 string getRequestData();
 void sendResponse(const string &response,const string &contentType=ContentType::json);

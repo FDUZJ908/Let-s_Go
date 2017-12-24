@@ -1,7 +1,7 @@
 #include <stdcpp.h>
 #include <server.h>
 
-const int POINumLimit=10000;
+const int POINumLimit=100;
 
 struct Data
 {
@@ -38,12 +38,13 @@ int main()
         Record &record=recordList[i];
         double lat_poi=record["latitude"].GetDouble();
         double lng_poi=record["longitude"].GetDouble();
-        v.push_back(Data(i,distance(lat,lng,lat_poi,lng_poi)));
+        double d=distance(lat,lng,lat_poi,lng_poi);
+        if(d+ZERO<DISTLOW) v.push_back(Data(i,d));
     }
     sort(v.begin(),v.end());
 
     DefRecordList(results);
-    n=min(n,POINumLimit);
+    n=min((int)v.size(),POINumLimit);
     for(int i=0;i<n;i++)
     {
         Record &record=recordList[v[i].x];

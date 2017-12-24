@@ -128,6 +128,7 @@ public:
     int size();
     void insert(const string &key,const string &value);
     void insert(const string &key,const int value);
+    void insert(const string &key,const uint64_t value);
     void insert(const string &key,const double value);
     void insert(const string &key,const bool value);
     void insert(const string &key,const Value &value);
