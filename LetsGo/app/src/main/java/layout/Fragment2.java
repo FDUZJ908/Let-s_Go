@@ -2,7 +2,6 @@ package layout;
 
 import android.content.Context;
 import android.content.Intent;
-import android.icu.text.LocaleDisplayNames;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,20 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.location.Poi;
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.LogoPosition;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -38,39 +31,16 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.PoiInfo;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.GeoCoder;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
-import com.baidu.mapapi.search.poi.PoiCitySearchOption;
-import com.baidu.mapapi.search.poi.PoiDetailResult;
-import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
-import com.baidu.mapapi.search.poi.PoiIndoorResult;
-import com.baidu.mapapi.search.poi.PoiNearbySearchOption;
-import com.baidu.mapapi.search.poi.PoiResult;
-import com.baidu.mapapi.search.poi.PoiSearch;
-import com.baidu.mapapi.search.poi.PoiSortType;
 import com.example.letsgo.FootprintActivity;
-import com.example.letsgo.MainActivity;
 import com.example.letsgo.R;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
-import java.util.logging.StreamHandler;
 
-import model.CheckIn;
 import model.MyPoiInfo;
-import model.SavePoi;
 import model.Search;
-import model.User;
-import model.responseRegister;
 import model.responseSearch;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -265,9 +235,8 @@ public class Fragment2 extends Fragment {
             } else if (isMoved(location)) {
                 Log.d("******", "移动超过200定位");
                 locateTo(location);
-            }
-            else
-                Log.d("******","移动不足200不定位");
+            } else
+                Log.d("******", "移动不足200不定位");
         }
     }
 
@@ -312,12 +281,18 @@ public class Fragment2 extends Fragment {
         j = j % d;
         mBaiduMap.clear();
         options.clear();
-        for (int i = j; i < PoiList.size(); i += d) {
+        for (int i = j, k = 0; i < PoiList.size(); i += d, k++) {
             //定义Maker坐标点
             LatLng point = new LatLng(PoiList.get(i).getLat(), PoiList.get(i).getLng());
             //构建Marker图标
+            int marker = R.drawable.marker1_0;
+            int popularity = PoiList.get(i).getPopularity();
+            if (popularity >= 40) marker = R.drawable.marker1_4;
+            else if (popularity >= 20) marker = R.drawable.marker1_3;
+            else if (popularity >= 10) marker = R.drawable.marker1_2;
+            else if (popularity >= 5) marker = R.drawable.marker1_1;
             BitmapDescriptor bitmap = BitmapDescriptorFactory
-                    .fromResource(R.drawable.marker1);
+                    .fromResource(marker);
 
             //构建MarkerOption，用于在地图上添加Marker
             Bundle mBundle = new Bundle();

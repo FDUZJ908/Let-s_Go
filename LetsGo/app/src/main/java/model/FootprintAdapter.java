@@ -14,10 +14,13 @@ import android.widget.Toast;
 import com.example.letsgo.R;
 
 import java.security.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by 11437 on 2017/12/20.
@@ -78,7 +81,9 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         viewHolder.fContent.setText(footprint.getContent());
         viewHolder.fLike.setText(footprint.getLike());
         viewHolder.fDislike.setText(footprint.getDislike());
-        viewHolder.fTime.setText(new SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.CHINA).format(footprint.getTimestamp()));
+        DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        viewHolder.fTime.setText(dateFormat.format(1000*(long)footprint.getTimestamp()));
         viewHolder.fNickname.setText(footprint.getNickname());
 
         //设置tag标记

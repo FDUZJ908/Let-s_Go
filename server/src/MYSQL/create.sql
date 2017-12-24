@@ -1,7 +1,7 @@
 DROP TABLE feedback;
 DROP TABLE post;
 DROP TABLE POITags;
-#DROP TABLE POI;*******
+DROP TABLE sysvar;
 DROP TABLE user;
 
 CREATE TABLE user (
@@ -47,7 +47,7 @@ CREATE TABLE post
   POI_id    CHAR(30)        NOT NULL,
   latitude  DOUBLE          NOT NULL,
   longitude DOUBLE          NOT NULL,
-  love    INT DEFAULT '0' NOT NULL,
+  love      INT DEFAULT '0' NOT NULL,
   dislike   INT DEFAULT '0' NOT NULL,
   text      TEXT            NULL,
   imageUrl  TEXT            NULL,
@@ -69,8 +69,8 @@ CREATE TABLE feedback (
   postid   INT      NOT NULL,
   attitude TINYINT  NOT NULL DEFAULT 0,
   FOREIGN KEY (userid) REFERENCES user (userid),
-  FOREIGN KEY (postid) REFERENCES post(postid),
-  PRIMARY KEY (userid,postid)
+  FOREIGN KEY (postid) REFERENCES post (postid),
+  PRIMARY KEY (userid, postid)
 )
   CHARACTER SET = utf8mb4;
 
@@ -84,6 +84,7 @@ CREATE TABLE sysvar (
   CHANGE type popularity INT NOT NULL DEFAULT 0;*/
 
 /*SELECT count(*) from POI;
-*/UPDATE POI SET popularity=popularity+1 WHERE POI_id='000006be298cba665bf6be3a';
+*/UPDATE POI
+SET popularity = popularity + 1
+WHERE POI_id = '000006be298cba665bf6be3a';
 
-SELECT POI_id, MAX(timestamp) AS time,FROM post WHERE userid=? AND timestamp>? GROUP BY POI_id ORDER BY time DESC LIMIT 50

@@ -102,7 +102,8 @@ vector<POI> setCand(const RecordList &POIs, const uLL tags, double latitude,doub
     {
         const Record &record=POIs[i];
         const double lat=record["latitude"].GetDouble(),lng=record["longitude"].GetDouble();
-        if(distance(lat,lng,latitude,longitude)>DISTLOW) v.push_back(POI(record));
+        double d=distance(lat,lng,latitude,longitude);
+        if(DISTLOW<d && d<DISTHIGH) v.push_back(POI(record));
     }
     setTags(v);
 
