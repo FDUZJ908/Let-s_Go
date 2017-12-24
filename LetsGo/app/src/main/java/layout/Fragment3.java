@@ -140,6 +140,7 @@ public class Fragment3 extends Fragment {
         mLocationClient.setLocOption(option);
         mLocationClient.start();
         mBaiduMap.setOnMapClickListener(MapClickListener);
+        mBaiduMap.setMyLocationEnabled(true);
         RecommendInfo.setText(GetInfo());
         locateTo(myLat,myLng);
     }
@@ -209,7 +210,13 @@ public class Fragment3 extends Fragment {
                     .icon(bitmap);
             mBaiduMap.addOverlay(option);
             //定位到marker
-            locateTo(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
+            //locateTo(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
+
+            LatLng ll = new LatLng(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
+            MapStatus newStatus = new MapStatus.Builder()
+                    .target(ll).zoom(16).build();
+            MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(newStatus);
+            mBaiduMap.animateMapStatus(mMapStatusUpdate, 250);//duration为动画的时间
         }
         else {
             GetRecommend();
@@ -220,9 +227,9 @@ public class Fragment3 extends Fragment {
     private String GetInfo(){
         String title="点击地图即可探索神秘地点↓"+"\n";
         if(MyPoiInfoList!=null && MyPoiInfoList.size()>0) {
-            String name = "【名称】:" + MyPoiInfoList.get(ListIndex).getName() + "\n";
-            String category = "【类别】:" + MyPoiInfoList.get(ListIndex).getCategory() + "\n";
-            String city = "【城市】:" + MyPoiInfoList.get(ListIndex).getCity() + "\n";
+            String name = "【" + MyPoiInfoList.get(ListIndex).getName() + "】\n";
+            String category = "(" + MyPoiInfoList.get(ListIndex).getCategory() + "----";
+            String city = "" + MyPoiInfoList.get(ListIndex).getCity() + ")";
             return  title+name + category + city;
         }
         else

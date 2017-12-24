@@ -10,6 +10,12 @@
     <color name="colorMain4">#747137</color>
     <color name="colorMain5">#C1B921</color>
     <color name="colorButton">#8EDAF8</color>
+    <color name="colorTitle">#193092</color>
+    <color name="colorBottom">#5D71C5</color>
+    <color name="blue1">#8EDAF8</color>
+    <color name="blue2">#5D71C5</color>
+    <color name="blue3">#193092</color>
+
 
     <color name="colorWhite">#FFFFFF</color>
 </resources>

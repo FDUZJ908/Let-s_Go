@@ -20,7 +20,7 @@
             android:layout_weight="2"
             android:typeface="sans"
             android:textStyle="bold"
-            android:gravity="center"
+            android:gravity="center_horizontal"
             android:textSize="20sp"/>
         <EditText
             android:id="@+id/PostContent"
@@ -35,8 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/colorButton"
-            android:text="留下足迹↑"/>
+            android:background="@drawable/btn_selector"
+            android:text="留下足迹↓"/>
     </LinearLayout>
 
 </RelativeLayout>

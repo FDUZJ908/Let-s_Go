@@ -2,6 +2,7 @@ package com.example.letsgo;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         initViews();
+        checkStatus();
         setPrivileges();
         initFragment();
         //requestLocation();
@@ -103,6 +106,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         settings_layout.setOnClickListener(this);
     }
 
+    protected void checkStatus(){
+        SharedPreferences sp=getSharedPreferences("UserInfo",MODE_PRIVATE);
+        myUserid=sp.getString("UserName",null);
+        myToken=sp.getString("UserToken",null);
+    }
+
     protected void setPrivileges() {
         List<String> permissionList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -121,10 +130,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void initFragment() {
-        if (myToken == null || myUserid == null) {
+        if (myToken == null && myUserid == null) {
             //登录或者注册
+            Log.d("***","未登录,set0");
             setChioceItem(0);
         } else {
+            //有登录缓存
+            Log.d("***","已登录,set1");
             setChioceItem(1);
         }
     }
@@ -144,12 +156,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (view.getId()) {
                 case R.id.course_layout:
                     setChioceItem(0);
+                    Log.d("***","点击0set0");
                     break;
                 case R.id.found_layout:
                     setChioceItem(1);
+                    Log.d("***","点击1set1");
                     break;
                 case R.id.setting_layout:
                     setChioceItem(2);
+                    Log.d("***","点击2set2");
                     break;
                 default:
                     break;
@@ -166,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hideFragments(transaction);
         switch (index) {
             case 0:
-                course_image.setImageResource(R.drawable.user);
+                course_image.setImageResource(R.drawable.user_0);
                 course_text.setTextColor(blue);
                 //course_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (myUserid == null && myToken == null) {
@@ -193,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case 1:
-                found_image.setImageResource(R.drawable.footprint);
+                found_image.setImageResource(R.drawable.footprint_0);
                 found_text.setTextColor(blue);
                 //found_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg2 == null) {
@@ -205,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case 2:
-                settings_image.setImageResource(R.drawable.finding);
+                settings_image.setImageResource(R.drawable.finding_0);
                 settings_text.setTextColor(blue);
                 //settings_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg3 == null) {

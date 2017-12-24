@@ -44,7 +44,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@drawable/user"></ImageView>
+                        android:background="@drawable/user_0"></ImageView>
 
                     <TextView
                         android:id="@+id/course_text"
@@ -74,7 +74,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@drawable/footprint"></ImageView>
+                        android:background="@drawable/footprint_0"></ImageView>
 
                     <TextView
                         android:id="@+id/found_text"
@@ -104,14 +104,14 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@drawable/finding"></ImageView>
+                        android:background="@drawable/finding_0"></ImageView>
 
                     <TextView
                         android:id="@+id/setting_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="探索"
+                        android:text="Go"
                         android:textColor="#7597B3"></TextView>
 
                 </LinearLayout>
