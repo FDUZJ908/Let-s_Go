@@ -1,15 +1,16 @@
 #include <stdcpp.h>
 #include <server.h>
 
-#define REC_NUM 30
+#define REC_NUM 20
 #define REQUIRE_DATA_NUM 10 //****
 
 #define ALPHA 0.5
 #define BETA 0.2
 
-int timestamp=0,CATE_NUM=0;
+int timestamp=0,CATE_NUM=0,RecLimit=0;
 map< string,vector<int> > cateTags;
 map< string,double > cateFreq;
+map< string,int > cateCount;
 
 struct POI{
     string id;
@@ -47,10 +48,11 @@ struct POI{
         for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=tags[j])
             if(_tags&mask) sum+=tags[j];
         MD=(1.0*sum/total)+1; //total>0
-
+        /*
         CF=0;
         for(int k=0;k<categories.size();k++) CF+=cateFreq[categories[k]];
         CF=log(1+CF)/log(2)+1;
+        */
     }
 };
 
@@ -133,7 +135,7 @@ double ScorebyHistory(const POI &cand, const POI &user, const uLL tags)
         norm2+=((LL)user.tags[i])*((LL)user.tags[i]);
     }
     double cosine=1.0*scalar/(sqrt(1.0*norm1)*sqrt(1.0*norm2));
-    double scores=cosine*user.MD*cand.CF*cand.Pop;
+    double scores=cosine*user.MD*cand.Pop;
     if(cand.id==user.id) scores*=BETA;
     return scores;
 }
@@ -143,17 +145,41 @@ bool cmp(const pair<int,double> &a,const pair<int,double> &b)
     return a.second>b.second;
 }
 
+RecordList getResults(vector<POI> &candPOIs, vector< pair<int,double> > &res)
+{
+    map< string,int > count; count.clear();
+    sort(res.begin(),res.end(),cmp);
+    int n=res.size(),tot=0;
+    DefRecordList(recordList);
+    for(int i=0;i<n;i++)
+    {
+        POI &cand=candPOIs[res[i].first];
+        int m=cand.categories.size(); bool flag=false;
+        for(int j=0;j<m;j++)
+            if(count[cand.categories[j]]<cateCount[cand.categories[j]]) {flag=true; break;}
+        if(flag)
+        {
+            cand.info.AddMember("scores",res[i].second,Allocator);
+            recordList.PushBack(cand.info,Allocator);
+            for(int j=0;j<m;j++) count[cand.categories[j]]++;
+            tot++;
+        }
+        if(tot==RecLimit) break;
+    }
+    return recordList;
+}
+
 RecordList recommendGenerally(vector<POI> &candPOIs, const uLL tags)
 {
     int n=candPOIs.size();
-    pair<int,double> res[n];
+    vector< pair<int,double> > res;
     for(int i=0;i<n;i++)
     {
         const POI &cand=candPOIs[i];
-        double scores=cand.MD*cand.CF*cand.Pop;
-        res[i]=make_pair(i,scores);
+        double scores=cand.MD*cand.Pop;
+        res.push_back(make_pair(i,scores));
     }
-    sort(res,res+n,cmp);
+/*    sort(res.begin(),res.end(),cmp);
     int tot=min(n,REC_NUM);
     DefRecordList(recordList);
     for(int i=0;i<tot;i++)
@@ -161,53 +187,47 @@ RecordList recommendGenerally(vector<POI> &candPOIs, const uLL tags)
         candPOIs[res[i].first].info.AddMember("scores",res[i].second,Allocator);
         recordList.PushBack(candPOIs[res[i].first].info,Allocator);
         //cout<<res[i].second<<endl;
-    }
-    return recordList;
+    }*/
+    return getResults(candPOIs, res);
 }
 
 RecordList recommendByHistory(vector<POI> &candPOIs, vector<POI> &userPOIs, const uLL tags)
 {
     int n=candPOIs.size(),m=userPOIs.size();
-    pair<int,double> res[n];
+    vector< pair<int,double> > res;
     for(int i=0;i<n;i++)
     {
         double Smax=0;
         for(int j=0;j<m;j++)
             Smax=max(Smax,ScorebyHistory(candPOIs[i],userPOIs[j],tags));
-        res[i]=make_pair(i,Smax);
+        res.push_back(make_pair(i,Smax));
     }
-    sort(res,res+n,cmp);
-    int tot=min(n,REC_NUM);
-    DefRecordList(recordList);
-    for(int i=0;i<tot;i++)
-    {
-        candPOIs[res[i].first].info.AddMember("scores",res[i].second,Allocator);
-        recordList.PushBack(candPOIs[res[i].first].info,Allocator);
-        //cout<<res[i].second<<endl;
-    }
-    return recordList;
+    return getResults(candPOIs, res);
 }
 
 void readCategoryTags()
 {
     string resrcPath(getenv("LetsGoResrcPATH"));
     FILE *fin=fopen((resrcPath+"category.txt").c_str(),"r");
-    int x; double y;
-    char category[64];
+    int x,z; double y;
+    char category[64]; string cate;
     vector<int> v;
     cateTags.clear();
     for(CATE_NUM=0;fscanf(fin," %s",category)!=EOF;CATE_NUM++)
     {
-        v.clear();
+        v.clear(); cate=category;
         for(int i=0;i<TAGS_NUM;i++)
         {
             fscanf(fin," %d",&x);
             v.push_back(x);
         }
-        cateTags[string(category)]=v;
+        cateTags[cate]=v;
 
         fscanf(fin," %lf",&y);
-        cateFreq[string(category)]=y;
+        cateFreq[cate]=y;
+        z=int(y*REC_NUM)+1;
+        cateCount[cate]=z;
+        RecLimit+=z;
     }
     fclose(fin);
 }
