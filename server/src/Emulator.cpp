@@ -2,8 +2,8 @@
 #include <server.h>
 
 double delta=0.01;
-double myLat=31.1966573150;
-double myLng=121.6043728388;
+double myLat=31.196835;
+double myLng=121.60084;
 
 string categories[10]={"餐饮美食", "教育学校", "文化艺术", "旅游景点", "购物商场",
                        "休闲娱乐", "政府机关", "医疗卫生", "住宅小区", "生活服务"};
@@ -68,6 +68,7 @@ void insert(const string &category, const string &userid, uLL tags)
     json.insert("latitude",myLat);
     json.insert("longitude",myLng);
     json.insert("timestamp",timestamp++);
+    json.insert("text","Post by "+userid+".");
     cdbc.insertJSON(json,"post");
 }
 
@@ -96,11 +97,8 @@ int main()
             fscanf(fin," %d",&x);
             if(x==1)
             {
-                for(int i=0;i<n;i++)
-                {
                     insert(categories[i], userid, tags);
                     insert(categories[i], userid, tags);
-                }
             }
         }
     }

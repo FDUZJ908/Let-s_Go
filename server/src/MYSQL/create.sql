@@ -80,3 +80,4 @@ CREATE TABLE sysvar (
   value1 INT
 )
   CHARACTER SET = utf8mb4;
+
