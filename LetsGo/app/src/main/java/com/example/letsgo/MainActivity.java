@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hideFragments(transaction);
         switch (index) {
             case 0:
-                course_image.setImageResource(R.drawable.user);
+                course_image.setImageResource(R.drawable.user_0);
                 course_text.setTextColor(blue);
                 //course_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (myUserid == null && myToken == null) {
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case 1:
-                found_image.setImageResource(R.drawable.footprint);
+                found_image.setImageResource(R.drawable.footprint_0);
                 found_text.setTextColor(blue);
                 //found_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg2 == null) {
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case 2:
-                settings_image.setImageResource(R.drawable.finding);
+                settings_image.setImageResource(R.drawable.finding_0);
                 settings_text.setTextColor(blue);
                 //settings_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg3 == null) {
