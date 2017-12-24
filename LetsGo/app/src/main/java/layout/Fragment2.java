@@ -287,10 +287,10 @@ public class Fragment2 extends Fragment {
             //构建Marker图标
             int marker = R.drawable.marker1_0;
             int popularity = PoiList.get(i).getPopularity();
-            if (popularity >= 40) marker = R.drawable.marker1_4;
-            else if (popularity >= 20) marker = R.drawable.marker1_3;
-            else if (popularity >= 10) marker = R.drawable.marker1_2;
-            else if (popularity >= 5) marker = R.drawable.marker1_1;
+            if (popularity >= 30) marker = R.drawable.marker1_4;
+            else if (popularity >= 15) marker = R.drawable.marker1_3;
+            else if (popularity >= 5) marker = R.drawable.marker1_2;
+            else if (popularity >0) marker = R.drawable.marker1_1;
             BitmapDescriptor bitmap = BitmapDescriptorFactory
                     .fromResource(marker);
 

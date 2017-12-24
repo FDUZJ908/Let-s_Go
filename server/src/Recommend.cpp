@@ -1,7 +1,7 @@
 #include <stdcpp.h>
 #include <server.h>
 
-#define REC_NUM 20
+#define REC_NUM 30
 #define REQUIRE_DATA_NUM 10 //****
 
 #define ALPHA 0.5
@@ -71,7 +71,7 @@ void setTags(vector<POI> &v)
     for(;i<n;i++) v[i].setTags();
 }
 
-vector<POI> setUser(const RecordList &recordList)
+vector<POI> setUser(const RecordList &recordList,const uLL tags)
 {
     vector<string> ids; ids.clear();
     int n=recordList.Size();
@@ -84,6 +84,7 @@ vector<POI> setUser(const RecordList &recordList)
     for(int i=0;i<n;i++) v.push_back(POI(POIs[i])); 
     setTags(v);
 
+    for(int i=0;i<n;i++) v[i].setMDCF(tags);
 /*    for(int i=0;i<n;i++)
     {
         int delta=timestamp-recordList[i]["time"].GetInt();
@@ -132,7 +133,7 @@ double ScorebyHistory(const POI &cand, const POI &user, const uLL tags)
         norm2+=((LL)user.tags[i])*((LL)user.tags[i]);
     }
     double cosine=1.0*scalar/(sqrt(1.0*norm1)*sqrt(1.0*norm2));
-    double scores=cosine*cand.MD*cand.CF*cand.Pop;
+    double scores=cosine*user.MD*cand.CF*cand.Pop;
     if(cand.id==user.id) scores*=BETA;
     return scores;
 }
@@ -157,6 +158,7 @@ RecordList recommendGenerally(vector<POI> &candPOIs, const uLL tags)
     DefRecordList(recordList);
     for(int i=0;i<tot;i++)
     {
+        candPOIs[res[i].first].info.AddMember("scores",res[i].second,Allocator);
         recordList.PushBack(candPOIs[res[i].first].info,Allocator);
         //cout<<res[i].second<<endl;
     }
@@ -179,6 +181,7 @@ RecordList recommendByHistory(vector<POI> &candPOIs, vector<POI> &userPOIs, cons
     DefRecordList(recordList);
     for(int i=0;i<tot;i++)
     {
+        candPOIs[res[i].first].info.AddMember("scores",res[i].second,Allocator);
         recordList.PushBack(candPOIs[res[i].first].info,Allocator);
         //cout<<res[i].second<<endl;
     }
@@ -227,7 +230,7 @@ int main()
     uLL tags=GETULong(tags_it);
 
     vector<POI> candPOIs=setCand(cdbc.queryPOINearby(lat,lng,DISTHIGH),tags,lat,lng); //sortbydistance
-    vector<POI> userPOIs=setUser(cdbc.queryHistoryPOI(userid,timestamp));
+    vector<POI> userPOIs=setUser(cdbc.queryHistoryPOI(userid,timestamp),tags);
     RecordList results;
     if(userPOIs.size()<REQUIRE_DATA_NUM)
     {
