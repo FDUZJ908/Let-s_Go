@@ -1,14 +1,15 @@
 #include <stdcpp.h>
 #include <server.h>
 
-#define REC_NUM 10
+#define REC_NUM 20
 #define REQUIRE_DATA_NUM 10 //****
 
-#define ALPHA 0.8
-#define BETA 0.6
+#define ALPHA 0.5
+#define BETA 0.2
 
-int timestamp=0,CATE_NUM=0,Pmax=0;
+int timestamp=0,CATE_NUM=0;
 map< string,vector<int> > cateTags;
+map< string,double > cateFreq;
 
 struct POI{
     string id;
@@ -16,31 +17,51 @@ struct POI{
     double ts;
     Record info;
     int tags[TAGS_MAXNUM]; //will be used to multiply, so remember to cast it to long long
+    vector<string> categories;
+    double MD;
+    double CF;
+    double Pop;
 
     POI(const Record &record)
     {
         info=COPYValue(record);
         id=info["POI_id"].GetString();
         popularity=info["popularity"].GetInt();
+        for(int i=0;i<TAGS_MAXNUM;i++) tags[i]=0;
+        categories=splitString(info["category"].GetString(),',');
     }
 
     void setTags()
     {
-        vector<int> &v=cateTags[string(info["category"].GetString())];
-        for(int i=0;i<v.size();i++) tags[i]=v[i];
-        for(int i=v.size();i<TAGS_MAXNUM;i++) tags[i]=0;
+        for(int k=0;k<categories.size();k++)
+        {
+            string &category=categories[k];
+            vector<int> &v=cateTags[category];
+            for(int i=0;i<v.size();i++) tags[i]+=v[i];
+        }
+    }
+
+    void setMDCF(const uLL _tags)
+    {
+        LL sum=0,total=0; uLL mask=1;
+        for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=tags[j])
+            if(_tags&mask) sum+=tags[j];
+        MD=1.0*sum/total;
+
+        CF=0;
+        for(int k=0;k<categories.size();k++) CF+=cateFreq[categories[k]];
+        CF=log(1+CF)/log(2);
     }
 };
 
-vector<POI> getPoiInfo(const vector<string> &ids)
+void setTags(vector<POI> &v)
 {
-    RecordList recordList=cdbc.queryByIDs(ids,"POI","POI_id"); //the results should be sorted yet
+    int n=v.size();
+    vector<string> ids; ids.clear();
+    for(int i=0;i<n;i++) ids.push_back(v[i].id);
 
-    vector<POI> v; v.clear();
-    int n=recordList.Size();
-    for(int i=0;i<n;i++) v.push_back(POI(recordList[i])); 
-    
-    recordList=cdbc.queryByIDs(ids,"POITags","POI_id"); //the results should be sorted yet
+    RecordList recordList=cdbc.queryByIDs(ids,"POITags","POI_id"); //the results should be sorted yet
+
     int m=recordList.Size(),i=0;
     for(int j=0;i<n && j<m;i++)
     {
@@ -48,7 +69,6 @@ vector<POI> getPoiInfo(const vector<string> &ids)
         else tagsRecordToArray(v[i].tags,recordList[j]),j++;
     }
     for(;i<n;i++) v[i].setTags();
-    return v;
 }
 
 vector<POI> setUser(const RecordList &recordList)
@@ -57,7 +77,12 @@ vector<POI> setUser(const RecordList &recordList)
     int n=recordList.Size();
     for(int i=0;i<n;i++)
         ids.push_back(recordList[i]["POI_id"].GetString());
-    vector<POI> v=getPoiInfo(ids);
+    RecordList POIs=cdbc.queryByIDs(ids,"POI","POI_id"); //the results should be sorted yet
+
+    vector<POI> v; v.clear();
+    n=POIs.Size();
+    for(int i=0;i<n;i++) v.push_back(POI(POIs[i])); 
+    setTags(v);
 
 /*    for(int i=0;i<n;i++)
     {
@@ -69,30 +94,34 @@ vector<POI> setUser(const RecordList &recordList)
     return v;
 }
 
-vector<POI> setCand(const RecordList &recordList)
+vector<POI> setCand(const RecordList &POIs, const uLL tags, double latitude,double longitude)
 {
-    vector<string> ids; ids.clear();
-    int n=recordList.Size();
+    vector<POI> v; v.clear();
+    int n=POIs.Size();
     for(int i=0;i<n;i++)
-        ids.push_back(recordList[i]["POI_id"].GetString());
-    vector<POI> v=getPoiInfo(ids);
+    {
+        const Record &record=POIs[i];
+        const double lat=record["latitude"].GetDouble(),lng=record["longitude"].GetDouble();
+        if(distance(lat,lng,latitude,longitude)>DISTLOW) v.push_back(POI(record));
+    }
+    setTags(v);
 
-    Pmax=0;
-    for(int i=0;i<n;i++) Pmax=max(Pmax,v[i].popularity);
+    int Pmax=0;
+    for(int i=0;i<n;i++)
+    {
+        Pmax=max(Pmax,v[i].popularity);
+        v[i].setMDCF(tags);
+    }
+    double k=ALPHA*Pmax;
+    for(int i=0;i<n;i++)
+        v[i].Pop=-k/(v[i].popularity+k)+2;
     return v;
-}
-
-double Degree(const POI &cand,const uLL tags)
-{
-    LL sum=0,total=0; uLL mask=1;
-    for(int j=0;j<TAGS_NUM;j++,mask<<=1,total+=cand.tags[j])
-        if(tags&mask) sum+=cand.tags[j];
-    return 1.0*sum/total;
 }
 
 double ScorebyHistory(const POI &cand, const POI &user, const uLL tags)
 {
     LL scalar=0,norm1=0,norm2=0;
+   
     for(int i=0;i<TAGS_NUM;i++)
     {
         scalar+=((LL)cand.tags[i])*((LL)user.tags[i]);
@@ -100,7 +129,7 @@ double ScorebyHistory(const POI &cand, const POI &user, const uLL tags)
         norm2+=((LL)user.tags[i])*((LL)user.tags[i]);
     }
     double cosine=1.0*scalar/(sqrt(1.0*norm1)*sqrt(1.0*norm2));
-    double scores=ALPHA*cosine*Degree(cand,tags)+(1-ALPHA)*2*cand.popularity/(Pmax+1);
+    double scores=cosine*cand.MD*cand.CF*cand.Pop;
     if(cand.id==user.id) scores*=BETA;
     return scores;
 }
@@ -117,14 +146,17 @@ RecordList recommendGenerally(vector<POI> &candPOIs, const uLL tags)
     for(int i=0;i<n;i++)
     {
         const POI &cand=candPOIs[i];
-        double scores=Degree(cand,tags)+2*cand.popularity/(Pmax+1);
+        double scores=cand.MD*cand.Pop;
         res[i]=make_pair(i,scores);
     }
     sort(res,res+n,cmp);
     int tot=min(n,REC_NUM);
     DefRecordList(recordList);
     for(int i=0;i<tot;i++)
+    {
         recordList.PushBack(candPOIs[res[i].first].info,Allocator);
+        //cout<<res[i].second<<endl;
+    }
     return recordList;
 }
 
@@ -143,31 +175,33 @@ RecordList recommendByHistory(vector<POI> &candPOIs, vector<POI> &userPOIs, cons
     int tot=min(n,REC_NUM);
     DefRecordList(recordList);
     for(int i=0;i<tot;i++)
+    {
         recordList.PushBack(candPOIs[res[i].first].info,Allocator);
+        //cout<<res[i].second<<endl;
+    }
     return recordList;
 }
-
-#define BUFSIZE 1024
 
 void readCategoryTags()
 {
     string resrcPath(getenv("LetsGoResrcPATH"));
-    FILE *fin=fopen((resrcPath+"CategoryTags.txt").c_str(),"r");
-    int x;
-    char buf[BUFSIZE],category[64];
+    FILE *fin=fopen((resrcPath+"category.txt").c_str(),"r");
+    int x; double y;
+    char category[64];
     vector<int> v;
-    CATE_NUM=0; cateTags.clear();
-    while(fgets(buf,BUFSIZE,fin)!=NULL)
+    cateTags.clear();
+    for(CATE_NUM=0;fscanf(fin," %s",category)!=EOF;CATE_NUM++)
     {
         v.clear();
-        sscanf(buf," %s",category);
         for(int i=0;i<TAGS_NUM;i++)
         {
-            sscanf(buf," %d",&x);
+            fscanf(fin," %d",&x);
             v.push_back(x);
         }
         cateTags[string(category)]=v;
-        CATE_NUM++;
+
+        fscanf(fin," %lf",&y);
+        cateFreq[string(category)]=y;
     }
     fclose(fin);
 }
@@ -189,7 +223,7 @@ int main()
     double lng=GETDouble(lng_it);
     uLL tags=GETULong(tags_it);
 
-    vector<POI> candPOIs=setCand(cdbc.queryPOINearby(lat,lng,DISTHIGH));
+    vector<POI> candPOIs=setCand(cdbc.queryPOINearby(lat,lng,DISTHIGH),lat,lng,tags); //sortbydistance
     vector<POI> userPOIs=setUser(cdbc.queryHistoryPOI(userid,timestamp));
     RecordList results;
     if(userPOIs.size()<REQUIRE_DATA_NUM)

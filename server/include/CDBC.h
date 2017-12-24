@@ -49,7 +49,7 @@ public:
                            const Value &argv=Value(kArrayType),const string &options=""); //argv must be kArrayType
     int getLastId();
     Record queryByID(const string &id,const string &table,const string &attr);
-    Record queryByIDs(const vector<string> &v,const string &table,const string &attr);
+    RecordList queryByIDs(const vector<string> &v,const string &table,const string &attr);
     Record querySystemVariable(const string &name);
     bool authenticate(const string &userid,const string &password);
     RecordList queryPostHistoryAtPOI(const string &id, int postid=0);
@@ -58,7 +58,7 @@ public:
     RecordList queryPostByTime(int timestamp);
     string updatePOIPopularity(const string &POI_id,int popularity);
     string updatePostLike(const vector<int> &ids,const string &attr,int x);
-    Record queryAttitude(const string &userid, const vector<int> &postids);
+    RecordList queryAttitude(const string &userid, const vector<int> &postids);
 
     ~CDBC()
     {

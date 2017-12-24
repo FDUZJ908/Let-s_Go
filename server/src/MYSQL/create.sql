@@ -85,3 +85,5 @@ CREATE TABLE sysvar (
 
 /*SELECT count(*) from POI;
 */UPDATE POI SET popularity=popularity+1 WHERE POI_id='000006be298cba665bf6be3a';
+
+SELECT POI_id, MAX(timestamp) AS time,FROM post WHERE userid=? AND timestamp>? GROUP BY POI_id ORDER BY time DESC LIMIT 50

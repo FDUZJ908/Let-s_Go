@@ -182,6 +182,8 @@ RecordList CDBC::selectQuery(const string &attrs,const string &tables,const stri
                              const Value &argv,const string &options)
 {
     string sql="SELECT "+attrs+" FROM "+tables+" WHERE "+conditions+" "+options;
+    //cout<<sql<<endl;
+
     PreparedStatement *query=conn->prepareStatement(sql);
     int argc=argv.Size();
     for(int i=0;i<argc;i++)
@@ -218,9 +220,11 @@ Record CDBC::queryByID(const string &id,const string &table,const string &attr)
     return FirstOf(recordList);
 }
 
-Record CDBC::queryByIDs(const vector<string> &v,const string &table,const string &attr)
+RecordList CDBC::queryByIDs(const vector<string> &v,const string &table,const string &attr)
 {
     int n=v.size();
+    if(n==0) return RecordList(kArrayType);
+
     string conditions=attr+" IN "+getRepeatQMark(1,n);
 
     Value argv(kArrayType);
@@ -271,12 +275,12 @@ RecordList CDBC::queryPOINearby(const double &lat, const double &lng, const doub
 
 RecordList CDBC::queryHistoryPOI(const string &userid,const int &timestamp)
 {
-    string attrs="POI_id, MAX(timestamp) AS time,";
+    string attrs="POI_id, MAX(timestamp) AS time";
     string conditions="userid=? AND timestamp>?";
     Value argv(kArrayType);
     argv.PushBack(Str2Value(userid),Allocator);
     argv.PushBack(Int2Value(timestamp-YEAR_SECONDS),Allocator);
-    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 10");
+    return selectQuery(attrs,"post",conditions,argv,"GROUP BY POI_id ORDER BY time DESC LIMIT 50");
 }
 
 RecordList CDBC::queryPostByTime(int timestamp)
@@ -304,7 +308,9 @@ string CDBC::updatePOIPopularity(const string &POI_id,int popularity)
 string CDBC::updatePostLike(const vector<int> &ids,const string &attr,int x)
 {
     int n=ids.size();
-    string conditions="postid in"+getRepeatQMark(1,n);
+    if(n==0) return OK;
+
+    string conditions="postid IN"+getRepeatQMark(1,n);
     string sql="UPDATE post SET "+attr+"="+attr+"+("+TOString(x)+") WHERE "+conditions;
 
     try
@@ -320,9 +326,11 @@ string CDBC::updatePostLike(const vector<int> &ids,const string &attr,int x)
     return OK;
 }
 
-Record CDBC::queryAttitude(const string &userid, const vector<int> &postids)
+RecordList CDBC::queryAttitude(const string &userid, const vector<int> &postids)
 {
     int n=postids.size();
+    if(n==0) return RecordList(kArrayType);
+
     string conditions="userid=? AND postid IN "+getRepeatQMark(1,n);
 
     Value argv(kArrayType);

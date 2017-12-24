@@ -88,6 +88,20 @@ string removeChar(string str,char ch)
     return s;
 }
 
+vector<string> splitString(const char* st,char ch)
+{
+    int len=strlen(st);
+    char buf[len+10];
+    vector<string> v; v.clear();
+    for(int i=0,j=0;i<len;i=j+1)
+    {
+        j=i;
+        while(j<len && st[j]!=ch) j++;
+        v.push_back(string(st+i,j-i));
+    }
+    return v;
+}
+
 unsigned short Hex2Byte(char c)
 {
     if('0'<=c && c<='9') return c-'0';

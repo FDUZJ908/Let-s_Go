@@ -30,6 +30,7 @@ int getLastUpdateTime()
 int main()
 {
     logFile.set("UpdatePOI.log");
+    logFile.print("run");
 
     RecordList recordList=cdbc.queryPostByTime(getLastUpdateTime());
     map<string,Info> count; count.clear();
