@@ -45,7 +45,8 @@
         <activity
             android:name=".FootprintActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".CheckInActivity"></activity>
+        <activity android:name=".CheckInActivity" />
+        <activity android:name=".RawPictureActivity"></activity>
     </application>
 
 </manifest>

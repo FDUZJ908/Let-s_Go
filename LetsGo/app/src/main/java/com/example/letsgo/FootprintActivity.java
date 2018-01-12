@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.baidu.location.Poi;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,6 +72,20 @@ public class FootprintActivity extends AppCompatActivity {
         pid = intent.getStringExtra("POI_id");
         mLat = intent.getDoubleExtra("mLat", 0.0);
         mLng = intent.getDoubleExtra("mLng", 0.0);
+        //创建默认的ImageLoader参数
+        //ImageLoaderConfiguration configuration=ImageLoaderConfiguration.createDefault(this);
+
+        //创建可以打印log的ImageLoaderConfiguration
+        ImageLoaderConfiguration configuration=new ImageLoaderConfiguration.Builder(this)
+                .writeDebugLogs()
+                .memoryCache(new LruMemoryCache(2*1024*1024))//可以通过自己的内存缓存实现
+                .memoryCacheSize(2*1024*1024)//内存缓存的最大值
+                .memoryCacheSizePercentage(13)
+                .build();
+
+        //初始化ImageLoader
+        ImageLoader.getInstance().init(configuration);
+
         initViews();
         run();
     }
@@ -94,8 +111,9 @@ public class FootprintActivity extends AppCompatActivity {
                     Log.d("**", "enterResult");
                     Log.d("**", data.getStringExtra("data_return"));
                     Footprint footprint = gson.fromJson(data.getStringExtra("data_return"), Footprint.class);
-                    footprintList.add(0, footprint);
-                    adapter.notifyDataSetChanged();
+                    //footprintList.add(0, footprint);
+                    //adapter.notifyDataSetChanged();
+                    adapter.insert(footprint,0);
                 } else if (resultCode == RESULT_CANCELED) {
                     Log.d("**", "留下足迹错误");
                 }
@@ -159,7 +177,8 @@ public class FootprintActivity extends AppCompatActivity {
                     mPost.get(i).getTimestamp(),
                     mPost.get(i).getPostid(),
                     mPost.get(i).getAttitude(),
-                    mPost.get(i).getNickname());
+                    mPost.get(i).getNickname(),
+                    mPost.get(i).getImageUrl());
             footprintList.add(fi);
         }
     }

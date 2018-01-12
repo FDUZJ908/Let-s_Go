@@ -1,18 +1,36 @@
 package model;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.letsgo.FootprintActivity;
 import com.example.letsgo.R;
+import com.example.letsgo.RawPictureActivity;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,6 +39,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutionException;
+
+import static android.support.v4.content.ContextCompat.startActivity;
 
 /**
  * Created by 11437 on 2017/12/20.
@@ -30,6 +51,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
     private List<Footprint> FootprintList = new ArrayList<>();
     private List<Attitude> attitudeList = new ArrayList<>();
     private Context context;
+    private LruCache<String, BitmapDrawable> mImageCache;
 
     public List<Attitude> getAttitudeList() {
         return this.attitudeList;
@@ -39,6 +61,15 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         super(context, textViewResourceId, objects);
         resourceId = textViewResourceId;
         FootprintList = objects;
+
+        int maxCache = (int) Runtime.getRuntime().maxMemory();
+        int cacheSize = maxCache / 8;
+        mImageCache = new LruCache<String, BitmapDrawable>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, BitmapDrawable value) {
+                return value.getBitmap().getByteCount();
+            }
+        };
     }
 
     @Override
@@ -47,7 +78,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
             context = parent.getContext();
         }
         final Footprint footprint = getItem(position);
-        View view;
+        final View view;
         final ViewHolder viewHolder;
         if (convertView == null) {
             view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
@@ -57,8 +88,10 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
             viewHolder.fLike = (Button) view.findViewById(R.id.fLike);
             viewHolder.fDislike = (Button) view.findViewById(R.id.fDislike);
             viewHolder.fTime = (TextView) view.findViewById(R.id.fTime);
+            viewHolder.fImage=(ImageView) view.findViewById(R.id.fImage);
             viewHolder.fPostid = footprint.getPostid();
             viewHolder.fAttitude = footprint.getAttitude();
+            viewHolder.fImgUrl=footprint.getImageUrl();
             if (viewHolder.fAttitude == 0) {
                 viewHolder.flag1 = 0;
                 viewHolder.flag2 = 0;
@@ -85,6 +118,46 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         viewHolder.fTime.setText(dateFormat.format(1000*(long)footprint.getTimestamp()));
         viewHolder.fNickname.setText(footprint.getNickname());
+        DisplayImageOptions options=new DisplayImageOptions.Builder()
+                //.showImageOnLoading(R.drawable.like0)
+                //.showImageForEmptyUri(R.drawable.i_error)
+                .cacheInMemory(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .displayer(new RoundedBitmapDisplayer(20))
+                .build();
+
+        //ImageLoader.getInstance().displayImage("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png"
+        //       ,viewHolder.fImage,options);
+        if(viewHolder.fImgUrl!=null) {
+            ImageLoader.getInstance().displayImage(viewHolder.fImgUrl
+                    , viewHolder.fImage, options);
+            viewHolder.fImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (view == viewHolder.fImage) {
+                        Intent i = new Intent(context, RawPictureActivity.class);
+                        context.startActivity(i);
+                    }
+                }
+            });
+        }
+
+        //ImageLoader.getInstance().displayImage(footprint.getImageUrl(),viewHolder.fImage,options);
+
+        /*
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL thumb_u = new URL("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png");
+                    Drawable thumb_d = Drawable.createFromStream(thumb_u.openStream(), "src");
+                    viewHolder.fImage.setImageDrawable(thumb_d);
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.d("ERROR!!!!!","adapter image error");
+                }
+            }
+        }).start();*/
 
         //设置tag标记
         //viewHolder.fLike.setTag(R.id.btn1,position);
@@ -140,6 +213,8 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         Button fLike;
         Button fDislike;
         TextView fTime;
+        ImageView fImage;
+        String fImgUrl;
         int fPostid;
         int fAttitude;
         int flag1;
@@ -155,5 +230,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
             attitudeList.add(new Attitude(postid, attitude));
         }
     }
+
+
 }
 

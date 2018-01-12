@@ -38,5 +38,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.github.addappcn:android-pickers:1.0.1'
     compile 'com.github.donkingliang:LabelsView:1.2.0'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     testCompile 'junit:junit:4.12'
 }
