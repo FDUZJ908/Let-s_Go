@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.net.URL;
@@ -61,7 +62,7 @@ public class CheckInActivity extends AppCompatActivity {
     Uri picUri;
 
     private responseRegister mResponseRegister;
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     static final int PICK_IMAGE_REQUEST = 1;
 
 
