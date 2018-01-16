@@ -233,10 +233,11 @@ public class Fragment2 extends Fragment {
                 search(location);
                 isLocated = true;
             } else if (isMoved(location)) {
-                Log.d("******", "移动超过200定位");
+                //Log.d("******", "移动超过200定位");
                 locateTo(location);
             } else
-                Log.d("******", "移动不足200不定位");
+                ;
+                //Log.d("******", "移动不足200不定位");
         }
     }
 

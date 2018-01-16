@@ -112,6 +112,7 @@ public class CheckInActivity extends AppCompatActivity {
                     }
                     else
                         checkIn= new CheckIn(pid, myUserid, myToken, mLat, mLng, PostContent.getText().toString(), 0);
+                    Log.d("send",gson.toJson(checkIn));
                     sendHttpPost("https://shiftlin.top/cgi-bin/Post", gson.toJson(checkIn), new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
