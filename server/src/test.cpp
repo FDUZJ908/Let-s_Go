@@ -3,7 +3,11 @@
 
 int main()
 {
-    DefRecordList(v);
+    char s[100],st[200];
+    scanf(" %s",s);
+    base64Decoder(s,st);
+    printf("%s\n",st);
+/*    DefRecordList(v);
     DefRecord(json);
     json.AddMember("a",Value(1),Allocator);
     
@@ -15,5 +19,5 @@ int main()
     
     for(int i=0;i<v.Size();i++)
         cout<<JSON(v[i]).toString()<<endl;
-    return 0;
+    return 0;*/
 }

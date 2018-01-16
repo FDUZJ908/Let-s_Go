@@ -59,23 +59,6 @@ string HTTPSRequestGET(const string &url_str)
     return result;
 }
 
-HTTPContent HTTPSRequestPOST(const string &url_str,const JSON &data)
-{
-    URI url(url_str);
-    HTTPSClientSession clientSession(url.getHost(),url.getPort());
-    HTTPRequest request(HTTPRequest::HTTP_POST,url.getPathAndQuery());
-    string data_str=data.toString();
-    request.setContentType("application/json");
-    request.setContentLength(data_str.length());
-    ostream& os=clientSession.sendRequest(request);
-    os<<data_str;
-    HTTPResponse response;
-    istream& is=clientSession.receiveResponse(response);
-    HTTPContent result(response.getContentLength(),response.getContentType());
-    result.read(is);
-    return result;
-}
-
 void writeError(const string &mesg)
 {
     JSON json(1);

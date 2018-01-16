@@ -22,67 +22,12 @@ struct ContentType
 #define ContentType_JPEG "image/jpeg"
 
 
-class HTTPContent
-{
-    char *buffer;
-    int bufferSize,length; 
-
-public:
-    string type;
-
-    HTTPContent(int _bufferSize,const string _type)
-    {
-        bufferSize=_bufferSize;
-        buffer=(char*)malloc(bufferSize*sizeof(char));
-        type=_type;
-    }
-
-    int read(istream& is)
-    {
-        is.read(buffer,bufferSize);
-        length=is.gcount();
-        return length;
-    }
-
-    void sendResponse()
-    {
-        string header="Content-type: "+type+"\n";
-        printf("%s\n",header.c_str());
-        fflush(stdout);
-        write(STDOUT_FILENO,buffer,length);
-    }
-
-    string saveAsFile(const string &filename)
-    {
-        string url=URL+"/Files/"+filename;
-        string filepath(getenv("LetsGoResrcPATH"));
-        FILE* fout=fopen((filepath+filename).c_str(),"w");
-        fwrite(buffer,length,1,fout);
-        fclose(fout);
-        return url;
-    }
-
-    string toString()
-    {
-        int len=strlen(buffer);
-        while(len>0 && buffer[len-1]!='}') len--;
-        buffer[len]='\0';
-        return string(buffer);
-    }
-
-    ~HTTPContent()
-    {
-        free(buffer);
-    }
-};
-
 string getRequestData();
 void sendResponse(const string &response,const string &contentType=ContentType::json);
 string getToken(const string &userid);
 bool checkTocken(const string &token);
 string HTTPRequestGET(const string &url_str);
 string HTTPSRequestGET(const string &url_str);
-HTTPContent HTTPSRequestPOST(const string &url_str,const JSON &data);
 void writeError(const string &mesg);
 
 

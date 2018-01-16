@@ -23,3 +23,32 @@ string polyhash(const string &str)
     res[n]='\0';
     return res;
 }
+
+int charDecoder(char ch)
+{
+    if('A'<=ch && ch<='Z') return ch-'A';
+    if('a'<=ch && ch<='z') return 26+ch-'a';
+    if('0'<=ch && ch<='9') return 52+ch-'0';
+    if(ch=='+') return 62;
+    if(ch=='-') return 63;
+    return 0;
+}
+
+int base64Decoder(const char *s, char *buffer)
+{
+    int n=strlen(s),m=0;
+    for(int i=0;i<n;i+=4)
+    {
+        int x=0;
+        for(int j=0;j<4;j++)
+            x=x | (charDecoder(s[i+j])<<((3-j)*6));
+        buffer[m+2]=(x&0xFF); x>>=8;
+        buffer[m+1]=(x&0xFF); x>>=8;
+        buffer[m]=(x&0xFF); x>>=8;
+        m+=3;
+    }
+    if(s[--n]=='=') m--;
+    if(s[--n]=='=') m--;
+    buffer[m]='\0';
+    return m;
+}

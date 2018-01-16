@@ -332,6 +332,8 @@
   "latitude": 40.43535, //用户所在纬度
   "longitude": 123.454,  //用户所在经度
   "text": "Let's Go!",
+  "image": "SDGDSGDSGDGD", //base64
+  "format" "jpeg",
   "token": "1015292bbf6baa2f0641d520e75377d2fe073123lshzy137@163.com1513578455",
   "tags": 2524242 //一个整数,unsigned long long, binary表示
 }
