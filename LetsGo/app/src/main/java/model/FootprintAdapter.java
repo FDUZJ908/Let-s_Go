@@ -51,7 +51,6 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
     private List<Footprint> FootprintList = new ArrayList<>();
     private List<Attitude> attitudeList = new ArrayList<>();
     private Context context;
-    //private LruCache<String, BitmapDrawable> mImageCache;
 
     public List<Attitude> getAttitudeList() {
         return this.attitudeList;
@@ -61,22 +60,11 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         super(context, textViewResourceId, objects);
         resourceId = textViewResourceId;
         FootprintList = objects;
-
-        /*
-        int maxCache = (int) Runtime.getRuntime().maxMemory();
-        int cacheSize = maxCache / 8;
-        mImageCache = new LruCache<String, BitmapDrawable>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, BitmapDrawable value) {
-                return value.getBitmap().getByteCount();
-            }
-        };
-        */
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //Log.d("****","调用getView"+String.valueOf(position));
+
         if (context == null) {
             context = parent.getContext();
         }
@@ -84,6 +72,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         final View view;
         final ViewHolder viewHolder;
         if (convertView == null) {
+            Log.d("****","调用getView"+String.valueOf(position));
             //Log.d("******************","convertView == null");
             view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
             viewHolder = new ViewHolder();
@@ -96,11 +85,6 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
             viewHolder.fPostid = footprint.getPostid();
             viewHolder.fAttitude = footprint.getAttitude();
             viewHolder.fImgUrl=footprint.getImageUrl();
-            Log.d("**num**",String.valueOf(position));
-            if(viewHolder.fImgUrl!=null)
-                Log.d("**URL**",viewHolder.fImgUrl);
-            else
-                Log.d("**URL**","kong");
             if (viewHolder.fAttitude == 0) {
                 viewHolder.flag1 = 0;
                 viewHolder.flag2 = 0;
@@ -134,46 +118,18 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .displayer(new RoundedBitmapDisplayer(20))
                 .build();
-
-        //ImageLoader.getInstance().displayImage("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png"
-        //       ,viewHolder.fImage,options);
-        if(viewHolder.fImgUrl!=null) {
-            Log.d("**id**",String.valueOf( position));
-            Log.d("**Url**",viewHolder.fImgUrl);
-            ImageLoader.getInstance().displayImage(viewHolder.fImgUrl
+            ImageLoader.getInstance().displayImage(footprint.getImageUrl()
                     , viewHolder.fImage, options);
             viewHolder.fImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (view == viewHolder.fImage) {
                         Intent i = new Intent(context, RawPictureActivity.class);
-                        i.putExtra("imgUrl", viewHolder.fImgUrl);
+                        i.putExtra("imgUrl", footprint.getImageUrl());
                         context.startActivity(i);
                     }
                 }
             });
-        }
-
-        //ImageLoader.getInstance().displayImage(footprint.getImageUrl(),viewHolder.fImage,options);
-
-        /*
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL thumb_u = new URL("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png");
-                    Drawable thumb_d = Drawable.createFromStream(thumb_u.openStream(), "src");
-                    viewHolder.fImage.setImageDrawable(thumb_d);
-                }catch (Exception e){
-                    e.printStackTrace();
-                    Log.d("ERROR!!!!!","adapter image error");
-                }
-            }
-        }).start();*/
-
-        //设置tag标记
-        //viewHolder.fLike.setTag(R.id.btn1,position);
-        //viewHolder.fDislike.setTag(R.id.btn2,position);
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -234,10 +190,6 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
     }
 
     protected void ChangeList(int postid, int attitude) {
-        //attitudeList.remove(new Attitude(postid, 1));
-        //attitudeList.remove(new Attitude(postid, -1));
-        //attitudeList.remove(new Attitude(postid, 2));
-        //attitudeList.remove(new Attitude(postid, -2));
         if (attitude != 0) {
             attitudeList.add(new Attitude(postid, attitude));
         }

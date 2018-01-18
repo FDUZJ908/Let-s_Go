@@ -108,10 +108,6 @@ public class FootprintActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     sendFeedback();
                     finish();
-                    /*
-                    Footprint footprint = gson.fromJson(data.getStringExtra("data_return"), Footprint.class);
-                    adapter.insert(footprint,0);
-                    */
                 } else if (resultCode == RESULT_CANCELED) {
                     Log.d("**", "留下足迹错误");
                 }
@@ -169,9 +165,6 @@ public class FootprintActivity extends AppCompatActivity {
             return;
         }
         for (int i = 0; i < mPost.size(); i++) {
-            String tempUrl=mPost.get(i).getImageUrl();
-            if(tempUrl==null)
-                tempUrl="drawable://"+R.drawable.blank;
             Footprint fi = new Footprint(mPost.get(i).getText(),
                     String.valueOf(mPost.get(i).getLike()),
                     String.valueOf(mPost.get(i).getDislike()),
@@ -179,7 +172,7 @@ public class FootprintActivity extends AppCompatActivity {
                     mPost.get(i).getPostid(),
                     mPost.get(i).getAttitude(),
                     mPost.get(i).getNickname(),
-                    tempUrl);
+                    mPost.get(i).getImageUrl());
             footprintList.add(fi);
         }
     }
