@@ -21,12 +21,7 @@ public class RawPictureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_raw_picture);
-        //Intent intent=getIntent();
-        //picUri=Uri.parse( intent.getStringExtra("picUri"));
-        //picUri=Uri.parse("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png");
-        //Log.d("***Uri***",picUri.toString());
         rawImage=(ImageView)findViewById(R.id.rawPciture);
-        //rawImage.setImageURI(picUri);
         Picasso.with(RawPictureActivity.this).load("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png")
                 .into(rawImage);
         rawImage.setOnClickListener(new View.OnClickListener() {

@@ -132,28 +132,10 @@ public class CheckInActivity extends AppCompatActivity {
                 }
             }
         });
-        //imgUpload.setImageURI(Uri.parse("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png"));
-        /*
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL thumb_u = new URL("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png");
-                    Drawable thumb_d = Drawable.createFromStream(thumb_u.openStream(), "src");
-                    imgUpload.setImageDrawable(thumb_d);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.d("ERROR!!!!!!!!!", "出错了");
-                }
-            }
-        }).start();
-        */
-
     }
 
     private void imageBrowse() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        // Start the Intent
         startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
     }
 

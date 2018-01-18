@@ -132,7 +132,7 @@ public class Fragment3 extends Fragment {
 
     protected void initViews() {
         mMapView = getView().findViewById(R.id.Recommend);
-        RecommendInfo=getView().findViewById(R.id.RecommendInfo);
+        RecommendInfo = getView().findViewById(R.id.RecommendInfo);
         mBaiduMap = mMapView.getMap();
         mLocationClient = new LocationClient(getContext());
         LocationClientOption option = new LocationClientOption();
@@ -142,12 +142,12 @@ public class Fragment3 extends Fragment {
         mBaiduMap.setOnMapClickListener(MapClickListener);
         mBaiduMap.setMyLocationEnabled(true);
         RecommendInfo.setText(GetInfo());
-        locateTo(myLat,myLng);
+        locateTo(myLat, myLng);
     }
 
-    protected void locateTo(double Lat,double Lng) {
+    protected void locateTo(double Lat, double Lng) {
 
-        Log.d("***","开始定位:"+String.valueOf(Lat)+":"+String.valueOf(Lng));
+        //Log.d("***","开始定位:"+String.valueOf(Lat)+":"+String.valueOf(Lng));
         MyLocationData locationData = new MyLocationData.Builder()
                 .direction(100).latitude(Lat)
                 .longitude(Lng).build();
@@ -160,11 +160,10 @@ public class Fragment3 extends Fragment {
     }
 
 
-
     private BaiduMap.OnMapClickListener MapClickListener = new BaiduMap.OnMapClickListener() {
         @Override
         public void onMapClick(LatLng latLng) {
-            Log.d("***","地图被点");
+            //Log.d("***","地图被点");
             GetRecommend();
         }
 
@@ -178,8 +177,7 @@ public class Fragment3 extends Fragment {
         if (MyPoiInfoList != null && ListIndex < MyPoiInfoList.size()) {
             ++ListIndex;
             RecommendMarker();
-        }
-        else
+        } else
             sendHttpPost("https://shiftlin.top/cgi-bin/Recommend", gson.toJson(new Recommend(myUserid, myLat, myLng, myToken, myTags)), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -189,7 +187,7 @@ public class Fragment3 extends Fragment {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     responseData = response.body().string();
-                    Log.d("***",responseData);
+                    Log.d("***", responseData);
                     Message message = new Message();
                     message.what = GETRECOMMEND;
                     message.obj = responseData;
@@ -199,10 +197,10 @@ public class Fragment3 extends Fragment {
     }
 
     private void RecommendMarker() {
-        if(MyPoiInfoList!=null && ListIndex<MyPoiInfoList.size()){
+        if (MyPoiInfoList != null && ListIndex < MyPoiInfoList.size()) {
             RecommendInfo.setText(GetInfo());
             mBaiduMap.clear();
-            LatLng point=new LatLng(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
+            LatLng point = new LatLng(MyPoiInfoList.get(ListIndex).getLat(), MyPoiInfoList.get(ListIndex).getLng());
             BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.marker2_2);
             OverlayOptions option = new MarkerOptions()
                     .perspective(true)
@@ -212,27 +210,25 @@ public class Fragment3 extends Fragment {
             //定位到marker
             //locateTo(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
 
-            LatLng ll = new LatLng(MyPoiInfoList.get(ListIndex).getLat(),MyPoiInfoList.get(ListIndex).getLng());
+            LatLng ll = new LatLng(MyPoiInfoList.get(ListIndex).getLat(), MyPoiInfoList.get(ListIndex).getLng());
             MapStatus newStatus = new MapStatus.Builder()
                     .target(ll).zoom(16).build();
             MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(newStatus);
             mBaiduMap.animateMapStatus(mMapStatusUpdate, 250);//duration为动画的时间
-        }
-        else {
+        } else {
             GetRecommend();
         }
 
     }
 
-    private String GetInfo(){
-        String title="点击地图即可探索神秘地点↓"+"\n";
-        if(MyPoiInfoList!=null && MyPoiInfoList.size()>0) {
+    private String GetInfo() {
+        String title = "点击地图即可探索神秘地点↓" + "\n";
+        if (MyPoiInfoList != null && MyPoiInfoList.size() > 0) {
             String name = "【" + MyPoiInfoList.get(ListIndex).getName() + "】\n";
             String category = "(" + MyPoiInfoList.get(ListIndex).getCategory() + "----";
             String city = "" + MyPoiInfoList.get(ListIndex).getCity() + ")";
-            return  title+name + category + city;
-        }
-        else
+            return title + name + category + city;
+        } else
             return title;
     }
 
@@ -249,9 +245,13 @@ public class Fragment3 extends Fragment {
                                 .setPositiveButton("确定", null)
                                 .show();
                     } else {
-                        MyPoiInfoList = mResponseSearch.getPOIs();
-                        ListIndex=0;
-                        RecommendMarker();
+                        if (mResponseSearch.getPOI_num() == 0)
+                            ;//no more result
+                        else {
+                            MyPoiInfoList = mResponseSearch.getPOIs();
+                            ListIndex = 0;
+                            RecommendMarker();
+                        }
                     }
                     break;
                 default:
@@ -279,8 +279,8 @@ public class Fragment3 extends Fragment {
     }
 
     @Override
-    public void onDestroy(){
-        if(mLocationClient!=null)
+    public void onDestroy() {
+        if (mLocationClient != null)
             mLocationClient.stop();
         super.onDestroy();
         mMapView.onDestroy();
@@ -291,6 +291,7 @@ public class Fragment3 extends Fragment {
         super.onResume();
         mMapView.onResume();
     }
+
     @Override
     public void onPause() {
         super.onPause();

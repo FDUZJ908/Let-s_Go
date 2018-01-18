@@ -94,24 +94,6 @@ public class RegisterActivity extends AppCompatActivity {
                     break;
                 case TEST:
                     break;
-                /*case FAILURE:
-                    new AlertDialog.Builder(getApplicationContext())
-                            .setTitle("注册错误")
-                            .setMessage("验证码输入错误")
-                            .show();
-                    break;
-                case OK:
-                    new AlertDialog.Builder(getApplicationContext())
-                            .setTitle("注册成功")
-                            .setMessage("请返回登录")
-                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    finish();
-                                }
-                            })
-                            .show();
-                    break;*/
                 default:
                     break;
             }
@@ -142,7 +124,6 @@ public class RegisterActivity extends AppCompatActivity {
                 sendHttpPost("https://shiftlin.top/cgi-bin/Verify.py", gson.toJson(register), new okhttp3.Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.d("**TEST**", "Success");
                         Message message = new Message();
                         message.obj = response.body().string();
                         message.what = GETCODE;
@@ -151,7 +132,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.d("**TEST**", "Failure");
                         e.printStackTrace();
                     }
 
@@ -195,7 +175,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 myRegister = new Register();
                 myRegister.setUserid(account.getText().toString());
-                //register.setCode(code.getText().toString());
                 myRegister.setPassword(password.getText().toString());
                 myRegister.setNickname(nickname.getText().toString());
                 myRegister.setTel(Tel.getText().toString());

@@ -77,17 +77,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        mLocationClient = new LocationClient(getApplicationContext());
-        mLocationClient.registerLocationListener(new MyLocationListener());
-        */
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         initViews();
         checkStatus();
         setPrivileges();
         initFragment();
-        //requestLocation();
     }
 
     public void initViews() {
@@ -132,11 +127,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void initFragment() {
         if (myToken == null && myUserid == null) {
             //登录或者注册
-            Log.d("***","未登录,set0");
             setChioceItem(0);
         } else {
             //有登录缓存
-            Log.d("***","已登录,set1");
             setChioceItem(1);
         }
     }
@@ -156,15 +149,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (view.getId()) {
                 case R.id.course_layout:
                     setChioceItem(0);
-                    Log.d("***","点击0set0");
                     break;
                 case R.id.found_layout:
                     setChioceItem(1);
-                    Log.d("***","点击1set1");
                     break;
                 case R.id.setting_layout:
                     setChioceItem(2);
-                    Log.d("***","点击2set2");
                     break;
                 default:
                     break;
@@ -183,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case 0:
                 course_image.setImageResource(R.drawable.user_0);
                 course_text.setTextColor(blue);
-                //course_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (myUserid == null && myToken == null) {
                     if (fg1 == null) {
                         fg1 = new Fragment1();
@@ -199,18 +188,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         transaction.show(fg4);
                     }
                 }
-                /*
-                if (fg1 == null) {
-                    transaction.show(fg4);
-                } else {
-                    transaction.show(fg1);
-                }*/
                 break;
 
             case 1:
                 found_image.setImageResource(R.drawable.footprint_0);
                 found_text.setTextColor(blue);
-                //found_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg2 == null) {
                     fg2 = new Fragment2();
                     transaction.add(R.id.content, fg2);
@@ -222,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case 2:
                 settings_image.setImageResource(R.drawable.finding_0);
                 settings_text.setTextColor(blue);
-                //settings_layout.setBackgroundResource(R.drawable.ic_tabbar_bg_click);
                 if (fg3 == null) {
                     fg3 = new Fragment3();
                     transaction.add(R.id.content, fg3);
@@ -253,13 +234,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //定义一个重置所有选项的方法
     public void clearChioce() {
-        //course_image.setImageResource(R.drawable.ic_tabbar_course_normal);
         course_layout.setBackgroundColor(whirt);
         course_text.setTextColor(gray);
-        //found_image.setImageResource(R.drawable.ic_tabbar_found_normal);
         found_layout.setBackgroundColor(whirt);
         found_text.setTextColor(gray);
-        //settings_image.setImageResource(R.drawable.ic_tabbar_settings_normal);
         settings_layout.setBackgroundColor(whirt);
         settings_text.setTextColor(gray);
     }
@@ -275,35 +253,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         transaction.commit();
     }
 
-    /*
-    private void requestLocation() {
-        LocationClientOption option = new LocationClientOption();
-        option.setScanSpan(5000);//每5秒获得一次定位
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);//高精度定位
-        //option.setLocationMode(LocationClientOption.LocationMode.Device_Sensors);//只有GPS定位
-        mLocationClient.setLocOption(option);
-        mLocationClient.start();
-    }
-    */
-
     @Override
     protected void onResume() {
         super.onResume();
-        //mapView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //mapView.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        /*mLocationClient.stop();
-        baiduMap.setMyLocationEnabled(false);*/
-        //mapView.onDestroy();
     }
 
     @Override
@@ -326,7 +288,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             return;
                         }
                     }
-                    //requestLocation();
                 } else {
                     Toast.makeText(this, "发生未知错误", Toast.LENGTH_SHORT).show();
                     finish();

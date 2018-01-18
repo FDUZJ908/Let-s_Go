@@ -134,10 +134,8 @@ public class Fragment4 extends Fragment {
         Gender = getView().findViewById(R.id.Gender);
         Interest = getView().findViewById(R.id.Interest);
         Character = getView().findViewById(R.id.Character);
-        //if(myNickname==null){
         GetAccount();
         setUneditable();
-        // }
     }
 
     public void setUneditable() {
@@ -196,11 +194,11 @@ public class Fragment4 extends Fragment {
         @Override
         public void onLabelSelectChange(View label, String labelText, boolean isSelect, int position) {
             if (isSelect) {
-                Log.d("**InterestSelect",labelText+":被选中:坐标是"+String.valueOf(position));
+                //Log.d("**InterestSelect",labelText+":被选中:坐标是"+String.valueOf(position));
                 label.setBackground(ContextCompat.getDrawable(getContext(),tag));
             }
             else {
-                Log.d("**InterestSelect",labelText+":被取消选中:坐标是"+String.valueOf(position));
+                //Log.d("**InterestSelect",labelText+":被取消选中:坐标是"+String.valueOf(position));
                 label.setBackground(null);
             }
         }
@@ -210,11 +208,11 @@ public class Fragment4 extends Fragment {
         @Override
         public void onLabelSelectChange(View label, String labelText, boolean isSelect, int position) {
             if (isSelect) {
-                Log.d("**CharacterSelect",labelText+":被选中:坐标是"+String.valueOf(position));
+                //Log.d("**CharacterSelect",labelText+":被选中:坐标是"+String.valueOf(position));
                 label.setBackground(ContextCompat.getDrawable(getContext(),tag));
             }
             else {
-                Log.d("**CharacterSelect",labelText+":被取消选中:坐标是"+String.valueOf(position));
+                //Log.d("**CharacterSelect",labelText+":被取消选中:坐标是"+String.valueOf(position));
                 label.setBackground(null);
             }
         }
@@ -232,11 +230,6 @@ public class Fragment4 extends Fragment {
         public void onClick(View view) {
             A1 = Interest.getSelectLabels();
             A2 = Character.getSelectLabels();
-            if (A1 != null && A1.size() != 0)
-                Log.d("***A1***", String.valueOf(A1.get(0)));
-            if (A2 != null && A2.size() != 0)
-                Log.d("***A2***", String.valueOf(A2.get(0)));
-
             PostAccount();
             setUneditable();
         }
@@ -273,7 +266,7 @@ public class Fragment4 extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 responseData = response.body().string();
-                Log.d("******",responseData);
+                //Log.d("******",responseData);
                 Message message = new Message();
                 message.what = GETACCOUNT;
                 message.obj = responseData;
@@ -287,7 +280,7 @@ public class Fragment4 extends Fragment {
         Gender.setText(genderIntToString(mResponseAccount.getGender()));
         buttonConstellation.setText(conIntToString(mResponseAccount.getTags()));
         buttonAge.setText(ageIntToString(mResponseAccount.getTags()));
-        Log.d("**************",String.valueOf(mResponseAccount.getTags()));
+        //Log.d("**************",String.valueOf(mResponseAccount.getTags()));
         Interest.setLabels(intIntToString(mResponseAccount.getTags()));
         Character.setLabels(chaIntToString(mResponseAccount.getTags()));
     }

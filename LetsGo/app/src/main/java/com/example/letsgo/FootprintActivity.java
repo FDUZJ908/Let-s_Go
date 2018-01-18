@@ -72,8 +72,6 @@ public class FootprintActivity extends AppCompatActivity {
         pid = intent.getStringExtra("POI_id");
         mLat = intent.getDoubleExtra("mLat", 0.0);
         mLng = intent.getDoubleExtra("mLng", 0.0);
-        //创建默认的ImageLoader参数
-        //ImageLoaderConfiguration configuration=ImageLoaderConfiguration.createDefault(this);
 
         //创建可以打印log的ImageLoaderConfiguration
         ImageLoaderConfiguration configuration=new ImageLoaderConfiguration.Builder(this)
@@ -92,7 +90,7 @@ public class FootprintActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("******", "点了back键");
+        //Log.d("******", "点了back键");
         sendFeedback();
         super.onBackPressed();
         finish();
@@ -108,11 +106,7 @@ public class FootprintActivity extends AppCompatActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
-                    Log.d("**", "enterResult");
-                    Log.d("**", data.getStringExtra("data_return"));
                     Footprint footprint = gson.fromJson(data.getStringExtra("data_return"), Footprint.class);
-                    //footprintList.add(0, footprint);
-                    //adapter.notifyDataSetChanged();
                     adapter.insert(footprint,0);
                 } else if (resultCode == RESULT_CANCELED) {
                     Log.d("**", "留下足迹错误");
@@ -186,7 +180,6 @@ public class FootprintActivity extends AppCompatActivity {
     protected void sendFeedback(){
         if (adapter!=null  && adapter.getAttitudeList().size() > 0) {
             mFeedback = new Feedback(myUserid, myToken, adapter.getAttitudeList().size(), adapter.getAttitudeList());
-            Log.d("**test**", gson.toJson(mFeedback, Feedback.class));
             sendHttpPost("https://shiftlin.top/cgi-bin/Feedback", gson.toJson(mFeedback, Feedback.class), new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

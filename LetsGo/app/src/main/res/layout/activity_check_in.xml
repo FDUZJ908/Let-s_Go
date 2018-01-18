@@ -41,6 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@null"
+            android:textColor="@color/colorButton"
             android:text="上传图片"/>
         <Button
             android:id="@+id/PostButton"

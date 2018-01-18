@@ -160,24 +160,15 @@ public class Fragment2 extends Fragment {
     private void initViews() {
         mLocationClient = new LocationClient(getContext());
         mLocationClient.registerLocationListener(new MyLocationListener());
-        //SDKInitializer.initialize(getContext());
         //绘制界面
-        //mMapView = new TextureMapView(getActivity());
         mMapView = getView().findViewById(R.id.MainMap);
-        //mMapView.setLogoPosition(LogoPosition.logoPostionCenterBottom);
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMyLocationEnabled(true);
-        //Button Refresh=new Button(getActivity());
         Refresh = getView().findViewById(R.id.Refresh);
 
         //设置指南针
         mUiSettings = mBaiduMap.getUiSettings();
         mUiSettings.setCompassEnabled(true);
-        /*
-        LinearLayout linearLayout = new LinearLayout(getActivity());
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.addView(Refresh);
-        linearLayout.addView(mMapView);*/
         Refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -278,11 +269,20 @@ public class Fragment2 extends Fragment {
     }
 
     protected void Marker(int j) {
+        if(PoiList.size()==0)
+            // no result
+            return;
         int d = PoiList.size() / 10;
-        j = j % d;
+        if(d==0){
+            // num<10
+            j=0;
+            d=1;
+        }
+        else
+            j = j % d;
         mBaiduMap.clear();
         options.clear();
-        for (int i = j, k = 0; i < PoiList.size(); i += d, k++) {
+        for (int i = j; i < PoiList.size(); i += d) {
             //定义Maker坐标点
             LatLng point = new LatLng(PoiList.get(i).getLat(), PoiList.get(i).getLng());
             //构建Marker图标
@@ -294,7 +294,6 @@ public class Fragment2 extends Fragment {
             else if (popularity >0) marker = R.drawable.marker1_1;
             BitmapDescriptor bitmap = BitmapDescriptorFactory
                     .fromResource(marker);
-
             //构建MarkerOption，用于在地图上添加Marker
             Bundle mBundle = new Bundle();
             mBundle.putString("POI_id", PoiList.get(i).getUid());
