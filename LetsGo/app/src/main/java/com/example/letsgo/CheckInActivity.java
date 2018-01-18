@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -193,6 +194,7 @@ public class CheckInActivity extends AppCompatActivity {
                         new AlertDialog.Builder(CheckInActivity.this)
                                 .setTitle("留下足迹成功")
                                 .setMessage("你已经留下了你的足迹")
+                                .setCancelable(false)
                                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -209,6 +211,14 @@ public class CheckInActivity extends AppCompatActivity {
                                         intent.putExtra("data_return", gson.toJson(footprint));
                                         setResult(RESULT_OK, intent);
                                         finish();
+                                    }
+                                })
+                                .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                                    @Override
+                                    public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                                        if(i==KeyEvent.KEYCODE_BACK)
+                                            return true;
+                                        return false;
                                     }
                                 })
                                 .show();

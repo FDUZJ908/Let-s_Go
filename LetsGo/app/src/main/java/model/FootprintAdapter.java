@@ -51,7 +51,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
     private List<Footprint> FootprintList = new ArrayList<>();
     private List<Attitude> attitudeList = new ArrayList<>();
     private Context context;
-    private LruCache<String, BitmapDrawable> mImageCache;
+    //private LruCache<String, BitmapDrawable> mImageCache;
 
     public List<Attitude> getAttitudeList() {
         return this.attitudeList;
@@ -62,6 +62,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         resourceId = textViewResourceId;
         FootprintList = objects;
 
+        /*
         int maxCache = (int) Runtime.getRuntime().maxMemory();
         int cacheSize = maxCache / 8;
         mImageCache = new LruCache<String, BitmapDrawable>(cacheSize) {
@@ -70,10 +71,12 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
                 return value.getBitmap().getByteCount();
             }
         };
+        */
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //Log.d("****","调用getView"+String.valueOf(position));
         if (context == null) {
             context = parent.getContext();
         }
@@ -81,6 +84,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         final View view;
         final ViewHolder viewHolder;
         if (convertView == null) {
+            //Log.d("******************","convertView == null");
             view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.fContent = (TextView) view.findViewById(R.id.fContent);
@@ -92,6 +96,11 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
             viewHolder.fPostid = footprint.getPostid();
             viewHolder.fAttitude = footprint.getAttitude();
             viewHolder.fImgUrl=footprint.getImageUrl();
+            Log.d("**num**",String.valueOf(position));
+            if(viewHolder.fImgUrl!=null)
+                Log.d("**URL**",viewHolder.fImgUrl);
+            else
+                Log.d("**URL**","kong");
             if (viewHolder.fAttitude == 0) {
                 viewHolder.flag1 = 0;
                 viewHolder.flag2 = 0;
@@ -120,7 +129,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         viewHolder.fNickname.setText(footprint.getNickname());
         DisplayImageOptions options=new DisplayImageOptions.Builder()
                 //.showImageOnLoading(R.drawable.like0)
-                //.showImageForEmptyUri(R.drawable.i_error)
+                //.showImageForEmptyUri(R.drawable.like0)
                 .cacheInMemory(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .displayer(new RoundedBitmapDisplayer(20))
@@ -129,6 +138,8 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
         //ImageLoader.getInstance().displayImage("http://downza.img.zz314.com/soft/bcgj-110/2017-01-12/653e5cc1c2d125434b1155cd63315d23.png"
         //       ,viewHolder.fImage,options);
         if(viewHolder.fImgUrl!=null) {
+            Log.d("**id**",String.valueOf( position));
+            Log.d("**Url**",viewHolder.fImgUrl);
             ImageLoader.getInstance().displayImage(viewHolder.fImgUrl
                     , viewHolder.fImage, options);
             viewHolder.fImage.setOnClickListener(new View.OnClickListener() {
@@ -223,10 +234,10 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
     }
 
     protected void ChangeList(int postid, int attitude) {
-        attitudeList.remove(new Attitude(postid, 1));
-        attitudeList.remove(new Attitude(postid, -1));
-        attitudeList.remove(new Attitude(postid, 2));
-        attitudeList.remove(new Attitude(postid, -2));
+        //attitudeList.remove(new Attitude(postid, 1));
+        //attitudeList.remove(new Attitude(postid, -1));
+        //attitudeList.remove(new Attitude(postid, 2));
+        //attitudeList.remove(new Attitude(postid, -2));
         if (attitude != 0) {
             attitudeList.add(new Attitude(postid, attitude));
         }
