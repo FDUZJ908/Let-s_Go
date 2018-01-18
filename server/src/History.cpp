@@ -27,7 +27,7 @@ int main()
             string format=(record["format"].IsNull())?"":record["format"].GetString();
             if(format.size()>0)
             {
-                string imageUrl=URL+"/Files/"+TOString(postid)+"."+format;
+                string imageUrl=URL+"/Files/"+record["userid"].GetString()+"/"+TOString(postid)+"."+format;
                 record.AddMember("imageUrl",Str2Value(imageUrl),Allocator);
             }
             record.RemoveMember("format");

@@ -14,7 +14,6 @@ string saveFile(const string &userid,const string imageName,const string &image_
     FILE *fout=fopen(filepath.c_str(),"w");
     char buf[MAXBUF];
     int len=base64Decoder(image_str,buf);
-    cout<<len<<endl;
     fwrite(buf,len,1,fout);
     fclose(fout);
 

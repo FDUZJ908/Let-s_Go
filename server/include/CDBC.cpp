@@ -251,6 +251,7 @@ RecordList CDBC::queryPostHistoryAtPOI(const string &POI_id, int postid)
     if(postid==0) postid=INF;
     string attrs="";
     attrs+="post.postid AS postid, ";
+    attrs+="post.userid AS userid, ";
     attrs+="user.nickname AS nickname, ";
     attrs+="post.timestamp AS timestamp, ";
     attrs+="post.text AS text, ";

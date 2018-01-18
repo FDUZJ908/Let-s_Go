@@ -285,6 +285,7 @@
   "posts": [
     {
       "postid":3,
+      "userid":"lshzy137@gmail.com"
       "nickname":"lsh",
       "timestamp": 1513578455,
       "text":"23333",
@@ -295,6 +296,7 @@
     },
     {
       "postid":2,
+      "userid":"lshzy137@gmail.com"
       "nickname":"lsh",
       "timestamp": 1513578450,
       "text":"今天天气不好啊",
@@ -305,6 +307,7 @@
     },
     {
       "postid":1,
+      "userid":"lshzy137@gmail.com"
       "nickname":"lsh",
       "timestamp": 1513578440,
       "text":"今天天气好啊",
