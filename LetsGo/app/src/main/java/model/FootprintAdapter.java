@@ -136,6 +136,7 @@ public class FootprintAdapter extends ArrayAdapter<Footprint> {
                 public void onClick(View view) {
                     if (view == viewHolder.fImage) {
                         Intent i = new Intent(context, RawPictureActivity.class);
+                        i.putExtra("imgUrl", viewHolder.fImgUrl);
                         context.startActivity(i);
                     }
                 }
