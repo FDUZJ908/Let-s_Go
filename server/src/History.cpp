@@ -19,7 +19,19 @@ int main()
     {
         vector<int> ids;
         for(int i=0;i<n;i++)
-            ids.push_back(recordList[i]["postid"].GetInt());
+        {
+            Record &record=recordList[i];
+            int postid=record["postid"].GetInt();
+            ids.push_back(postid);
+
+            string format=(record["format"].IsNull())?"":record["format"].GetString();
+            if(format.size()>0)
+            {
+                string imageUrl=URL+"/Files/"+record["userid"].GetString()+"/"+TOString(postid)+"."+format;
+                record.AddMember("imageUrl",Str2Value(imageUrl),Allocator);
+            }
+            record.RemoveMember("format");
+        }
 
         RecordList feedbacks=cdbc.queryAttitude(userid,ids);
         int m=feedbacks.Size();

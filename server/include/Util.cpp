@@ -77,17 +77,6 @@ string getLocStr(double lat,double lng)
     return "("+TOString(lat)+","+TOString(lng)+")";
 }
 
-string removeChar(string str,char ch)
-{
-    int n=str.size(),m=0;
-    char* s;
-    s=(char *)malloc(sizeof(char)*n);
-    for(int i=0;i<n;i++)
-        if(str[i]!=ch) s[m++]=str[i];
-    free(s);
-    return s;
-}
-
 vector<string> splitString(const char* st,char ch)
 {
     int len=strlen(st);

@@ -3,7 +3,8 @@ DROP TABLE post;
 DROP TABLE POITags;
 DROP TABLE sysvar;
 DROP TABLE user;
-UPDATE POI set popularity=0;
+UPDATE POI
+SET popularity = 0;
 
 CREATE TABLE user (
   userid   CHAR(32) PRIMARY KEY,
@@ -51,7 +52,7 @@ CREATE TABLE post
   love      INT DEFAULT '0' NOT NULL,
   dislike   INT DEFAULT '0' NOT NULL,
   text      TEXT            NULL,
-  imageUrl  TEXT            NULL,
+  format    CHAR(20)        NULL,
   tags      BIGINT UNSIGNED NOT NULL DEFAULT 0,
   FOREIGN KEY (userid) REFERENCES user (userid),
   FOREIGN KEY (POI_id) REFERENCES POI (POI_id)
@@ -81,3 +82,5 @@ CREATE TABLE sysvar (
 )
   CHARACTER SET = utf8mb4;
 
+ALTER TABLE post
+  CHANGE imageurl format CHAR(20) NULL;

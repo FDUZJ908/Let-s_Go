@@ -35,7 +35,6 @@ int main()
     map<string,Info> count; count.clear();
     
     int n=recordList.Size();
-    cout<<n<<endl;
     for(int i=0;i<n;i++)
     {
         Record &record=recordList[i];
