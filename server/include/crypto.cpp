@@ -30,13 +30,16 @@ int charDecoder(char ch)
     if('a'<=ch && ch<='z') return 26+ch-'a';
     if('0'<=ch && ch<='9') return 52+ch-'0';
     if(ch=='+') return 62;
-    if(ch=='-') return 63;
+    if(ch=='/') return 63;
     return 0;
 }
 
-int base64Decoder(const char *s, char *buffer)
+int base64Decoder(const string &ins, char *buffer)
 {
-    int n=strlen(s),m=0;
+    int len=ins.size(),n=0,m=0; char s[len];
+    for(int i=0;i<len;i++)
+        if(ins[i]!='\n' && ins[i]!='\r') s[n++]=ins[i];
+
     for(int i=0;i<n;i+=4)
     {
         int x=0;

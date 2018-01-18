@@ -24,12 +24,13 @@ int main()
             int postid=record["postid"].GetInt();
             ids.push_back(postid);
 
-            string format=record["imageUrl"].GetString();
+            string format=(record["format"].IsNull())?"":record["format"].GetString();
             if(format.size()>0)
             {
                 string imageUrl=URL+"/Files/"+TOString(postid)+"."+format;
-                record["imageUrl"].SetString(imageUrl.c_str(),imageUrl.size(),Allocator);
-            }else record.RemoveMember("imageUrl");
+                record.AddMember("imageUrl",Str2Value(imageUrl),Allocator);
+            }
+            record.RemoveMember("format");
         }
 
         RecordList feedbacks=cdbc.queryAttitude(userid,ids);

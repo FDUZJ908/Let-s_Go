@@ -3,8 +3,9 @@
 
 int main()
 {
-    char s[100],st[200];
-    scanf(" %s",s);
+    char s[100]="c2RnZHNnZCBnZHNnCg==\n\n";
+    char st[200];
+    //scanf(" %s",s);
     base64Decoder(s,st);
     printf("%s\n",st);
 /*    DefRecordList(v);

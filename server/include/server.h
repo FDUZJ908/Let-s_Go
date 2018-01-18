@@ -28,7 +28,7 @@ string getToken(const string &userid);
 bool checkTocken(const string &token);
 string HTTPRequestGET(const string &url_str);
 string HTTPSRequestGET(const string &url_str);
-void writeError(const string &mesg);
+  void writeError(const string &mesg);
 
 
 #define TAGS_MAXNUM 64
