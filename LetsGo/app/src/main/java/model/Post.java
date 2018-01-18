@@ -14,7 +14,8 @@ public class Post {
     private int dislike;
     private int timestamp;
     private int attitude;
-    public Post(int postid,String text,int like,int dislike,int timestamp,int attitude,String nickname){
+    private String imageUrl;
+    public Post(int postid,String text,int like,int dislike,int timestamp,int attitude,String nickname,String imageUrl){
         this.postid=postid;
         this.text=text;
         this.love=like;
@@ -22,6 +23,7 @@ public class Post {
         this.timestamp=timestamp;
         this.attitude=attitude;
         this.nickname=nickname;
+        this.imageUrl=imageUrl;
     }
     public void setPostid(int postid){this.postid=postid;}
     public void setText(String text){this.text=text;}
@@ -30,6 +32,7 @@ public class Post {
     public void setTimestamp(int timestamp){this.timestamp=timestamp;}
     public void setAttitude(int attitude){this.attitude=attitude;}
     public void setNickname(String nickname){this.nickname=nickname;}
+    public void setImageUrl(String imageUrl){this.imageUrl=imageUrl;}
     public int getPostid(){return this.postid;}
     public String getText(){return this.text;}
     public int getLike(){return this.love;}
@@ -37,4 +40,5 @@ public class Post {
     public int getTimestamp(){return this.timestamp;}
     public int getAttitude(){return this.attitude;}
     public String getNickname(){return this.nickname;}
+    public String getImageUrl(){return  this.imageUrl;}
 }

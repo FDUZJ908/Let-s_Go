@@ -30,6 +30,18 @@
             android:hint="@string/foot_hint"
             android:gravity="center"
             android:background="@null"/>
+        <ImageView
+            android:id="@+id/imgUpload"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:background="@null"/>
+        <Button
+            android:id="@+id/ChooseButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="上传图片"/>
         <Button
             android:id="@+id/PostButton"
             android:layout_width="match_parent"
