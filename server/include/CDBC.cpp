@@ -1,4 +1,4 @@
-    #include "CDBC.h"
+#include "CDBC.h"
 
 string getRepeatQMark(int n,int m)
 {
@@ -53,7 +53,7 @@ string CDBC::insertRecordlist(RecordList &recordList,const string &table,bool is
 
     string sql="INSERT INTO "+table+" "+string(cols)+" VALUES "+getRepeatQMark(n,col_num);
     if(isUpdate) sql+=" ON DUPLICATE KEY UPDATE "+string(update);
-    logFile.print(sql);
+
     try
     {
         PreparedStatement *query=conn->prepareStatement(sql);
