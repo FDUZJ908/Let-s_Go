@@ -15,7 +15,7 @@ CREATE TABLE user (
   tags     BIGINT UNSIGNED NOT NULL DEFAULT 0
 )
   CHARACTER SET = utf8mb4;
-/*
+
 CREATE TABLE POI (
   POI_id     CHAR(30) PRIMARY KEY,
   category   CHAR(64) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE POI (
   CHARACTER SET = utf8mb4;
 
 CREATE INDEX idx_lat_lng
-  ON POI (latitude, longitude);*/
+  ON POI (latitude, longitude);
 
 CREATE TABLE POITags (
   POI_id CHAR(30) PRIMARY KEY,
@@ -81,6 +81,3 @@ CREATE TABLE sysvar (
   value1 INT
 )
   CHARACTER SET = utf8mb4;
-
-INSERT INTO POI values('abcde1','住宅小区','赵浯旭的家',29.518272,106.533345,0,'上海市','中国');
-INSERT INTO POI values('abcde2','餐饮美食','赵浯旭家的厨房',29.520272,106.543345,0,'上海市','中国');

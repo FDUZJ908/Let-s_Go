@@ -1,3 +1,4 @@
 #!/bin/bash
-source /root/.bash_profile
-/root/LetsGo/cgi-bin/UpdatePOI
+cd ..
+source ~/.bash_profile
+cgi-bin/UpdatePOI

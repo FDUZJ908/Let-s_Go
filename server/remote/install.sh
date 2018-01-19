@@ -1,5 +1,5 @@
 set -e
-cd ~/LetsGo/
+cd ..
 rm -rf ./src ./include
 tar -zxf ./code.tar.gz
 
@@ -13,7 +13,7 @@ done
 make dep
 make
 rm -rf /var/www/cgi-bin/*
-cp -f ~/LetsGo/cgi-bin/* /var/www/cgi-bin/
-cp -f ~/LetsGo/src/Python/*.py /var/www/cgi-bin/
+cp -f cgi-bin/* /var/www/cgi-bin/
+cp -f src/Python/*.py /var/www/cgi-bin/
 chmod 755 /var/www/cgi-bin/*
-chmod 755 ~/LetsGo/cgi-bin/*
+chmod 755 /cgi-bin/*
