@@ -39,7 +39,7 @@ include $(DEPEND)
 install:
 	tar --exclude '.*' -zcf code.tar.gz src include Makefile run.sh
 	scp code.tar.gz root@shiftlin.top:~/LetsGo
-	ssh root@shiftlin.top "bash ~/LetsGo/install.sh"
+	ssh root@shiftlin.top "bash ~/LetsGo/remote/install.sh"
 
 clean:
 	rm -f $(DEPEND_DIR)/*.d
