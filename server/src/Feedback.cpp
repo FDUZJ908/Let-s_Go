@@ -53,6 +53,7 @@ int main()
         vJson.PushBack(feedback,Allocator);
     }
     string ret=cdbc.insertRecordlist(vJson,"feedback",true);
+    logFile.print(ret);
 
     cdbc.updatePostLike(vLike,"love",1);
     cdbc.updatePostLike(vDislike,"dislike",1);

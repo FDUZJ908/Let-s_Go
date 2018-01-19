@@ -33,32 +33,6 @@ bool checkTocken(const string &token)
     return sha1(polyhash(token.substr(40)))==token.substr(0,40);
 }
 
-string HTTPRequestGET(const string &url_str) //need to append '/' at the end of url_str when you request for the default index.html
-{
-    URI url(url_str);
-    HTTPClientSession clientSession(url.getHost(),url.getPort());
-    HTTPRequest request(HTTPRequest::HTTP_GET,url.getPathAndQuery());
-    clientSession.sendRequest(request);
-    HTTPResponse response;
-    istream& is=clientSession.receiveResponse(response);
-    string result;
-    StreamCopier::copyToString(is,result);
-    return result;
-}
-
-string HTTPSRequestGET(const string &url_str)
-{
-    URI url(url_str);
-    HTTPSClientSession clientSession(url.getHost(),url.getPort());
-    HTTPRequest request(HTTPRequest::HTTP_GET,url.getPathAndQuery());
-    clientSession.sendRequest(request);
-    HTTPResponse response;
-    istream& is=clientSession.receiveResponse(response);
-    string result;
-    StreamCopier::copyToString(is,result);
-    return result;
-}
-
 void writeError(const string &mesg)
 {
     JSON json(1);

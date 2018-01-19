@@ -82,5 +82,5 @@ CREATE TABLE sysvar (
 )
   CHARACTER SET = utf8mb4;
 
-ALTER TABLE post
-  CHANGE imageurl format CHAR(20) NULL;
+INSERT INTO POI values('abcde1','住宅小区','赵浯旭的家',29.518272,106.533345,0,'上海市','中国');
+INSERT INTO POI values('abcde2','餐饮美食','赵浯旭家的厨房',29.520272,106.543345,0,'上海市','中国');

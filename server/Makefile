@@ -6,7 +6,7 @@ BIN=./cgi-bin
 
 CXX=g++
 CXXFLAGS=-std=c++11 -I$(INCLUDE)
-LINK_LIB=-lPocoNetSSL -lPocoNet -lPocoFoundation -lcrypto -lssl -lmysqlcppconn.7.1.1.9
+LINK_LIB=-lcrypto -lssl -lmysqlcppconn.7.1.1.9
 
 DEPEND_DIR=./dependency
 DEPEND=depend.d

@@ -51,8 +51,9 @@ string CDBC::insertRecordlist(RecordList &recordList,const string &table,bool is
     char cols[BUFSIZE],update[BUFSIZE];
     int col_num=getColsUpdateString(recordList[0],cols,update);
 
-    string sql="INSERT INTO "+table+" "+string(cols)+" VALUES "+getRepeatQMark(1,col_num);
+    string sql="INSERT INTO "+table+" "+string(cols)+" VALUES "+getRepeatQMark(n,col_num);
     if(isUpdate) sql+=" ON DUPLICATE KEY UPDATE "+string(update);
+    logFile.print(sql);
     try
     {
         PreparedStatement *query=conn->prepareStatement(sql);

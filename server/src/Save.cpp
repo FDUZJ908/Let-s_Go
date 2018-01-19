@@ -35,7 +35,7 @@ int main(int argc,char *argv[])
             }
             if(ret==OK) cnt++; else message=ret;
         }
-    }catch (Exception e)
+    }catch (exception &e)
     {
         writeError(e.what());
     }
