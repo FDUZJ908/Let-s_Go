@@ -19,7 +19,7 @@
 \begin{document}
 
 \begin{titlepage}
-\title{\bfseries 移动互联网课程项目报告\\--Let's Go基于位置的游玩分享软件}
+\title{\huge{\bfseries 移动互联网课程项目报告\\--Let's Go: 基于位置的游玩分享软件}}
 \author{林士翰 15307130120, 赵浯旭 15307130231}
 \date{}
 \maketitle
@@ -240,6 +240,10 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
 \end{figure}
 \begin{enumerate}
     \item src目录下为CGI的源代码和数据库的SQL语句，以及一些辅助功能的代码。\\
+    \begin{figure}[H]
+    \center
+    \includegraphics[width=0.2\textwidth]{images/server3.png}
+    \end{figure}
     \begin{tcolorbox}[colback=white]
         Python/server.py, Python/Verify.py: 采用SMTP协议发送验证码到客户邮箱。\\
         Account.cpp: 获取帐号信息或更新个人信息。\\
@@ -256,6 +260,10 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
     \end{tcolorbox}
 
     \item include目录下为一些头文件，对底层库进行了封装。\\
+    \begin{figure}[H]
+    \center
+    \includegraphics[width=0.2\textwidth]{images/server2.png}
+    \end{figure}
     \begin{tcolorbox}[colback=white]
         CDBC.h, CDBC.cpp: 对mysql-connector-c++进行封装。\\
         crypto.h, crypto.cpp: 哈希函数和Base64解码。\\
@@ -266,12 +274,21 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
     \end{tcolorbox}
 
     \item remote目录下为放置在服务器上的辅助脚本。\\
+    \begin{figure}[H]
+    \center
+    \includegraphics[width=0.3\textwidth]{images/server4.png}
+    \end{figure}
     \begin{tcolorbox}[colback=white]
         cron\_run.sh: crontab定时任务。\\
         install.sh: 本地执行make install命令时，服务器上执行这一脚本来编译并部署CGI。
     \end{tcolorbox}
 
     \item resources目录下只有category.txt，为问卷调查的结果。
+    \begin{figure}[H]
+    \center
+    \includegraphics[width=0.3\textwidth]{images/server5.png}
+    \end{figure}
+
     \item Makefile为make文件，用于编译控制。
     \item run.sh用于初始化环境(--conf选项)和调试时辅助运行指定CGI。
 \end{enumerate}
@@ -295,26 +312,68 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
     \item 在服务器上安装Apache, mysql, rapidjson, openssl, mysql-connector-c++, mysql-connector-python。
     \item 编辑/etc/httpd/conf/httpd.conf，配置Apache，需要配置HTTPS。
     \item 将/server目录拷贝到服务器上/root目录下，并且重命名为LetsGo。
-    \item 在LetsGo目录下，执行命令bash ./run.sh --conf，然后执行命令make编译。
+    \item 在LetsGo目录下，执行命令bash ./run.sh - -conf，然后执行命令make编译。
     \item 编译成功后将LetsGo/cgi-bin目录下的可执行文件和LetsGo/src/Python目录下的脚本全部复制到/var/www/cgi-bin目录中。
     \item 根据LetsGo/src/MYSQL/create.sql文件，建立好数据库，导入POI数据。
-    \item 在\~/.bash_profile和/etc/httpd/conf/httpd.conf中都添加以下环境变量。\\
+    \item 在/root/.bash\_profile和/etc/httpd/conf/httpd.conf中都添加以下环境变量。\\
     \begin{tcolorbox}[colback=white]
-        DatabasePassword "1234" //数据库密码 
-        EmailAddress "test@163.com" //用来发验证码的邮箱
-        EmailPassword "123456" //邮箱密码
-        HASHSEED "960821" //多项式哈希种子
-        LetsGoLogPATH "/root/Log/" //日志文件存储目录，需要先手动建立，并且设置权限为777
-        LetsGoResrcPATH "/root/LetsGo/resources/" //资源文件目录，需要设置权限为777
-        LetsGoFilePATH "/var/www/html/Files/" //用户上传的图片保存目录，需要手动建立，并且设置权限为777
+        DatabasePassword ``1234" //数据库密码\\
+        EmailAddress ``test@163.com" //用来发验证码的邮箱\\
+        EmailPassword ``123456" //邮箱密码\\
+        HASHSEED ``960821" //多项式哈希种子\\
+        \\
+        LetsGoLogPATH ``/root/Log/" \\
+        //日志文件存储目录，需要先手动建立，并且设置权限为777\\
+        LetsGoResrcPATH ``/root/LetsGo/resources/"\\
+        //资源文件目录，需要设置权限为777\\
+        LetsGoFilePATH ``/var/www/html/Files/" \\
+        //用户上传的图片保存目录，需要手动建立，并且设置权限为777
     \end{tcolorbox}
-    \item 配置linux的crontab定时任务，使其定时运行LetsGo/remote/下的cron_run.sh。
+    \item 配置linux的crontab定时任务，使其定时运行LetsGo/remote/下的cron\_run.sh。
     \item 用命令service httpd start运行Apache。
 \end{enumerate}
 
 \section{APP重要使用场景}
+\begin{figure}[H]
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_login.png}
+    \caption{登录}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_register.jpeg}
+    \caption{注册}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_profile.jpeg}
+    \caption{查看和修改个人信息}
+\end{minipage}
+\end{figure}
 
+\begin{figure}[H]
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_POI.jpeg}
+    \caption{查看附近的POI}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_post.jpeg}
+    \caption{留下足迹}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_browse.jpeg}
+    \caption{浏览某一POI他人足迹}
+\end{minipage}
+\end{figure}
 
+\begin{figure}[H]
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_picture.jpeg}
+    \caption{放大查看图片}
+\end{minipage}
+\begin{minipage}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{images/demo_recommend.jpeg}
+    \caption{地点推荐}
+\end{minipage}
+\end{figure}
 
 \section{分工}
 Let's Go项目由赵浯旭(15307130231)和林士翰(15307130120)合作完成，赵浯旭负责了全部的客户端开发，林士翰负责了全部的服务器搭建和开发。项目报告由两人共同编写。
