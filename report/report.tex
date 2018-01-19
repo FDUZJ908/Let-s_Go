@@ -10,6 +10,7 @@
 \usepackage{ulem}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{caption}
 \usepackage{url}
 \setlist{labelindent=\parindent}
 \setlist[enumerate]{label=\textbf{\arabic*}}
@@ -19,7 +20,7 @@
 \begin{document}
 
 \begin{titlepage}
-\title{\huge{\bfseries 移动互联网课程项目报告\\--Let's Go: 基于位置的游玩分享软件}}
+\title{\bfseries 移动互联网课程项目报告\\ --Let's Go: 基于位置的游玩分享软件}
 \author{林士翰 15307130120, 赵浯旭 15307130231}
 \date{}
 \maketitle
@@ -42,8 +43,7 @@ Let's Go的客户端采用原生Android开发，服务器用Apache HTTP Server�
 \section{项目亮点}
 \subsection{市场需求}
 Let's Go是一个基于地理位置的状态分享平台，并且提供了地点推荐服务。目前市面上有许多状态分享软件，如大众点评、微信朋友圈、Swarm等。
-大众点评关注用户的消费行为和分享，不是游玩分享平台。
-微信朋友圈不关注地理位置信息，注重好友之间的分享。
+大众点评关注用户的消费行为和分享，不是游玩分享平台，而微信朋友圈不关注地理位置信息，注重好友之间的分享。
 Swarm是一款基于地理位置的社交软件，但关注签到行为，而不是想法的分享。此外，Swarm只能浏览好友的签到，无法浏览某一地点的其他人签到，也没有POI推荐功能。
 还有一些游记软件，如面包旅行，关注的是用户的旅游行为。用户以游记的方式记录自己的行程，而不是在POI分享自己的想法。
 此外，Let's Go没有好友的功能，因而并非传统的社交软件，达到了游玩推荐的目的。
@@ -98,7 +98,9 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
     \item 算法需要获得其他用户的发帖情况，计算量大，对服务器造成压力，延迟高。
     \item 如何解决冷启动问题(cold-start problem)? 用户或POI没有历史记录怎么办? 
 \end{enumerate}
-1和2的解决方法是利用标签(tags)。\\
+
+1和2的解决方法是利用标签(tags)。
+
 每个用户注册后，需要选择符合自己的标签，Let’s Go提供了以下36种可选标签：
 
 \begin{tcolorbox}[colback=white]
@@ -110,18 +112,25 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
 \end{tcolorbox}
 
 设$tags_{i,j}$ 为带有第$j$个标签的在第$i$个POI发过贴的用户数。
-对于第$i$个POI，\[v_i=(tags_{i,1},tags_{i,2},  …  ,tags_{i,36}),\]即可以认为是其特征向量，这样就不需要获得其他用户的发帖情况来计算特征向量，从而解决了第2个问题。\\
+对于第$i$个POI，
+\[v_i=(tags_{i,1},tags_{i,2},  …  ,tags_{i,36}),\]
+即可以认为是其特征向量，这样就不需要获得其他用户的发帖情况来计算特征向量，从而解决了第2个问题。
+
 第$i$个POI和第$j$个POI之间的相似度用向量余弦来衡量。
 \[C_{i,j}=cos(v_i,v_j)\]
-由于余弦的性质，两个POI之间的相似度只跟其标签分布有关，跟标签绝对数量无关。\\
+由于余弦的性质，两个POI之间的相似度只跟其标签分布有关，跟标签绝对数量无关。
+
 用户$u$对地点$j$的评分为
 \[M_j=\frac{\sum_{p \in U}tags_{j,p}}{\sum_{k=1}^{36}tags_{j,k}}+1\]
-加1是为了防止$M_j$为0。\\
+加1是为了防止$M_j$为0。
+
 同时，考虑到POI热度对推荐的影响,
 \[P_i=log_2(1+\frac{sum_i}{max\{sum_j\}})+1,\]
-加1是为了防止$log$的真数和$P_i$为0\\
+加1是为了防止$log$的真数和$P_i$为0。
+
 那么用户$u$对地点$i$的评分为
 \[Scores_i=max\{C_{i,j} \times M_j\} \times P_i\]
+
 选出Scores最大的前$k$个POI推荐给用户，并保证每个分类都有POI被选取。
 
 当POI没有历史记录时，就无法获得POI的特征向量，为此，我们进行了问卷调查。
@@ -139,16 +148,16 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
     \vspace{0pt}
     \includegraphics[width=\textwidth]{images/ques3.png}
 \end{minipage}
-\caption{问卷地址: https://www.wjx.cn/jq/19541006.aspx}
+\caption*{问卷地址: \url{https://www.wjx.cn/jq/19541006.aspx}}
 \end{figure}
 我们总共收集了146份调查问卷，这样就获得了每个POI类别的标签分布，将POI类别的标签分布作为POI的初始标签分布。
 当POI没有历史记录时，其特征向量为其所属类别的特征向量；当POI有历史记录后，在初始向量上加上历史发帖用户的标签，得到特征向量。\\
 当用户没有历史记录时，我们只考虑用户标签与POI特征向量匹配程度和POI热度的影响，$Scores_i$修正为$Scores_i=M_i \times P_i$。
 
 \subsubsection{后端优化}
-用户每一次发帖都会导致POI的标签改变，也会导致POI的热度(即该POI的帖子数)改变，同时，由于Apache CGI是运行在不同进程中，无法在内存里维护这些变化，给数据库增加很大的压力。考虑到POI的标签和热度只会影响推荐算法，单次发帖b对推荐算法的影响很小，可以延迟更新。所以采用按天更新的机制，在服务器上设置定时器，每天凌晨3点的将前一天的所有发帖统计后写入数据库。
+用户每一次发帖都会导致POI的标签改变，也会导致POI的热度(即该POI的帖子数)改变，同时，由于Apache CGI是运行在不同进程中，无法在内存里维护这些变化，给数据库增加很大的压力。考虑到POI的标签和热度只会影响推荐算法，单次发帖对推荐算法的影响很小，可以延迟更新。所以采用按天更新的机制，在服务器上设置定时器，每天凌晨3点的将前一天的所有发帖统计后写入数据库。
 
-同样的，点赞和反对的请求比较平凡，对服务器也造成相当大压力，而且实时性要求较高，无法延迟更新。对于一次浏览某个POI的历史帖子(从点击POI的图标到点击返回键)，客户端将用户的点赞反对行为积攒下来，当用户退出浏览后再一起发送给服务器，服务器写入数据库，从而减小服务器压力。
+同样的，点赞和反对的请求比较频繁，对服务器也造成相当大压力，而且实时性要求较高，无法延迟更新。对于一次浏览某个POI的历史帖子(从点击POI的图标到点击返回键)，客户端将用户的点赞反对行为积攒下来，当用户退出浏览后再一起发送给服务器，服务器写入数据库，从而减小服务器压力。
 
 客户端对用户位置和POI进行缓存，当用户位置变化不大时，就不需要再次向服务器查询附近的POI和推荐地点，直接返回上一次结果。
 
@@ -298,7 +307,11 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
 客户端可以直接使用提供的app-release.apk安装，也可以编译源码运行，在Android Studio中编译源码并运行的步骤如下：
 \begin{enumerate}
     \item 将/LetsGo文件夹导入Android Studio中。
-    \item 在http://lbsyun.baidu.com/index.php?title=sdk/download\&action下载百度地图SDK(请按下图选择)。
+    \item 在\url{http://lbsyun.baidu.com/index.php?title=sdk/download\&action}下载百度地图SDK(请按下图选择)。
+    \begin{figure}[H]
+    \center
+    \includegraphics[width=\textwidth]{images/baiduAPI.png}
+    \end{figure}
     \item 解压BaiduLBS\_AndroidSDK\_Lib.zip得到libs文件夹，其中包含BaiduLBS\_Android.jar以及其他5个文件夹(arm64-v8a,armeabi,armeabi-v7a,x86,x86\_64)。
     \item 在/LetsGo/app下新建libs文件夹，将上述BaiduLBS\_Android.jar拷贝至/LetsGo/app/libs目录下。
     \item 在/LetsGo/app/src/main下新建jniLibs文件夹，将上述5个文件夹拷贝至/LetsGo/app/src/main/jniLibs目录下。
@@ -376,7 +389,8 @@ Let's Go利用基于物品的协同过滤算法(item-item collaborative filterin
 \end{figure}
 
 \section{分工}
-Let's Go项目由赵浯旭(15307130231)和林士翰(15307130120)合作完成，赵浯旭负责了全部的客户端开发，林士翰负责了全部的服务器搭建和开发。项目报告由两人共同编写。
+Let's Go项目由赵浯旭(15307130231)和林士翰(15307130120)合作完成，赵浯旭负责了全部的客户端开发，林士翰负责了全部的服务器搭建和开发。
+项目报告由两人共同编写。
 两人的贡献比例为50\%:50\%。
 
 \end{document}
