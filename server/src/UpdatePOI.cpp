@@ -86,9 +86,10 @@ int main()
         if(ret!=OK) logFile.print(ret);
     }
 
+    logFile.print(TOString(getTimestamp()));
     JSON json;
     json.insert("name",string("lastUpdateTime"));
     json.insert("value1",getTimestamp());
-    cdbc.insertJSON(json,"sysvar");
+    cdbc.insertJSON(json,"sysvar",true);
     return 0;
 }
